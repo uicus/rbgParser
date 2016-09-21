@@ -46,7 +46,7 @@ bool clipboard::should_paste_into(void)const{
     return !frozen;
 }
 
-token clipboard::get_current_token()const{
+const token& clipboard::get_current_token()const{
     assert(contains_full_token());
     return stored;
 }
@@ -141,16 +141,16 @@ bool backtrace_info::is_first_token_in_slice(void)const{
     return current_end == 0;
 }
 
-slice backtrace_info::get_variable_slice(void)const{
+const slice& backtrace_info::get_variable_slice(void)const{
     return current_slice.get_replacement(current());
 }
 
-token backtrace_info::get_beginning(void)const{
+const token& backtrace_info::get_beginning(void)const{
     assert(!current_slice.is_end(current_begin));
     return current_slice.get_token(current_begin);
 }
 
-token backtrace_info::current(void)const{
+const token& backtrace_info::current(void)const{
     assert(current_begin == current_end);
     return current_slice.get_token(current_end);
 }
@@ -190,14 +190,14 @@ bool slice_iterator::has_value(void)const{
     return !backtrace_stack.empty() || c.contains_full_token();
 }
 
-token slice_iterator::current(void)const{
+const token& slice_iterator::current(void)const{
     if(c.contains_full_token())
         return c.get_current_token();
     else
         return backtrace_stack.back().current();
 }
 
-void slice_iterator::push_next_slice(slice&& s){
+void slice_iterator::push_next_slice(const slice& s){
     bool last_to_paste = backtrace_stack.back().next_is_tilde() || (backtrace_stack.back().is_last_token_in_slice() && backtrace_stack.back().get_last_should_be_pasted());
     backtrace_stack.push_back(std::move(s));
     if(last_to_paste)
@@ -263,7 +263,7 @@ bool slice_iterator::next(const macro_bank& macros,messages_container& msg)throw
             if(macros.is_zero_arity_macro(backtrace_stack.back().current(),backtrace_stack.back().get_context_order()))
                 push_next_slice(macros.get_macro_slice(backtrace_stack.back().current(),std::vector<slice>()));
             else if(macros.is_non_zero_arity_macro(backtrace_stack.back().current(),backtrace_stack.back().get_context_order())){
-                token name = backtrace_stack.back().current();
+                const token& name = backtrace_stack.back().current();
                 std::vector<slice> args = backtrace_stack.back().parse_arguments(msg);
                 if(!macros.is_macro_name_and_arity(name,args.size(),backtrace_stack.back().get_context_order()))
                     throw msg.build_message(name.get_position(),"Macro with given name exists but requires another number of arguments ("+std::to_string(args.size())+" given)");

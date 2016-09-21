@@ -51,7 +51,7 @@ bool slice::should_be_replaced(const token& ident)const{
     return replacements.find(ident) != replacements.end();
 }
 
-slice slice::get_replacement(const token& ident)const{
+const slice& slice::get_replacement(const token& ident)const{
     return replacements.find(ident)->second;
 }
 
@@ -63,7 +63,7 @@ uint slice::get_context_order(void)const{
     return context_order;
 }
 
-token slice::get_token(uint index)const{
+const token& slice::get_token(uint index)const{
     assert(begin+index<end);
     return (*data)[begin+index];
 }

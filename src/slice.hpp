@@ -25,11 +25,11 @@ class slice{
         slice cut_slice(uint from, uint to)const; // relative coords
         void add_replacement(const token& ident,const slice& value);
         bool should_be_replaced(const token& ident)const;
-        slice get_replacement(const token& ident)const;
+        const slice& get_replacement(const token& ident)const;
         bool is_empty(void)const;
 
         uint get_context_order(void)const;
-        token get_token(uint index)const;
+        const token& get_token(uint index)const;
         bool is_end(uint index)const;
 };
 

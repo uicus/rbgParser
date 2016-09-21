@@ -24,7 +24,7 @@ class clipboard{
         bool contains_full_token(void)const;
         bool contains_some_token(void)const;
         bool should_paste_into(void)const;
-        token get_current_token()const;
+        const token& get_current_token()const;
 };
 
 class backtrace_info{
@@ -50,9 +50,9 @@ class backtrace_info{
         bool next_is_tilde(void)const;
         bool is_last_token_in_slice(void)const;
         bool is_first_token_in_slice(void)const;
-        slice get_variable_slice(void)const;
-        token get_beginning(void)const;
-        token current(void)const;
+        const slice& get_variable_slice(void)const;
+        const token& get_beginning(void)const;
+        const token& current(void)const;
         void next(void);
         bool has_value(void)const;
 };
@@ -60,15 +60,15 @@ class backtrace_info{
 class slice_iterator{
         std::vector<backtrace_info> backtrace_stack;
         clipboard c;
+        void push_next_slice(const slice& s);
+        void pop_slice(void);
+        bool handle_standard_token(messages_container& msg)throw(message);
     public:
         slice_iterator(const slice& s);
 
         std::vector<std::pair<uint,std::string>> create_call_stack(const std::string& details)const;
         bool has_value(void)const;
-        token current(void)const;
-        void push_next_slice(slice&& s);
-        void pop_slice(void);
-        bool handle_standard_token(messages_container& msg)throw(message);
+        const token& current(void)const;
         bool next(const macro_bank& macros,messages_container& msg)throw(message); // true -> moved forward, false -> end of iterator
 };
 
