@@ -134,13 +134,61 @@ uint game_items::input_goal(const std::vector<token>& input,uint current_token,m
     return end;
 }
 
-slice_iterator game_items::get_game_segment(void)const{
-    assert(game_segment != nullptr);
-    return slice_iterator(*game_segment);
+void game_items::print_rbg_slice(const slice& s, std::ostream& out, messages_container& msg)const throw(message){
+    slice_iterator it(s);
+    it.next(macros,msg);
+    while(it.has_value()){
+        out<<' '<<it.current().to_string();
+        it.next(macros,msg);
+    }
 }
 
-const macro_bank& game_items::get_macros(void)const{
-    return macros;
+void game_items::print_rbg_game(std::ostream& out, messages_container& msg)const throw(message){
+    if(game_segment != nullptr){
+        out<<"#game";
+        print_rbg_slice(*game_segment,out,msg);
+        out<<std::endl;
+    }
+}
+
+void game_items::print_rbg_board(std::ostream& out, messages_container& msg)const throw(message){
+    if(game_segment != nullptr){
+        out<<"#board";
+        print_rbg_slice(*board_segment,out,msg);
+        out<<std::endl;
+    }
+}
+
+void game_items::print_rbg_order(std::ostream& out, messages_container& msg)const throw(message){
+    if(game_segment != nullptr){
+        out<<"#order";
+        print_rbg_slice(*order_segment,out,msg);
+        out<<std::endl;
+    }
+}
+
+void game_items::print_rbg_players(std::ostream& out,messages_container& msg)const throw(message){
+    for(const auto& el: player_segments){
+        out<<"#player "<<el.first.to_string();
+        print_rbg_slice(el.second,out,msg);
+        out<<std::endl;
+    }
+}
+
+void game_items::print_rbg_goals(std::ostream& out,messages_container& msg)const throw(message){
+    for(const auto& el: goal_segments){
+        out<<"#goal "<<el.first.to_string();
+        print_rbg_slice(el.second,out,msg);
+        out<<std::endl;
+    }
+}
+
+void game_items::print_rbg(std::ostream& out, messages_container& msg)const throw(message){
+    print_rbg_game(out,msg);
+    print_rbg_board(out,msg);
+    print_rbg_players(out,msg);
+    print_rbg_order(out,msg);
+    print_rbg_goals(out,msg);
 }
 
 uint reach_end_of_directive(const std::vector<token>& input,uint current_token){
@@ -200,5 +248,21 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
         msg.add_message("No \'board\' directive");
     if(result.order_segment == nullptr)
         msg.add_message("No \'order\' directive");
+    std::map<token,slice> temp;
+    for(const auto& el: result.player_segments){
+        if(result.goal_segments.count(el.first))
+            temp.insert(std::move(el));
+        else
+            msg.add_message(el.first.get_position(),"Found \'player\' directive for \'"+el.first.to_string()+"\' but did not found corresponding \'goal\' directive, ignoring this player");
+    }
+    result.player_segments = std::move(temp);
+    temp.clear();
+    for(const auto& el: result.goal_segments){
+        if(result.player_segments.count(el.first))
+            temp.insert(std::move(el));
+        else
+            msg.add_message(el.first.get_position(),"Found \'goal\' directive for \'"+el.first.to_string()+"\' but did not found corresponding \'player\' directive, ignoring this player");
+    }
+    result.goal_segments = std::move(temp);
     return result;
 }

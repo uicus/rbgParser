@@ -27,17 +27,14 @@ int main(int argc, const char** argv){
         std::stringstream buffer;
         buffer << t.rdbuf();
         messages_container msg;
+        std::ofstream out(o.output_file());
         try{
+            if(!out.good())
+                throw msg.build_message("Couldn't open file "+o.output_file());
             std::vector<token> result = tokenize(buffer.str(),msg);
             game_items g = input_tokens(result,msg);
-            slice_iterator it = g.get_game_segment();
-            const macro_bank& macros = g.get_macros();
-            it.next(macros,msg);
-            while(it.has_value()){
-                std::cout<<it.current().to_string()<<' ';
-                it.next(macros,msg);
-            }
-            std::cout<<std::endl;
+            if(o.just_preprocess())
+                g.print_rbg(out,msg);
         }
         catch(message& m){
             std::cout<<m.as_error()<<std::endl;

@@ -20,6 +20,7 @@ class options{
         bool just_verify : 1;
         bool show_warnings : 1;
         bool warnings_as_errors : 1;
+        uint to_stage : 2; // 0->preprocessor, 1->semisteps, 2->full translation
         std::string output_name;
     public:
         options(void);
@@ -28,6 +29,7 @@ class options{
         bool verifying(void)const;
         bool showing_warnings(void)const;
         bool escalating_warnings(void)const;
+        bool just_preprocess(void)const;
         const std::string& output_file(void)const;
 };
 

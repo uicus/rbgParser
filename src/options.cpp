@@ -23,6 +23,7 @@ options::options(void):
 just_verify(false),
 show_warnings(true),
 warnings_as_errors(false),
+to_stage(2),
 output_name("a.gdl"){
 }
 
@@ -30,6 +31,7 @@ options::options(uint number_of_args, const char** args)throw(wrong_argument_err
 just_verify(false),
 show_warnings(true),
 warnings_as_errors(false),
+to_stage(2),
 output_name("a.gdl"){
     for(uint i=0;i<number_of_args;++i){
         if(args[i][0] != '-')
@@ -48,6 +50,8 @@ output_name("a.gdl"){
                 show_warnings = false;
             else if(!std::strcmp(args[i], "-Werror"))
                 warnings_as_errors = true;
+            else if(!std::strcmp(args[i], "-p"))
+                to_stage = 0;
             else
                 throw wrong_argument_error("Unrecognized flag");
         }
@@ -63,6 +67,10 @@ bool options::showing_warnings(void)const{
 }
 bool options::escalating_warnings(void)const{
     return warnings_as_errors;
+}
+
+bool options::just_preprocess(void)const{
+    return to_stage == 0;
 }
 
 const std::string& options::output_file(void)const{
