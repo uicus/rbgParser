@@ -44,6 +44,7 @@ class game_items{
         void print_rbg(std::ostream& out, messages_container& msg)const throw(message);
 };
 
+void print_tabs(std::ostream& out,uint n);
 uint reach_end_of_directive(const std::vector<token>& input,uint current_token);
 uint parse_arguments(const std::vector<token>& input,uint current_token,std::vector<token>& args,messages_container& msg)throw(message);
 game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message);

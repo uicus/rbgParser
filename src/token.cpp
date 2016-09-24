@@ -141,6 +141,11 @@ std::string token::to_string(void)const{
     }
 }
 
+uint token::get_value(void)const{
+    assert(type == number);
+    return number_value;
+}
+
 token_type token::get_type(void)const{
     return type;
 }

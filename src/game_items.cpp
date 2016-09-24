@@ -136,50 +136,99 @@ uint game_items::input_goal(const std::vector<token>& input,uint current_token,m
 
 void game_items::print_rbg_slice(const slice& s, std::ostream& out, messages_container& msg)const throw(message){
     slice_iterator it(s);
-    it.next(macros,msg);
-    while(it.has_value()){
-        out<<' '<<it.current().to_string();
-        it.next(macros,msg);
-    }
+    while(it.next(macros,msg))
+        out<<it.current().to_string()<<' ';
 }
 
 void game_items::print_rbg_game(std::ostream& out, messages_container& msg)const throw(message){
     if(game_segment != nullptr){
-        out<<"#game";
+        out<<"#game ";
         print_rbg_slice(*game_segment,out,msg);
-        out<<std::endl;
+        out<<std::endl<<std::endl;
     }
 }
 
 void game_items::print_rbg_board(std::ostream& out, messages_container& msg)const throw(message){
     if(game_segment != nullptr){
         out<<"#board";
-        print_rbg_slice(*board_segment,out,msg);
-        out<<std::endl;
+        slice_iterator it(*board_segment);
+        it.next(macros,msg);
+        if(it.has_value()){
+            if(it.current().get_type() != number || it.current().get_value() == 0){
+                msg.add_message(it.create_call_stack("Directive \'board\' should begin with width (positive integer); printing it in a single line"));
+                while(it.next(macros,msg))
+                    out<<' '<<it.current().to_string();
+            }
+            else{
+                uint width = it.current().get_value();
+                out<<' '<<it.current().to_string();
+                int current_token_number = 0;
+                while(it.next(macros,msg)){
+                    if((current_token_number-1)%width == 0)
+                        print_tabs(out,1);
+                    out<<' '<<it.current().to_string();
+                    ++current_token_number;
+                }
+            }
+        }
+        out<<std::endl<<std::endl;
     }
 }
 
 void game_items::print_rbg_order(std::ostream& out, messages_container& msg)const throw(message){
     if(game_segment != nullptr){
-        out<<"#order";
+        out<<"#order ";
         print_rbg_slice(*order_segment,out,msg);
-        out<<std::endl;
+        out<<std::endl<<std::endl;
     }
 }
 
 void game_items::print_rbg_players(std::ostream& out,messages_container& msg)const throw(message){
     for(const auto& el: player_segments){
-        out<<"#player "<<el.first.to_string();
-        print_rbg_slice(el.second,out,msg);
-        out<<std::endl;
+        out<<"#player "<<el.first.to_string()<<std::endl;
+        slice_iterator it(el.second);
+        it.next(macros,msg);
+        if(it.has_value())
+            out<<"       "<<it.current().to_string();
+        std::vector<bool> first_item_encountered;
+        bool last_was_bracket = true;
+        while(it.next(macros,msg)){
+            if(it.current().get_type() == double_plus){
+                print_tabs(out,1);
+                first_item_encountered.clear();
+                first_item_encountered.push_back(false);
+                last_was_bracket = true;
+            }
+            if(it.current().get_type() == left_round_bracket){
+                if(first_item_encountered.empty())
+                    first_item_encountered.push_back(false);
+                if(!first_item_encountered.back()){
+                    print_tabs(out,first_item_encountered.size()+1);
+                    out<<"  ";
+                    first_item_encountered.back() = true;
+                }
+                first_item_encountered.push_back(false);
+            }
+            if(it.current().get_type() == plus && last_was_bracket)
+                print_tabs(out,first_item_encountered.size()+1);
+            if(it.current().get_type() == right_round_bracket){
+                if(!first_item_encountered.empty())
+                    first_item_encountered.pop_back();
+                last_was_bracket = true;
+            }
+            else
+                last_was_bracket = false;
+            out<<' '<<it.current().to_string();
+        }
+        out<<std::endl<<std::endl;
     }
 }
 
 void game_items::print_rbg_goals(std::ostream& out,messages_container& msg)const throw(message){
     for(const auto& el: goal_segments){
-        out<<"#goal "<<el.first.to_string();
+        out<<"#goal "<<el.first.to_string()<<' ';
         print_rbg_slice(el.second,out,msg);
-        out<<std::endl;
+        out<<std::endl<<std::endl;
     }
 }
 
@@ -189,6 +238,12 @@ void game_items::print_rbg(std::ostream& out, messages_container& msg)const thro
     print_rbg_players(out,msg);
     print_rbg_order(out,msg);
     print_rbg_goals(out,msg);
+}
+
+void print_tabs(std::ostream& out,uint n){
+    out<<std::endl;
+    for(uint i=0;i<4*n-1;++i)
+        out<<' ';
 }
 
 uint reach_end_of_directive(const std::vector<token>& input,uint current_token){
