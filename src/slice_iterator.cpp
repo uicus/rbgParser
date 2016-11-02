@@ -166,10 +166,23 @@ bool backtrace_info::has_value(void)const{
     return !current_slice.is_end(current_end);
 }
 
-slice_iterator::slice_iterator(const slice& s):
+slice_iterator::slice_iterator(const slice& s, const macro_bank* mcrs):
 backtrace_stack(),
-c(){
+c(),
+macros(mcrs){
     backtrace_stack.push_back(s);
+}
+
+slice_iterator::slice_iterator(const slice_iterator& src):
+backtrace_stack(src.backtrace_stack),
+c(src.c),
+macros(src.macros){
+}
+
+slice_iterator::slice_iterator(slice_iterator&& src):
+backtrace_stack(src.backtrace_stack),
+c(src.c),
+macros(src.macros){
 }
 
 std::vector<std::pair<uint,std::string>> slice_iterator::create_call_stack(const std::string& details)const{
@@ -241,7 +254,7 @@ bool slice_iterator::handle_standard_token(messages_container& msg)throw(message
     }
 }
 
-bool slice_iterator::next(const macro_bank& macros,messages_container& msg)throw(message){
+bool slice_iterator::next(messages_container& msg)throw(message){
     c.report_next_token();
     while(true){
         while(!backtrace_stack.empty()){
@@ -259,15 +272,15 @@ bool slice_iterator::next(const macro_bank& macros,messages_container& msg)throw
             throw msg.build_message(backtrace_stack.back().current().get_position(),"Unexpected tilde");
         else if(backtrace_stack.back().points_at_variable())
             push_next_slice(backtrace_stack.back().get_variable_slice());
-        else if(macros.could_be_macro_name(backtrace_stack.back().current())){
-            if(macros.is_zero_arity_macro(backtrace_stack.back().current(),backtrace_stack.back().get_context_order()))
-                push_next_slice(macros.get_macro_slice(backtrace_stack.back().current(),std::vector<slice>()));
-            else if(macros.is_non_zero_arity_macro(backtrace_stack.back().current(),backtrace_stack.back().get_context_order())){
+        else if(macros->could_be_macro_name(backtrace_stack.back().current())){
+            if(macros->is_zero_arity_macro(backtrace_stack.back().current(),backtrace_stack.back().get_context_order()))
+                push_next_slice(macros->get_macro_slice(backtrace_stack.back().current(),std::vector<slice>()));
+            else if(macros->is_non_zero_arity_macro(backtrace_stack.back().current(),backtrace_stack.back().get_context_order())){
                 const token& name = backtrace_stack.back().current();
                 std::vector<slice> args = backtrace_stack.back().parse_arguments(msg);
-                if(!macros.is_macro_name_and_arity(name,args.size(),backtrace_stack.back().get_context_order()))
+                if(!macros->is_macro_name_and_arity(name,args.size(),backtrace_stack.back().get_context_order()))
                     throw msg.build_message(name.get_position(),"Macro with given name exists but requires another number of arguments ("+std::to_string(args.size())+" given)");
-                push_next_slice(macros.get_macro_slice(name,args));
+                push_next_slice(macros->get_macro_slice(name,args));
             }
             else if(handle_standard_token(msg))
                 return true;

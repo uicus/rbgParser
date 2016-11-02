@@ -2,6 +2,7 @@
 #define GAME_ITEMS
 
 #include<map>
+#include<set>
 #include<vector>
 #include<iostream>
 
@@ -9,6 +10,8 @@
 #include"token.hpp"
 #include"message.hpp"
 #include"slice_iterator.hpp"
+#include"game_board.hpp"
+#include"parsed_game.hpp"
 
 class game_items{
         macro_bank macros;
@@ -33,6 +36,8 @@ class game_items{
         void print_rbg_order(std::ostream& out, messages_container& msg)const throw(message);
         void print_rbg_players(std::ostream& out,messages_container& msg)const throw(message);
         void print_rbg_goals(std::ostream& out,messages_container& msg)const throw(message);
+
+        game_board parse_board(messages_container& msg, std::set<token>& encountered_pieces)const throw(message);
     public:
         game_items(const game_items&)=delete;
         game_items(game_items&& src);
@@ -42,6 +47,7 @@ class game_items{
 
         friend game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message);
         void print_rbg(std::ostream& out, messages_container& msg)const throw(message);
+        parsed_game parse_game(messages_container& msg)const throw(message);
 };
 
 void print_tabs(std::ostream& out,uint n);

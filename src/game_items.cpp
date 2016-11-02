@@ -1,7 +1,8 @@
 #include<cassert>
 
-#include "game_items.hpp"
+#include"game_items.hpp"
 #include"types.hpp"
+#include"game_board.hpp"
 
 game_items::game_items(void):
 macros(),
@@ -135,8 +136,8 @@ uint game_items::input_goal(const std::vector<token>& input,uint current_token,m
 }
 
 void game_items::print_rbg_slice(const slice& s, std::ostream& out, messages_container& msg)const throw(message){
-    slice_iterator it(s);
-    while(it.next(macros,msg))
+    slice_iterator it(s,&macros);
+    while(it.next(msg))
         out<<it.current().to_string()<<' ';
 }
 
@@ -151,19 +152,18 @@ void game_items::print_rbg_game(std::ostream& out, messages_container& msg)const
 void game_items::print_rbg_board(std::ostream& out, messages_container& msg)const throw(message){
     if(game_segment != nullptr){
         out<<"#board";
-        slice_iterator it(*board_segment);
-        it.next(macros,msg);
-        if(it.has_value()){
+        slice_iterator it(*board_segment,&macros);
+        if(it.next(msg)){
             if(it.current().get_type() != number || it.current().get_value() == 0){
                 msg.add_message(it.create_call_stack("Directive \'board\' should begin with width (positive integer); printing it in a single line"));
-                while(it.next(macros,msg))
+                while(it.next(msg))
                     out<<' '<<it.current().to_string();
             }
             else{
                 uint width = it.current().get_value();
                 out<<' '<<it.current().to_string();
                 int current_token_number = 0;
-                while(it.next(macros,msg)){
+                while(it.next(msg)){
                     if((current_token_number-1)%width == 0)
                         print_tabs(out,1);
                     out<<' '<<it.current().to_string();
@@ -186,13 +186,12 @@ void game_items::print_rbg_order(std::ostream& out, messages_container& msg)cons
 void game_items::print_rbg_players(std::ostream& out,messages_container& msg)const throw(message){
     for(const auto& el: player_segments){
         out<<"#player "<<el.first.to_string()<<std::endl;
-        slice_iterator it(el.second);
-        it.next(macros,msg);
-        if(it.has_value())
+        slice_iterator it(el.second,&macros);
+        if(it.next(msg))
             out<<"       "<<it.current().to_string();
         std::vector<bool> first_item_encountered;
         bool last_was_bracket = true;
-        while(it.next(macros,msg)){
+        while(it.next(msg)){
             if(it.current().get_type() == double_plus){
                 print_tabs(out,1);
                 first_item_encountered.clear();
@@ -238,6 +237,35 @@ void game_items::print_rbg(std::ostream& out, messages_container& msg)const thro
     print_rbg_players(out,msg);
     print_rbg_order(out,msg);
     print_rbg_goals(out,msg);
+}
+
+game_board game_items::parse_board(messages_container& msg, std::set<token>& encountered_pieces)const throw(message){
+    if(board_segment == nullptr)
+        throw msg.build_message("No \'board\' directive");
+    slice_iterator it(*board_segment,&macros);
+    if(!it.next(msg))
+        throw msg.build_message("Unexpected end of \'board\' directive");
+    if(it.current().get_type() != number)
+        throw msg.build_message(it.create_call_stack("Expected number literal, encountered \'"+it.current().to_string()+"\'"));
+    uint width = it.current().get_value();
+    if(width == 0)
+        throw msg.build_message(it.create_call_stack("Board width has to be positive"));
+    if(!it.next(msg))
+        throw msg.build_message("Unexpected end of \'board\' directive");
+    if(it.current().get_type() != number)
+        throw msg.build_message(it.create_call_stack("Expected number literal, encountered \'"+it.current().to_string()+"\'"));
+    uint height = it.current().get_value();
+    if(height == 0)
+        throw msg.build_message(it.create_call_stack("Board height has to be positive"));
+    game_board brd(width,height);
+    it.next(msg);
+    brd.fill_with_slice(it,encountered_pieces,msg);
+    return brd;
+}
+
+parsed_game game_items::parse_game(messages_container& msg)const throw(message){
+    std::set<token> encountered_pieces;
+    return parsed_game(parse_board(msg,encountered_pieces));
 }
 
 void print_tabs(std::ostream& out,uint n){

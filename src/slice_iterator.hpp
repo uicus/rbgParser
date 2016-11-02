@@ -60,16 +60,21 @@ class backtrace_info{
 class slice_iterator{
         std::vector<backtrace_info> backtrace_stack;
         clipboard c;
+        const macro_bank* macros;
         void push_next_slice(const slice& s);
         void pop_slice(void);
         bool handle_standard_token(messages_container& msg)throw(message);
     public:
-        slice_iterator(const slice& s);
+        slice_iterator(const slice& s, const macro_bank* macros);
+        slice_iterator& operator=(const slice_iterator&)=delete;
+        slice_iterator& operator=(slice_iterator&&)=delete;
+        slice_iterator(const slice_iterator& src);
+        slice_iterator(slice_iterator&& src);
 
         std::vector<std::pair<uint,std::string>> create_call_stack(const std::string& details)const;
         bool has_value(void)const;
         const token& current(void)const;
-        bool next(const macro_bank& macros,messages_container& msg)throw(message); // true -> moved forward, false -> end of iterator
+        bool next(messages_container& msg)throw(message); // true -> moved forward, false -> end of iterator
 };
 
 #endif

@@ -35,6 +35,8 @@ int main(int argc, const char** argv){
             game_items g = input_tokens(result,msg);
             if(o.just_preprocess())
                 g.print_rbg(out,msg);
+            else if(o.verifying())
+                parsed_game pg = g.parse_game(msg);
         }
         catch(message& m){
             std::cout<<m.as_error()<<std::endl;
