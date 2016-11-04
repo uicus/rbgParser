@@ -21,7 +21,7 @@ void game_board::add_piece(const token& piece){
 void game_board::fill_with_slice(slice_iterator& it, std::set<token>& encountered_pieces, messages_container& msg)throw(message){
     while(!is_completely_filled()){
         if(!it.has_value())
-            throw msg.build_message("Unexpected end of \'board\' directive");
+            throw msg.build_message("Unexpected end of \'board\' directive (expected "+std::to_string(width*height-currently_filled)+" tokens more)");
         if(it.current().get_type() != identifier)
             throw msg.build_message(it.create_call_stack("Expected identifier, encountered \'"+it.current().to_string()+"\'"));
         else{

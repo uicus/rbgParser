@@ -3,6 +3,7 @@
 #include"game_items.hpp"
 #include"types.hpp"
 #include"game_board.hpp"
+#include"parser_helpers.hpp"
 
 game_items::game_items(void):
 macros(),
@@ -245,21 +246,24 @@ game_board game_items::parse_board(messages_container& msg, std::set<token>& enc
     slice_iterator it(*board_segment,&macros);
     if(!it.next(msg))
         throw msg.build_message("Unexpected end of \'board\' directive");
-    if(it.current().get_type() != number)
-        throw msg.build_message(it.create_call_stack("Expected number literal, encountered \'"+it.current().to_string()+"\'"));
-    uint width = it.current().get_value();
-    if(width == 0)
-        throw msg.build_message(it.create_call_stack("Board width has to be positive"));
-    if(!it.next(msg))
+    parser_result<int> result = parse_int(it,msg);
+    if(!result.is_success())
+        throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
+    if(result.get_value() <= 0)
+        throw msg.build_message("Board width must be positive");
+    uint width = result.get_value();
+    if(!it.has_value())
         throw msg.build_message("Unexpected end of \'board\' directive");
-    if(it.current().get_type() != number)
-        throw msg.build_message(it.create_call_stack("Expected number literal, encountered \'"+it.current().to_string()+"\'"));
-    uint height = it.current().get_value();
-    if(height == 0)
-        throw msg.build_message(it.create_call_stack("Board height has to be positive"));
+    result = parse_int(it,msg);
+    if(!result.is_success())
+        throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
+    if(result.get_value() <= 0)
+        throw msg.build_message("Board height must be positive");
+    uint height = result.get_value();
     game_board brd(width,height);
-    it.next(msg);
     brd.fill_with_slice(it,encountered_pieces,msg);
+    if(it.has_value())
+        throw msg.build_message(it.create_call_stack("Unexpected tokens at the end of \'board\' directive"));
     return brd;
 }
 
