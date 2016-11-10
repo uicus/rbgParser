@@ -15,7 +15,7 @@ std::string message::as_warning(void)const{
     std::string result;
     for(int i=call_stack.size()-1;i>=0;--i){
         if(call_stack[i].first.second>0)
-            result += std::string(i<int(call_stack.size()-1) ? "\n\t" : "")+"Warning (line "+std::to_string(call_stack[i].first.first)+", charcter "+std::to_string(call_stack[i].first.second)+"): "+call_stack[i].second;
+            result += std::string(i<int(call_stack.size()-1) ? "\n\t" : "")+"Warning (line "+std::to_string(call_stack[i].first.first)+", character "+std::to_string(call_stack[i].first.second)+"): "+call_stack[i].second;
         else
             result += std::string(i<int(call_stack.size()-1) ? "\n\t" : "")+"Warning: "+call_stack[i].second;
     }
@@ -26,7 +26,7 @@ std::string message::as_error(void)const{
     std::string result;
     for(int i=call_stack.size()-1;i>=0;--i){
         if(call_stack[i].first.second>0)
-            result += std::string(i<int(call_stack.size()-1) ? "\n\t" : "")+"Error (line "+std::to_string(call_stack[i].first.first)+", charcter "+std::to_string(call_stack[i].first.second)+"): "+call_stack[i].second;
+            result += std::string(i<int(call_stack.size()-1) ? "\n\t" : "")+"Error (line "+std::to_string(call_stack[i].first.first)+", character "+std::to_string(call_stack[i].first.second)+"): "+call_stack[i].second;
         else
             result += std::string(i<int(call_stack.size()-1) ? "\n\t" : "")+"Error: "+call_stack[i].second;
     }

@@ -34,6 +34,7 @@ type(src.type){
 
 token& token::operator=(const token& src){
     if(this != &src){
+        position_in_file = src.position_in_file;
         if(type == identifier || type == quotation)
             delete contained_string;
         type = src.type;
@@ -46,6 +47,7 @@ token& token::operator=(const token& src){
 }
 token& token::operator=(token&& src){
     if(this != &src){
+        position_in_file = src.position_in_file;
         if(type == identifier || type == quotation)
             delete contained_string;
         type = src.type;

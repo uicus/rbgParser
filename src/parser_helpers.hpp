@@ -1,7 +1,10 @@
 #ifndef PARSER_HELPERS
 #define PARSER_HELPERS
 
+#include<set>
+
 #include"slice_iterator.hpp"
+#include"token.hpp"
 #include"message.hpp"
 
 template<typename T>
@@ -37,5 +40,6 @@ parser_result<T> success(T&& result){
 }
 
 parser_result<int> parse_int(slice_iterator& it, messages_container& msg)throw(message);
+parser_result<std::set<token>> parse_tokens_set(slice_iterator& it, messages_container& msg)throw(message);
 
 #endif

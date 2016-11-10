@@ -245,7 +245,7 @@ game_board game_items::parse_board(messages_container& msg, std::set<token>& enc
         throw msg.build_message("No \'board\' directive");
     slice_iterator it(*board_segment,&macros);
     if(!it.next(msg))
-        throw msg.build_message("Unexpected end of \'board\' directive");
+        throw msg.build_message("Unexpected end of \'board\' directive (expected two integers more)");
     parser_result<int> result = parse_int(it,msg);
     if(!result.is_success())
         throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
@@ -253,7 +253,7 @@ game_board game_items::parse_board(messages_container& msg, std::set<token>& enc
         throw msg.build_message("Board width must be positive");
     uint width = result.get_value();
     if(!it.has_value())
-        throw msg.build_message("Unexpected end of \'board\' directive");
+        throw msg.build_message("Unexpected end of \'board\' directive (expected one integer more)");
     result = parse_int(it,msg);
     if(!result.is_success())
         throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
