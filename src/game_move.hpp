@@ -9,17 +9,19 @@
 #include"parser_helpers.hpp"
 #include"slice_iterator.hpp"
 #include"message.hpp"
+#include"game_order.hpp"
 
 class atomic_move{
         int x;
         int y;
-        bool every_on_legal;
         std::set<token> on;
         std::set<token> off;
+        bool every_on_legal : 1;
+        bool no_off : 1;
     public:
         atomic_move(void);
         atomic_move(int x,int y,const std::set<token>& on,const std::set<token>& off);
-        atomic_move(int x,int y,const std::set<token>& off); // true -> on, false -> off
+        atomic_move(int x,int y,const std::set<token>& on_off, bool on_switch);
 
         friend parser_result<atomic_move> parse_atomic_move(
             slice_iterator& it,
@@ -40,7 +42,7 @@ class turn_change_indicator{
 
         friend parser_result<turn_change_indicator> parse_turn_change_indicator(
             slice_iterator& it,
-            const std::map<token,slice>& players,
+            const game_order& players,
             messages_container& msg)throw(message);
 
         bool operator<(const turn_change_indicator& m)const;
@@ -49,7 +51,7 @@ class turn_change_indicator{
 
 parser_result<turn_change_indicator> parse_turn_change_indicator(
     slice_iterator& it,
-    const std::map<token,slice>& players,
+    const game_order& players,
     messages_container& msg)throw(message);
 
 class moves_sum;
@@ -75,7 +77,7 @@ class bracketed_move{
         friend parser_result<bracketed_move> parse_bracketed_move(
             slice_iterator& it,
             std::set<token>& encountered_pieces,
-            const std::map<token,slice>& players,
+            const game_order& players,
             messages_container& msg)throw(message);
 
         bool operator<(const bracketed_move& m)const;
@@ -85,7 +87,7 @@ class bracketed_move{
 parser_result<bracketed_move> parse_bracketed_move(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
-    const std::map<token,slice>& players,
+    const game_order& players,
     messages_container& msg)throw(message);
 
 class moves_concatenation{
@@ -97,7 +99,7 @@ class moves_concatenation{
         friend parser_result<moves_concatenation> parse_moves_concatenation(
             slice_iterator& it,
             std::set<token>& encountered_pieces,
-            const std::map<token,slice>& players,
+            const game_order& players,
             messages_container& msg)throw(message);
 
         bool operator<(const moves_concatenation& m)const;
@@ -107,7 +109,7 @@ class moves_concatenation{
 parser_result<moves_concatenation> parse_moves_concatenation(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
-    const std::map<token,slice>& players,
+    const game_order& players,
     messages_container& msg)throw(message);
 
 class moves_sum{
@@ -119,7 +121,7 @@ class moves_sum{
         friend parser_result<moves_sum> parse_moves_sum(
             slice_iterator& it,
             std::set<token>& encountered_pieces,
-            const std::map<token,slice>& players,
+            const game_order& players,
             messages_container& msg)throw(message);
 
         bool operator<(const moves_sum& m)const;
@@ -129,7 +131,7 @@ class moves_sum{
 parser_result<moves_sum> parse_moves_sum(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
-    const std::map<token,slice>& players,
+    const game_order& players,
     messages_container& msg)throw(message);
 
 #endif

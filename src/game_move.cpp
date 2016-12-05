@@ -3,23 +3,26 @@
 atomic_move::atomic_move(void):
 x(0),
 y(0),
-every_on_legal(false),
 on(),
-off(){}
+off(),
+every_on_legal(false),
+no_off(false){}
 
 atomic_move::atomic_move(int _x,int _y,const std::set<token>& _on,const std::set<token>& _off):
 x(_x),
 y(_y),
-every_on_legal(false),
 on(_on),
-off(_off){}
+off(_off),
+every_on_legal(false),
+no_off(false){}
 
-atomic_move::atomic_move(int _x,int _y,const std::set<token>& _off):
+atomic_move::atomic_move(int _x,int _y,const std::set<token>& _on_off, bool on_switch):
 x(_x),
 y(_y),
-every_on_legal(true),
-on(),
-off(_off){}
+on(on_switch ? _on_off : std::set<token>()),
+off(on_switch ? std::set<token>() : _on_off),
+every_on_legal(!on_switch),
+no_off(on_switch){}
 
 parser_result<atomic_move> parse_atomic_move(
     slice_iterator& it,
@@ -52,6 +55,7 @@ parser_result<atomic_move> parse_atomic_move(
             throw msg.build_message("Unexpected end of atomic move");
     }
     bool every_on_legal = false;
+    bool no_off = false;
     std::set<token> on,off;
     if(it.current().get_type() == slash){
         every_on_legal = true;
@@ -69,9 +73,7 @@ parser_result<atomic_move> parse_atomic_move(
             on = legals.get_value();
         else
             throw msg.build_message(it.create_call_stack("Expected set of identifiers or '/', encountered \'"+it.current().to_string()+"\'"));
-        if(!it.has_value())
-            throw msg.build_message("Unexpected end of atomic move");
-        if(it.current().get_type() == slash){
+        if(it.has_value()&&it.current().get_type() == slash){
             if(!it.next(msg))
                 throw msg.build_message("Unexpected end of atomic move");
             legals = parse_tokens_set(it,msg);
@@ -81,23 +83,24 @@ parser_result<atomic_move> parse_atomic_move(
                 throw msg.build_message(it.create_call_stack("Expected set of identifiers, encountered \'"+it.current().to_string()+"\'"));
         }
         else
-            off = on;
+            no_off = true;
     }
     encountered_pieces.insert(on.begin(),on.end());
     encountered_pieces.insert(off.begin(),off.end());
-    return success(every_on_legal ? atomic_move(x,y,off) : atomic_move(x,y,on,off));
+    return success(every_on_legal ? atomic_move(x,y,off,false) : (no_off ? atomic_move(x,y,on,true) : atomic_move(x,y,on,off)));
 }
 
 bool atomic_move::operator<(const atomic_move& m)const{
     return x<m.x
         || (x==m.x && y<m.y)
         || (x==m.x && y==m.y && every_on_legal<m.every_on_legal)
-        || (x==m.x && y==m.y && every_on_legal==m.every_on_legal && on<m.on)
-        || (x==m.x && y==m.y && every_on_legal==m.every_on_legal && on==m.on && off<m.off);
+        || (x==m.x && y==m.y && every_on_legal==m.every_on_legal && no_off<m.no_off)
+        || (x==m.x && y==m.y && every_on_legal==m.every_on_legal && no_off==m.no_off && on<m.on)
+        || (x==m.x && y==m.y && every_on_legal==m.every_on_legal && no_off==m.no_off && on==m.on && off<m.off);
 }
 
 bool atomic_move::operator==(const atomic_move& m)const{
-    return (x==m.x && y==m.y && every_on_legal==m.every_on_legal && on==m.on && off==m.off);
+    return (x==m.x && y==m.y && every_on_legal==m.every_on_legal && no_off==m.no_off && on==m.on && off==m.off);
 }
 
 turn_change_indicator::turn_change_indicator(const token& name):
@@ -109,7 +112,7 @@ player(create_quotation(0)){}//dummy
 
 parser_result<turn_change_indicator> parse_turn_change_indicator(
     slice_iterator& it,
-    const std::map<token,slice>& players,
+    const game_order& players,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<turn_change_indicator>();
@@ -119,7 +122,7 @@ parser_result<turn_change_indicator> parse_turn_change_indicator(
         throw msg.build_message("Unexpected end of square brackets enclosed player name");
     if(it.current().get_type() != identifier)
         throw msg.build_message(it.create_call_stack("Expected player name, encountered \'"+it.current().to_string()+"\'"));
-    if(players.count(it.current()) == 0)
+    if(!players.exists(it.current()))
         throw msg.build_message(it.create_call_stack("There is no player \'"+it.current().to_string()+"\'"));
     turn_change_indicator result(it.current());
     if(!it.next(msg))
@@ -262,7 +265,7 @@ bracketed_move::~bracketed_move(void){
 parser_result<bracketed_move> parse_bracketed_move(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
-    const std::map<token,slice>& players,
+    const game_order& players,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<bracketed_move>();
@@ -331,7 +334,7 @@ content(std::move(src)){}
 parser_result<moves_concatenation> parse_moves_concatenation(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
-    const std::map<token,slice>& players,
+    const game_order& players,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<moves_concatenation>();
@@ -386,7 +389,7 @@ content(std::move(src)){}
 parser_result<moves_sum> parse_moves_sum(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
-    const std::map<token,slice>& players,
+    const game_order& players,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<moves_sum>();
