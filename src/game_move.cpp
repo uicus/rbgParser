@@ -1,3 +1,5 @@
+#include<cassert>
+
 #include"game_move.hpp"
 
 atomic_move::atomic_move(void):
@@ -30,8 +32,6 @@ parser_result<atomic_move> parse_atomic_move(
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<atomic_move>();
-    if(!it.current().get_type() != number && !it.current().get_type() != slash && !it.current().get_type() != identifier)
-        return failure<atomic_move>();
     int x=0,y=0;
     parser_result<int> delta = parse_int(it,msg);
     if(delta.is_success()){
@@ -47,13 +47,15 @@ parser_result<atomic_move> parse_atomic_move(
             y = delta.get_value();
         else
             throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
-        if(!it.next(msg))
+        if(!it.has_value())
             throw msg.build_message("Unexpected end of atomic move");
-        if(!it.current().get_type() != comma)
+        if(it.current().get_type() != comma)
             throw msg.build_message(it.create_call_stack("Expected ',', encountered \'"+it.current().to_string()+"\'"));
         if(!it.next(msg))
             throw msg.build_message("Unexpected end of atomic move");
     }
+    else if(it.current().get_type() != slash&&it.current().get_type() != identifier)
+        return failure<atomic_move>();
     bool every_on_legal = false;
     bool no_off = false;
     std::set<token> on,off;
@@ -62,7 +64,7 @@ parser_result<atomic_move> parse_atomic_move(
         if(!it.next(msg))
             throw msg.build_message("Unexpected end of atomic move");
         parser_result<std::set<token>> legals = parse_tokens_set(it,msg);
-        if(!legals.is_success())
+        if(legals.is_success())
             off = legals.get_value();
         else
             throw msg.build_message(it.create_call_stack("Expected set of identifiers, encountered \'"+it.current().to_string()+"\'"));
@@ -77,7 +79,7 @@ parser_result<atomic_move> parse_atomic_move(
             if(!it.next(msg))
                 throw msg.build_message("Unexpected end of atomic move");
             legals = parse_tokens_set(it,msg);
-            if(!legals.is_success())
+            if(legals.is_success())
                 off = legals.get_value();
             else
                 throw msg.build_message(it.create_call_stack("Expected set of identifiers, encountered \'"+it.current().to_string()+"\'"));
@@ -113,20 +115,30 @@ player(create_quotation(0)){}//dummy
 parser_result<turn_change_indicator> parse_turn_change_indicator(
     slice_iterator& it,
     const game_order& players,
+    int player_number,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<turn_change_indicator>();
-    if(!it.current().get_type() != left_square_bracket)
+    if(it.current().get_type() != left_square_bracket)
         return failure<turn_change_indicator>();
     if(!it.next(msg))
-        throw msg.build_message("Unexpected end of square brackets enclosed player name");
-    if(it.current().get_type() != identifier)
-        throw msg.build_message(it.create_call_stack("Expected player name, encountered \'"+it.current().to_string()+"\'"));
-    if(!players.exists(it.current()))
-        throw msg.build_message(it.create_call_stack("There is no player \'"+it.current().to_string()+"\'"));
-    turn_change_indicator result(it.current());
-    if(!it.next(msg))
-        throw msg.build_message("Unexpected end of square brackets enclosed player name");
+        throw msg.build_message("Unexpected end of square brackets enclosed player name (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+    turn_change_indicator result;
+    if(it.current().get_type() == identifier){
+        if(!players.exists(it.current()))
+            throw msg.build_message(it.create_call_stack("There is no player \'"+it.current().to_string()+"\'"));
+        result = turn_change_indicator(it.current());
+        it.next(msg);
+    }
+    else{
+        parser_result<int> delta_result = parse_int(it,msg);
+        if(delta_result.is_success())
+            result = turn_change_indicator(players.get_player_name(player_number,delta_result.get_value()));
+        else
+            throw msg.build_message(it.create_call_stack("Expected player name or integer, encountered \'"+it.current().to_string()+"\'"));
+    }
+    if(!it.has_value())
+        throw msg.build_message("Unexpected end of square brackets enclosed player name (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
     if(it.current().get_type() != right_square_bracket)
         throw msg.build_message(it.create_call_stack("Expected \']\', encountered \'"+it.current().to_string()+"\'"));
     it.next(msg);
@@ -142,10 +154,12 @@ bool turn_change_indicator::operator==(const turn_change_indicator& m)const{
 }
 
 bracketed_move::bracketed_move(void):
+repetition_number(1),
 sum(nullptr),
 tag(0){}
 
 bracketed_move::bracketed_move(const bracketed_move& src):
+repetition_number(src.repetition_number),
 sum(nullptr),
 tag(src.tag){
     switch(src.tag){
@@ -162,6 +176,7 @@ tag(src.tag){
 
 bracketed_move& bracketed_move::operator=(const bracketed_move& src){
     if(this != &src){
+        repetition_number = src.repetition_number;
         switch(tag){
         case 0:
             delete sum;
@@ -188,6 +203,7 @@ bracketed_move& bracketed_move::operator=(const bracketed_move& src){
 }
 
 bracketed_move::bracketed_move(bracketed_move&& src):
+repetition_number(src.repetition_number),
 sum(),
 tag(src.tag){
     switch(src.tag){
@@ -207,6 +223,7 @@ tag(src.tag){
 
 bracketed_move& bracketed_move::operator=(bracketed_move&& src){
     if(this != &src){
+        repetition_number = src.repetition_number;
         switch(tag){
         case 0:
             delete sum;
@@ -235,16 +252,19 @@ bracketed_move& bracketed_move::operator=(bracketed_move&& src){
 }
 
 bracketed_move::bracketed_move(const moves_sum& src):
+repetition_number(1),
 tag(0){
     sum = new moves_sum(src);
 }
 
 bracketed_move::bracketed_move(const atomic_move& src):
+repetition_number(1),
 tag(1){
     atomic = new atomic_move(src);
 }
 
 bracketed_move::bracketed_move(const turn_change_indicator& src):
+repetition_number(1),
 tag(2){
     turn_changer = new turn_change_indicator(src);
 }
@@ -266,17 +286,22 @@ parser_result<bracketed_move> parse_bracketed_move(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
     const game_order& players,
+    int player_number,
+    bool& contains_turn_changer,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<bracketed_move>();
-    parser_result<turn_change_indicator> turn_changer_result = parse_turn_change_indicator(it,players,msg);
-    if(turn_changer_result.is_success())
+    parser_result<turn_change_indicator> turn_changer_result = parse_turn_change_indicator(it,players,player_number,msg);
+    if(turn_changer_result.is_success()){
+        contains_turn_changer = true;
         return success(bracketed_move(turn_changer_result.get_value()));
-    else if(it.current().get_type() == left_square_bracket){
+    }
+    else if(it.current().get_type() == left_round_bracket){
         if(!it.next(msg))
-            throw msg.build_message("Unexpected end of brackets enclosed move");
+            throw msg.build_message("Unexpected end of brackets enclosed move (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
         bracketed_move result;
-        parser_result<moves_sum> sum_result = parse_moves_sum(it,encountered_pieces,players,msg);
+        bool sum_contains_turn_changer = false;
+        parser_result<moves_sum> sum_result = parse_moves_sum(it,encountered_pieces,players,player_number,sum_contains_turn_changer,msg);
         if(sum_result.is_success())
             result = sum_result.get_value();
         else{
@@ -284,13 +309,33 @@ parser_result<bracketed_move> parse_bracketed_move(
             if(atomic_result.is_success())
                 result = atomic_result.get_value();
             else
-                throw msg.build_message(it.create_call_stack("Expected atomic move or moves sum"));
+                throw msg.build_message(it.create_call_stack("Expected atomic move or moves sum, encountered \'"+it.current().to_string()+"\'"));
         }
         if(!it.has_value())
             throw msg.build_message("Unexpected end of brackets enclosed move");
         if(it.current().get_type() != right_round_bracket)
             throw msg.build_message(it.create_call_stack("Expected \')\', encountered \'"+it.current().to_string()+"\'"));
-        it.next(msg);
+        if(it.next(msg)&&it.current().get_type()==caret){
+            if(!it.next(msg))
+                throw msg.build_message("Unexpected end of repetition indicator (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+            if(it.current().get_type()==star){
+                if(sum_contains_turn_changer)
+                    throw msg.build_message("Sum of moves containing turn changing moves cannot be repeated more than once (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+                result.set_star();
+                it.next(msg);
+            }
+            else{
+                parser_result<int> rn_result = parse_int(it,msg);
+                if(!rn_result.is_success())
+                    throw msg.build_message(it.create_call_stack("Expected \'*\' or positive number, encountered \'"+it.current().to_string()+"\'"));
+                if(rn_result.get_value()<=0)
+                    throw msg.build_message("Number of repetition must be positive (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+                if(rn_result.get_value()>1&&sum_contains_turn_changer)
+                    throw msg.build_message("Sum of moves containing turn changing moves cannot be repeated more than once (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+                result.set_repetition_number(rn_result.get_value());
+            }
+        }
+        contains_turn_changer = sum_contains_turn_changer;
         return success(std::move(result));
     }
     else
@@ -325,6 +370,15 @@ bool bracketed_move::operator==(const bracketed_move& m)const{
     }
 }
 
+void bracketed_move::set_repetition_number(uint rn){
+    assert(rn>0);
+    repetition_number = rn;
+}
+
+void bracketed_move::set_star(void){
+    repetition_number = 0;
+}
+
 moves_concatenation::moves_concatenation(void):
 content(){}
 
@@ -335,21 +389,30 @@ parser_result<moves_concatenation> parse_moves_concatenation(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
     const game_order& players,
+    int player_number,
+    bool& contains_turn_changer,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<moves_concatenation>();
     std::vector<bracketed_move> result;
-    parser_result<bracketed_move> brackets_result = parse_bracketed_move(it,encountered_pieces,players,msg);
+    bool brackets_contains_turn_changer = false;
+    parser_result<bracketed_move> brackets_result = parse_bracketed_move(it,encountered_pieces,players,player_number,brackets_contains_turn_changer,msg);
+    contains_turn_changer |= brackets_contains_turn_changer;
     if(brackets_result.is_success())
         result.push_back(brackets_result.get_value());
     else
         return failure<moves_concatenation>();
     while(true){
-        brackets_result = parse_bracketed_move(it,encountered_pieces,players,msg);
+        brackets_contains_turn_changer = false;
+        brackets_result = parse_bracketed_move(it,encountered_pieces,players,player_number,brackets_contains_turn_changer,msg);
         if(!brackets_result.is_success())
             return success(moves_concatenation(std::move(result)));
-        else
+        else{
+            if(contains_turn_changer)
+                throw msg.build_message("Only last element of moves concatenation can be turn changer (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
             result.push_back(brackets_result.get_value());
+            contains_turn_changer |= brackets_contains_turn_changer;
+        }
     }
 }
 
@@ -390,19 +453,25 @@ parser_result<moves_sum> parse_moves_sum(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
     const game_order& players,
+    int player_number,
+    bool& contains_turn_changer,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<moves_sum>();
     std::set<moves_concatenation> result;
-    parser_result<moves_concatenation> concat_result = parse_moves_concatenation(it,encountered_pieces,players,msg);
+    bool concatenation_contains_turn_changer = false;
+    parser_result<moves_concatenation> concat_result = parse_moves_concatenation(it,encountered_pieces,players,player_number,concatenation_contains_turn_changer,msg);
+    contains_turn_changer |= concatenation_contains_turn_changer;
     if(concat_result.is_success())
         result.insert(concat_result.get_value());
     else
         return failure<moves_sum>();
     while(it.has_value() && it.current().get_type() == plus){
-        if(it.next(msg))
-            throw msg.build_message("Unexpected end of move sum");
-        concat_result = parse_moves_concatenation(it,encountered_pieces,players,msg);
+        if(!it.next(msg))
+            throw msg.build_message("Unexpected end of move sum (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+        concatenation_contains_turn_changer = false;
+        concat_result = parse_moves_concatenation(it,encountered_pieces,players,player_number,concatenation_contains_turn_changer,msg);
+        contains_turn_changer |= concatenation_contains_turn_changer;
         if(!concat_result.is_success())
             throw msg.build_message(it.create_call_stack("Expected moves concatenation, encountered \'"+it.current().to_string()+"\'"));
         else

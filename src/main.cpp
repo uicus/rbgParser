@@ -21,14 +21,14 @@ int main(int argc, const char** argv){
         std::cerr<<"\"-Werror\" - treat warnings as errors"<<std::endl;
     }
     else{
-        std::string input_file_name(argv[argc-1]);
-        options o(argc-2, argv+1);
-        std::ifstream t(input_file_name);
-        std::stringstream buffer;
-        buffer << t.rdbuf();
         messages_container msg;
-        std::ofstream out(o.output_file());
         try{
+            std::string input_file_name(argv[argc-1]);
+            options o(argc-2, argv+1);
+            std::ifstream t(input_file_name);
+            std::stringstream buffer;
+            buffer << t.rdbuf();
+            std::ofstream out(o.output_file());
             if(!out.good())
                 throw msg.build_message("Couldn't open file "+o.output_file());
             std::vector<token> result = tokenize(buffer.str(),msg);
@@ -40,6 +40,9 @@ int main(int argc, const char** argv){
         }
         catch(message& m){
             std::cout<<m.as_error()<<std::endl;
+        }
+        catch(std::exception& e){
+            std::cout<<e.what()<<std::endl;
         }
         msg.write_as_warnings(std::cout);
     }

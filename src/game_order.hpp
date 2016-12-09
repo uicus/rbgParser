@@ -16,16 +16,17 @@ class game_order{
     public:
         game_order(void);
 
-        friend parser_result<game_order> parse_game_order(
+        friend game_order parse_game_order(
             slice_iterator& it,
             messages_container& msg,
             const std::map<token,slice>& players)throw(message);
 
         const token& get_player_name(uint my_number,int delta)const;
         bool exists(const token& player_name)const;
+        uint get_number_of_players(void)const;
 };
 
-parser_result<game_order> parse_game_order(
+game_order parse_game_order(
     slice_iterator& it,
     messages_container& msg,
     const std::map<token,slice>& players)throw(message);

@@ -43,6 +43,7 @@ class turn_change_indicator{
         friend parser_result<turn_change_indicator> parse_turn_change_indicator(
             slice_iterator& it,
             const game_order& players,
+            int player_number,
             messages_container& msg)throw(message);
 
         bool operator<(const turn_change_indicator& m)const;
@@ -52,11 +53,13 @@ class turn_change_indicator{
 parser_result<turn_change_indicator> parse_turn_change_indicator(
     slice_iterator& it,
     const game_order& players,
+    int player_number,
     messages_container& msg)throw(message);
 
 class moves_sum;
 
 class bracketed_move{
+        uint repetition_number;
         union{
             moves_sum* sum;
             atomic_move* atomic;
@@ -78,16 +81,23 @@ class bracketed_move{
             slice_iterator& it,
             std::set<token>& encountered_pieces,
             const game_order& players,
+            int player_number,
+            bool& contains_turn_changer,
             messages_container& msg)throw(message);
 
         bool operator<(const bracketed_move& m)const;
         bool operator==(const bracketed_move& m)const;
+
+        void set_repetition_number(uint rn);
+        void set_star(void);
 };
 
 parser_result<bracketed_move> parse_bracketed_move(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
     const game_order& players,
+    int player_number,
+    bool& contains_turn_changer,
     messages_container& msg)throw(message);
 
 class moves_concatenation{
@@ -100,6 +110,8 @@ class moves_concatenation{
             slice_iterator& it,
             std::set<token>& encountered_pieces,
             const game_order& players,
+            int player_number,
+            bool& contains_turn_changer,
             messages_container& msg)throw(message);
 
         bool operator<(const moves_concatenation& m)const;
@@ -110,6 +122,8 @@ parser_result<moves_concatenation> parse_moves_concatenation(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
     const game_order& players,
+    int player_number,
+    bool& contains_turn_changer,
     messages_container& msg)throw(message);
 
 class moves_sum{
@@ -122,6 +136,8 @@ class moves_sum{
             slice_iterator& it,
             std::set<token>& encountered_pieces,
             const game_order& players,
+            int player_number,
+            bool& contains_turn_changer,
             messages_container& msg)throw(message);
 
         bool operator<(const moves_sum& m)const;
@@ -132,6 +148,8 @@ parser_result<moves_sum> parse_moves_sum(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
     const game_order& players,
+    int player_number,
+    bool& contains_turn_changer,
     messages_container& msg)throw(message);
 
 #endif

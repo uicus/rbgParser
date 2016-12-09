@@ -4,6 +4,8 @@
 #include"types.hpp"
 #include"game_board.hpp"
 #include"parser_helpers.hpp"
+#include"game_order.hpp"
+#include"moves_sequence.hpp"
 
 game_items::game_items(void):
 macros(),
@@ -151,7 +153,7 @@ void game_items::print_rbg_game(std::ostream& out, messages_container& msg)const
 }
 
 void game_items::print_rbg_board(std::ostream& out, messages_container& msg)const throw(message){
-    if(game_segment != nullptr){
+    if(board_segment != nullptr){
         out<<"#board";
         slice_iterator it(*board_segment,&macros);
         if(it.next(msg)){
@@ -177,7 +179,7 @@ void game_items::print_rbg_board(std::ostream& out, messages_container& msg)cons
 }
 
 void game_items::print_rbg_order(std::ostream& out, messages_container& msg)const throw(message){
-    if(game_segment != nullptr){
+    if(order_segment != nullptr){
         out<<"#order ";
         print_rbg_slice(*order_segment,out,msg);
         out<<std::endl<<std::endl;
@@ -269,7 +271,19 @@ game_board game_items::parse_board(messages_container& msg, std::set<token>& enc
 
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     std::set<token> encountered_pieces;
-    return parsed_game(parse_board(msg,encountered_pieces));
+    slice_iterator order_it(*order_segment,&macros);
+    if(!order_it.next(msg))
+        throw msg.build_message("Empty \'order\' directive");
+    game_order players = parse_game_order(order_it,msg,player_segments);
+    std::map<token,moves_sequence> players_moves;
+    for(uint i=0;i<players.get_number_of_players();++i){
+        const token& name = players.get_player_name(i,0);
+        slice_iterator moves_it(player_segments.at(name),&macros);
+        if(!moves_it.next(msg))
+            throw msg.build_message("Empty "+name.to_string()+" \'player\' directive");
+        players_moves[name] = parse_moves_sequence(moves_it,encountered_pieces,players,i,msg);
+    }
+    return parsed_game(parse_board(msg,encountered_pieces),std::move(players_moves),std::move(players));
 }
 
 void print_tabs(std::ostream& out,uint n){
