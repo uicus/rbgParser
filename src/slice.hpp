@@ -11,7 +11,8 @@ class slice{
         const std::vector<token>* data; // doesn't own the data
         uint begin;
         uint end;
-        std::map<token,slice> replacements;
+        bool replacements_owner;
+        std::map<token,slice>* replacements;
         uint context_order;
         slice(const slice& src, uint from, uint to);
     public:

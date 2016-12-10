@@ -3,6 +3,7 @@
 
 #include<vector>
 #include<string>
+#include<memory>
 
 #include"slice.hpp"
 #include"token.hpp"
@@ -28,42 +29,47 @@ class clipboard{
 };
 
 class backtrace_info{
+        std::shared_ptr<backtrace_info> parent_slice;
         const slice current_slice;
-        uint current_begin;
-        uint current_end;
-        bool started : 1;
+        uint parent_begin;
+        uint parent_end;
         bool last_should_be_pasted : 1;
     public:
-        backtrace_info(const slice& s);
+        backtrace_info(const slice& s,const std::shared_ptr<backtrace_info>& parent,uint current_begin,uint current_end);
         backtrace_info(const backtrace_info& src);
         backtrace_info& operator=(const backtrace_info&)=delete;
         backtrace_info(backtrace_info&& src);
         backtrace_info& operator=(backtrace_info&&)=delete;
         ~backtrace_info(void);
 
-        std::vector<slice> parse_arguments(messages_container& msg)throw(message);
-        void rewind_parsing_arguments(void);
+        std::vector<slice> parse_arguments(messages_container& msg,uint current_begin,uint& current_end)throw(message);
+        std::shared_ptr<backtrace_info> get_parent(void)const;
+        backtrace_info* get_pointer(void)const;
+        uint get_begin(void)const;
+        uint get_end(void)const;
         void set_last_should_be_pasted(void);
         bool get_last_should_be_pasted(void);
         uint get_context_order(void)const;
-        bool points_at_variable(void)const;
-        bool next_is_tilde(void)const;
-        bool is_last_token_in_slice(void)const;
-        bool is_first_token_in_slice(void)const;
-        const slice& get_variable_slice(void)const;
-        const token& get_beginning(void)const;
-        const token& current(void)const;
-        void next(void);
-        bool has_value(void)const;
+        bool points_at_variable(uint current_end)const;
+        bool next_is_tilde(uint current_end)const;
+        bool is_last_token_in_slice(uint current_end)const;
+        const slice& get_variable_slice(uint current_end)const;
+        const token& current(uint current_end)const;
+        bool has_value(uint current_end)const;
 };
 
 class slice_iterator{
-        std::vector<backtrace_info> backtrace_stack;
+        std::shared_ptr<backtrace_info> top;
         clipboard c;
+        bool started;
+        uint current_begin;
+        uint current_end;
+        uint base_context_order;
         const macro_bank* macros;
         void push_next_slice(const slice& s);
         void pop_slice(void);
         bool handle_standard_token(messages_container& msg)throw(message);
+        void move_cursor(void);
     public:
         slice_iterator(const slice& s, const macro_bank* macros);
         slice_iterator& operator=(const slice_iterator&)=delete;

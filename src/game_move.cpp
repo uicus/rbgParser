@@ -318,20 +318,22 @@ parser_result<bracketed_move> parse_bracketed_move(
         if(it.next(msg)&&it.current().get_type()==caret){
             if(!it.next(msg))
                 throw msg.build_message("Unexpected end of repetition indicator (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+            slice_iterator fallback_it(it);
             if(it.current().get_type()==star){
                 if(sum_contains_turn_changer)
-                    throw msg.build_message("Sum of moves containing turn changing moves cannot be repeated more than once (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+                    throw msg.build_message(fallback_it.create_call_stack("Moves containing turn changer cannot be repeated more than once"));
                 result.set_star();
                 it.next(msg);
             }
             else{
+                slice_iterator before_int_it(it);
                 parser_result<int> rn_result = parse_int(it,msg);
                 if(!rn_result.is_success())
                     throw msg.build_message(it.create_call_stack("Expected \'*\' or positive number, encountered \'"+it.current().to_string()+"\'"));
                 if(rn_result.get_value()<=0)
-                    throw msg.build_message("Number of repetition must be positive (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+                    throw msg.build_message(before_int_it.create_call_stack("Number of repetition must be positive"));
                 if(rn_result.get_value()>1&&sum_contains_turn_changer)
-                    throw msg.build_message("Sum of moves containing turn changing moves cannot be repeated more than once (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+                    throw msg.build_message(fallback_it.create_call_stack("Moves containing turn changer cannot be repeated more than once"));
                 result.set_repetition_number(rn_result.get_value());
             }
         }
@@ -404,12 +406,13 @@ parser_result<moves_concatenation> parse_moves_concatenation(
         return failure<moves_concatenation>();
     while(true){
         brackets_contains_turn_changer = false;
+        slice_iterator fallback_it(it);
         brackets_result = parse_bracketed_move(it,encountered_pieces,players,player_number,brackets_contains_turn_changer,msg);
         if(!brackets_result.is_success())
             return success(moves_concatenation(std::move(result)));
         else{
             if(contains_turn_changer)
-                throw msg.build_message("Only last element of moves concatenation can be turn changer (player \'"+players.get_player_name(player_number,0).to_string()+"\')");
+                throw msg.build_message(fallback_it.create_call_stack("No move can appear after turn changer in concatenation"));
             result.push_back(brackets_result.get_value());
             contains_turn_changer |= brackets_contains_turn_changer;
         }
