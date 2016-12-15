@@ -10,19 +10,19 @@ off(),
 every_on_legal(false),
 no_off(false){}
 
-atomic_move::atomic_move(int _x,int _y,const std::set<token>& _on,const std::set<token>& _off):
+atomic_move::atomic_move(int _x,int _y,std::set<token>&& _on,std::set<token>&& _off):
 x(_x),
 y(_y),
-on(_on),
-off(_off),
+on(std::move(_on)),
+off(std::move(_off)),
 every_on_legal(false),
 no_off(false){}
 
-atomic_move::atomic_move(int _x,int _y,const std::set<token>& _on_off, bool on_switch):
+atomic_move::atomic_move(int _x,int _y,std::set<token>&& _on_off, bool on_switch):
 x(_x),
 y(_y),
-on(on_switch ? _on_off : std::set<token>()),
-off(on_switch ? std::set<token>() : _on_off),
+on(on_switch ? std::move(_on_off) : std::set<token>()),
+off(on_switch ? std::set<token>() : std::move(_on_off)),
 every_on_legal(!on_switch),
 no_off(on_switch){}
 
@@ -54,7 +54,7 @@ parser_result<atomic_move> parse_atomic_move(
         if(!it.next(msg))
             throw msg.build_message("Unexpected end of atomic move");
     }
-    else if(it.current().get_type() != slash&&it.current().get_type() != identifier)
+    else if(it.current().get_type() != slash&&it.current().get_type() != identifier&&it.current().get_type() != left_curly_bracket)
         return failure<atomic_move>();
     bool every_on_legal = false;
     bool no_off = false;
@@ -65,14 +65,14 @@ parser_result<atomic_move> parse_atomic_move(
             throw msg.build_message("Unexpected end of atomic move");
         parser_result<std::set<token>> legals = parse_tokens_set(it,msg);
         if(legals.is_success())
-            off = legals.get_value();
+            off = legals.move_value();
         else
             throw msg.build_message(it.create_call_stack("Expected set of identifiers, encountered \'"+it.current().to_string()+"\'"));
     }
     else{
         parser_result<std::set<token>> legals = parse_tokens_set(it,msg);
         if(legals.is_success())
-            on = legals.get_value();
+            on = legals.move_value();
         else
             throw msg.build_message(it.create_call_stack("Expected set of identifiers or '/', encountered \'"+it.current().to_string()+"\'"));
         if(it.has_value()&&it.current().get_type() == slash){
@@ -80,7 +80,7 @@ parser_result<atomic_move> parse_atomic_move(
                 throw msg.build_message("Unexpected end of atomic move");
             legals = parse_tokens_set(it,msg);
             if(legals.is_success())
-                off = legals.get_value();
+                off = legals.move_value();
             else
                 throw msg.build_message(it.create_call_stack("Expected set of identifiers, encountered \'"+it.current().to_string()+"\'"));
         }
@@ -89,7 +89,12 @@ parser_result<atomic_move> parse_atomic_move(
     }
     encountered_pieces.insert(on.begin(),on.end());
     encountered_pieces.insert(off.begin(),off.end());
-    return success(every_on_legal ? atomic_move(x,y,off,false) : (no_off ? atomic_move(x,y,on,true) : atomic_move(x,y,on,off)));
+    return success(
+        every_on_legal ?
+            atomic_move(x,y,std::move(off),false) :
+            (no_off ?
+                atomic_move(x,y,std::move(on),true) :
+                atomic_move(x,y,std::move(on),std::move(off))));
 }
 
 bool atomic_move::operator<(const atomic_move& m)const{
@@ -105,12 +110,16 @@ bool atomic_move::operator==(const atomic_move& m)const{
     return (x==m.x && y==m.y && every_on_legal==m.every_on_legal && no_off==m.no_off && on==m.on && off==m.off);
 }
 
+bool atomic_move::is_goal_eligible(void)const{
+    return no_off;
+}
+
 turn_change_indicator::turn_change_indicator(const token& name):
 player(name){
 }
 
 turn_change_indicator::turn_change_indicator(void):
-player(create_quotation(0)){}//dummy
+player(){}//dummy
 
 parser_result<turn_change_indicator> parse_turn_change_indicator(
     slice_iterator& it,
@@ -251,22 +260,22 @@ bracketed_move& bracketed_move::operator=(bracketed_move&& src){
     return *this;
 }
 
-bracketed_move::bracketed_move(const moves_sum& src):
+bracketed_move::bracketed_move(moves_sum&& src):
 repetition_number(1),
 tag(0){
-    sum = new moves_sum(src);
+    sum = new moves_sum(std::move(src));
 }
 
-bracketed_move::bracketed_move(const atomic_move& src):
+bracketed_move::bracketed_move(atomic_move&& src):
 repetition_number(1),
 tag(1){
-    atomic = new atomic_move(src);
+    atomic = new atomic_move(std::move(src));
 }
 
-bracketed_move::bracketed_move(const turn_change_indicator& src):
+bracketed_move::bracketed_move(turn_change_indicator&& src):
 repetition_number(1),
 tag(2){
-    turn_changer = new turn_change_indicator(src);
+    turn_changer = new turn_change_indicator(std::move(src));
 }
 
 bracketed_move::~bracketed_move(void){
@@ -294,7 +303,7 @@ parser_result<bracketed_move> parse_bracketed_move(
     parser_result<turn_change_indicator> turn_changer_result = parse_turn_change_indicator(it,players,player_number,msg);
     if(turn_changer_result.is_success()){
         contains_turn_changer = true;
-        return success(bracketed_move(turn_changer_result.get_value()));
+        return success(bracketed_move(turn_changer_result.move_value()));
     }
     else if(it.current().get_type() == left_round_bracket){
         if(!it.next(msg))
@@ -303,11 +312,11 @@ parser_result<bracketed_move> parse_bracketed_move(
         bool sum_contains_turn_changer = false;
         parser_result<moves_sum> sum_result = parse_moves_sum(it,encountered_pieces,players,player_number,sum_contains_turn_changer,msg);
         if(sum_result.is_success())
-            result = sum_result.get_value();
+            result = sum_result.move_value();
         else{
             parser_result<atomic_move> atomic_result = parse_atomic_move(it,encountered_pieces,msg);
             if(atomic_result.is_success())
-                result = atomic_result.get_value();
+                result = atomic_result.move_value();
             else
                 throw msg.build_message(it.create_call_stack("Expected atomic move or moves sum, encountered \'"+it.current().to_string()+"\'"));
         }
@@ -349,6 +358,10 @@ bool bracketed_move::operator<(const bracketed_move& m)const{
         return true;
     else if(tag>m.tag)
         return false;
+    else if(repetition_number<m.repetition_number)
+        return true;
+    else if(repetition_number>m.repetition_number)
+        return false;
     switch(tag){
     case 0:
         return *sum<*m.sum;
@@ -360,7 +373,7 @@ bool bracketed_move::operator<(const bracketed_move& m)const{
 }
 
 bool bracketed_move::operator==(const bracketed_move& m)const{
-    if(tag!=m.tag)
+    if(tag!=m.tag||repetition_number!=m.repetition_number)
         return false;
     switch(tag){
     case 0:
@@ -369,6 +382,17 @@ bool bracketed_move::operator==(const bracketed_move& m)const{
         return *atomic==*m.atomic;
     default:
         return *turn_changer==*m.turn_changer;
+    }
+}
+
+bool bracketed_move::is_goal_eligible(void)const{
+    switch(tag){
+    case 0:
+        return sum->is_goal_eligible();
+    case 1:
+        return atomic->is_goal_eligible();
+    default:
+        return false;
     }
 }
 
@@ -401,7 +425,7 @@ parser_result<moves_concatenation> parse_moves_concatenation(
     parser_result<bracketed_move> brackets_result = parse_bracketed_move(it,encountered_pieces,players,player_number,brackets_contains_turn_changer,msg);
     contains_turn_changer |= brackets_contains_turn_changer;
     if(brackets_result.is_success())
-        result.push_back(brackets_result.get_value());
+        result.push_back(brackets_result.move_value());
     else
         return failure<moves_concatenation>();
     while(true){
@@ -413,7 +437,7 @@ parser_result<moves_concatenation> parse_moves_concatenation(
         else{
             if(contains_turn_changer)
                 throw msg.build_message(fallback_it.create_call_stack("No move can appear after turn changer in concatenation"));
-            result.push_back(brackets_result.get_value());
+            result.push_back(brackets_result.move_value());
             contains_turn_changer |= brackets_contains_turn_changer;
         }
     }
@@ -446,6 +470,13 @@ bool moves_concatenation::operator==(const moves_concatenation& m)const{
     }
 }
 
+bool moves_concatenation::is_goal_eligible(void)const{
+    for(const auto& el: content)
+        if(!el.is_goal_eligible())
+            return false;
+    return true;
+}
+
 moves_sum::moves_sum(void):
 content(){}
 
@@ -466,7 +497,7 @@ parser_result<moves_sum> parse_moves_sum(
     parser_result<moves_concatenation> concat_result = parse_moves_concatenation(it,encountered_pieces,players,player_number,concatenation_contains_turn_changer,msg);
     contains_turn_changer |= concatenation_contains_turn_changer;
     if(concat_result.is_success())
-        result.insert(concat_result.get_value());
+        result.insert(concat_result.move_value());
     else
         return failure<moves_sum>();
     while(it.has_value() && it.current().get_type() == plus){
@@ -478,7 +509,7 @@ parser_result<moves_sum> parse_moves_sum(
         if(!concat_result.is_success())
             throw msg.build_message(it.create_call_stack("Expected moves concatenation, encountered \'"+it.current().to_string()+"\'"));
         else
-            result.insert(concat_result.get_value());
+            result.insert(concat_result.move_value());
     }
     return success(moves_sum(std::move(result)));
 }
@@ -498,6 +529,7 @@ bool moves_sum::operator<(const moves_sum& m)const{
         return false;
     }
 }
+
 bool moves_sum::operator==(const moves_sum& m)const{
     if(content.size() != m.content.size())
         return false;
@@ -507,4 +539,11 @@ bool moves_sum::operator==(const moves_sum& m)const{
                 return false;
         return true;
     }
+}
+
+bool moves_sum::is_goal_eligible(void)const{
+    for(const auto& el: content)
+        if(!el.is_goal_eligible())
+            return false;
+    return true;
 }

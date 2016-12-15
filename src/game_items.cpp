@@ -6,6 +6,7 @@
 #include"parser_helpers.hpp"
 #include"game_order.hpp"
 #include"moves_sequence.hpp"
+#include"game_goal.hpp"
 
 game_items::game_items(void):
 macros(),
@@ -283,7 +284,18 @@ parsed_game game_items::parse_game(messages_container& msg)const throw(message){
             throw msg.build_message("Empty "+name.to_string()+" \'player\' directive");
         players_moves[name] = parse_moves_sequence(moves_it,encountered_pieces,players,i,msg);
     }
-    return parsed_game(parse_board(msg,encountered_pieces),std::move(players_moves),std::move(players));
+    std::map<token,goals_alternative> players_goals;
+    for(uint i=0;i<players.get_number_of_players();++i){
+        const token& name = players.get_player_name(i,0);
+        slice_iterator goals_it(goal_segments.at(name),&macros);
+        goals_it.next(msg);
+        parser_result<goals_alternative> result = parse_goals_alternative(goals_it,encountered_pieces,msg,true);
+        assert(result.is_success());
+        if(goals_it.has_value())
+            throw msg.build_message(goals_it.create_call_stack("Unexpected tokens at the end of \'"+name.to_string()+"\' \'goals\' segment"));
+        players_goals[name] = result.move_value();
+    }
+    return parsed_game(parse_board(msg,encountered_pieces),std::move(players_moves),std::move(players_goals),std::move(players));
 }
 
 void print_tabs(std::ostream& out,uint n){

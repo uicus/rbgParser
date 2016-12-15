@@ -32,6 +32,7 @@ enum token_type{
     logical_and,
     logical_or,
     logical_not,
+    move,
     def,
     game,
     player,
@@ -40,7 +41,8 @@ enum token_type{
     goal,
     number,
     identifier, // must third-to-last
-    quotation
+    quotation,
+    dummy
 };
 
 class token{
@@ -50,9 +52,9 @@ class token{
             std::string* contained_string;
             uint number_value;
         };
-        token(void)=delete;
         token(uint position, token_type type);
     public:
+        token(void);
         token(const token& src);
         token(token&& src);
         token& operator=(const token& src);

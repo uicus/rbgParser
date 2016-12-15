@@ -27,6 +27,7 @@ class parser_result{
         friend parser_result success<T>(T&& result);
         bool is_success(void)const{return ok;}
         const T& get_value(void)const{return value;}
+        T move_value(void){auto a = std::move(value);value = T();return a;}
 };
 
 template<typename T>
@@ -41,5 +42,6 @@ parser_result<T> success(T&& result){
 
 parser_result<int> parse_int(slice_iterator& it, messages_container& msg)throw(message);
 parser_result<std::set<token>> parse_tokens_set(slice_iterator& it, messages_container& msg)throw(message);
+parser_result<token> parse_variable(slice_iterator& it, const std::set<token>& encountered_pieces, messages_container& msg)throw(message);
 
 #endif

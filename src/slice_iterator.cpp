@@ -3,7 +3,7 @@
 #include"slice_iterator.hpp"
 
 clipboard::clipboard(void):
-stored(create_quotation(0)), // dummy token
+stored(), // dummy token
 up_to_date(false),
 frozen(true){
 }

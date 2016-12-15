@@ -17,7 +17,7 @@ moves_sequence parse_moves_sequence(
     parser_result<moves_sum> sum_result = parse_moves_sum(it,encountered_pieces,players,player_number,this_move_contains_turn_changer,msg);
     contains_turn_changer |= this_move_contains_turn_changer;
     if(sum_result.is_success())
-        result.sequence.push_back(sum_result.get_value());
+        result.sequence.push_back(sum_result.move_value());
     else
         throw msg.build_message(it.create_call_stack("Expected moves sum, encountered \'"+it.current().to_string()+"\'"));
     while(it.has_value() && it.current().get_type() == double_plus){
@@ -29,7 +29,7 @@ moves_sequence parse_moves_sequence(
         if(!sum_result.is_success())
             throw msg.build_message(it.create_call_stack("Expected moves sum, encountered \'"+it.current().to_string()+"\'"));
         else
-            result.sequence.push_back(sum_result.get_value());
+            result.sequence.push_back(sum_result.move_value());
     }
     if(!contains_turn_changer)
         msg.add_message("Player \'"+players.get_player_name(player_number,0).to_string()+"\' has no moves which change the turn");

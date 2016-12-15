@@ -3,6 +3,10 @@
 
 #include"token.hpp"
 
+token::token(void):
+position_in_file(0),
+type(dummy){}
+
 token::token(uint position, token_type t):
 position_in_file(position),
 type(t){
@@ -91,6 +95,7 @@ std::string tokens_table[] = {
 "and",
 "or",
 "not",
+"move",
 "def",
 "game",
 "player",
@@ -125,6 +130,7 @@ std::string token::to_string(void)const{
         case logical_and:
         case logical_or:
         case logical_not:
+        case move:
         case def:
         case game:
         case player:
@@ -138,6 +144,8 @@ std::string token::to_string(void)const{
             return *contained_string;
         case quotation:
             return std::string("\"")+*contained_string+"\"";
+        case dummy:
+            return "dummy";
         default:
             assert(false);
     }

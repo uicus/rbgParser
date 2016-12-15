@@ -51,3 +51,19 @@ parser_result<std::set<token>> parse_tokens_set(slice_iterator& it, messages_con
     it.next(msg);
     return success(std::move(result));
 }
+
+parser_result<token> parse_variable(slice_iterator& it, const std::set<token>& encountered_pieces, messages_container& msg)throw(message){
+    if(!it.has_value())
+        return failure<token>();
+    if(it.current().get_type()!=dollar)
+        return failure<token>();
+    if(!it.next(msg))
+        throw msg.build_message("Unexpected end of variable");
+    if(it.current().get_type()!=identifier)
+        throw msg.build_message(it.create_call_stack("Expected identifier, encountered \'"+it.current().to_string()+"\'"));
+    if(encountered_pieces.count(it.current())==0&&it.current().to_string()!="turn")
+        throw msg.build_message(it.create_call_stack("There's no piece \'"+it.current().to_string()+"\'"));
+    token result = it.current();
+    it.next(msg);
+    return success(std::move(result));
+}

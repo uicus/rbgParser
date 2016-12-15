@@ -20,8 +20,8 @@ class atomic_move{
         bool no_off : 1;
     public:
         atomic_move(void);
-        atomic_move(int x,int y,const std::set<token>& on,const std::set<token>& off);
-        atomic_move(int x,int y,const std::set<token>& on_off, bool on_switch);
+        atomic_move(int x,int y,std::set<token>&& on,std::set<token>&& off);
+        atomic_move(int x,int y,std::set<token>&& on_off, bool on_switch);
 
         friend parser_result<atomic_move> parse_atomic_move(
             slice_iterator& it,
@@ -30,6 +30,8 @@ class atomic_move{
 
         bool operator<(const atomic_move& m)const;
         bool operator==(const atomic_move& m)const;
+
+        bool is_goal_eligible(void)const;
 };
 
 parser_result<atomic_move> parse_atomic_move(slice_iterator& it, messages_container& msg)throw(message);
@@ -48,6 +50,8 @@ class turn_change_indicator{
 
         bool operator<(const turn_change_indicator& m)const;
         bool operator==(const turn_change_indicator& m)const;
+
+        bool is_goal_eligible(void)const;
 };
 
 parser_result<turn_change_indicator> parse_turn_change_indicator(
@@ -66,9 +70,9 @@ class bracketed_move{
             turn_change_indicator* turn_changer;
         };
         uint tag : 2; // 0 -> sum, 1 -> atomic, else -> turn_changer
-        bracketed_move(const moves_sum& src);
-        bracketed_move(const atomic_move& src);
-        bracketed_move(const turn_change_indicator& src);
+        bracketed_move(moves_sum&& src);
+        bracketed_move(atomic_move&& src);
+        bracketed_move(turn_change_indicator&& src);
     public:
         bracketed_move(void);
         bracketed_move(const bracketed_move& src);
@@ -90,6 +94,7 @@ class bracketed_move{
 
         void set_repetition_number(uint rn);
         void set_star(void);
+        bool is_goal_eligible(void)const;
 };
 
 parser_result<bracketed_move> parse_bracketed_move(
@@ -116,6 +121,8 @@ class moves_concatenation{
 
         bool operator<(const moves_concatenation& m)const;
         bool operator==(const moves_concatenation& m)const;
+
+        bool is_goal_eligible(void)const;
 };
 
 parser_result<moves_concatenation> parse_moves_concatenation(
@@ -142,6 +149,8 @@ class moves_sum{
 
         bool operator<(const moves_sum& m)const;
         bool operator==(const moves_sum& m)const;
+
+        bool is_goal_eligible(void)const;
 };
 
 parser_result<moves_sum> parse_moves_sum(
