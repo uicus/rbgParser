@@ -40,3 +40,10 @@ bool game_order::exists(const token& player_name)const{
 uint game_order::get_number_of_players(void)const{
     return players_order.size();
 }
+
+std::ostream& operator<<(std::ostream& out,const game_order& g){
+    out<<"#order\n";
+    for(uint i=0;i<g.get_number_of_players();++i)
+        out<<"    "<<g.players_order[i].to_string()<<'\n';
+    return out;
+}

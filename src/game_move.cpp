@@ -26,6 +26,14 @@ off(on_switch ? std::set<token>() : std::move(_on_off)),
 every_on_legal(!on_switch),
 no_off(on_switch){}
 
+atomic_move::atomic_move(int _x,int _y):
+x(_x),
+y(_y),
+on(),
+off(),
+every_on_legal(true),
+no_off(true){}
+
 parser_result<atomic_move> parse_atomic_move(
     slice_iterator& it,
     std::set<token>& encountered_pieces,
@@ -50,7 +58,7 @@ parser_result<atomic_move> parse_atomic_move(
         if(!it.has_value())
             throw msg.build_message("Unexpected end of atomic move");
         if(it.current().get_type() != comma)
-            throw msg.build_message(it.create_call_stack("Expected ',', encountered \'"+it.current().to_string()+"\'"));
+            return success(atomic_move(x,y));
         if(!it.next(msg))
             throw msg.build_message("Unexpected end of atomic move");
     }
@@ -114,6 +122,29 @@ bool atomic_move::is_goal_eligible(void)const{
     return no_off;
 }
 
+std::ostream& operator<<(std::ostream& out,const atomic_move& m){
+    out<<m.x<<','<<m.y;
+    if(!m.every_on_legal||!m.no_off)
+        out<<',';
+    if(!m.every_on_legal)
+        out<<m.on;
+    if(!m.no_off)
+        out<<'/'<<m.off;
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out,const std::set<token>& s){
+    out<<'{';
+    if(!s.empty()){
+        auto it = s.begin();
+        out<<it->to_string();
+        while((++it)!=s.end())
+            out<<','<<it->to_string();
+    }
+    out<<'}';
+    return out;
+}
+
 turn_change_indicator::turn_change_indicator(const token& name):
 player(name){
 }
@@ -160,6 +191,11 @@ bool turn_change_indicator::operator<(const turn_change_indicator& m)const{
 
 bool turn_change_indicator::operator==(const turn_change_indicator& m)const{
     return player==m.player;
+}
+
+std::ostream& operator<<(std::ostream& out,const turn_change_indicator& m){
+    out<<'['<<m.player.to_string()<<']';
+    return out;
 }
 
 bracketed_move::bracketed_move(void):
@@ -405,6 +441,26 @@ void bracketed_move::set_star(void){
     repetition_number = 0;
 }
 
+void bracketed_move::print_rbg(std::ostream& out,uint recurrence_depth)const{
+    switch(tag){
+    case 0:
+        out<<"(\n    ";
+        sum->print_rbg(out,recurrence_depth+1);
+        print_spaces(out,4*recurrence_depth);
+        out<<')';
+        break;
+    case 1:
+        out<<"("<<(*atomic)<<')';
+        break;
+    default:
+        out<<(*turn_changer);
+    }
+    if(repetition_number==0)
+        out<<"^*";
+    else if(repetition_number>1)
+        out<<'^'<<repetition_number;
+}
+
 moves_concatenation::moves_concatenation(void):
 content(){}
 
@@ -477,6 +533,11 @@ bool moves_concatenation::is_goal_eligible(void)const{
     return true;
 }
 
+void moves_concatenation::print_rbg(std::ostream& out,uint recurrence_depth)const{
+    for(const auto& el: content)
+        el.print_rbg(out,recurrence_depth);
+}
+
 moves_sum::moves_sum(void):
 content(){}
 
@@ -546,4 +607,24 @@ bool moves_sum::is_goal_eligible(void)const{
         if(!el.is_goal_eligible())
             return false;
     return true;
+}
+
+void moves_sum::print_rbg(std::ostream& out,uint recurrence_depth)const{
+    if(!content.empty()){
+        auto it = content.begin();
+        print_spaces(out,4*(recurrence_depth-1));
+        it->print_rbg(out,recurrence_depth);
+        out<<'\n';
+        while((++it)!=content.end()){
+            print_spaces(out,4*recurrence_depth-2);
+            out<<"+ ";
+            it->print_rbg(out,recurrence_depth);
+            out<<'\n';
+        }
+    }
+}
+
+void print_spaces(std::ostream& out,uint n){
+    for(uint i=0;i<n;++i)
+        out<<' ';
 }

@@ -4,7 +4,7 @@
 #include<map>
 #include<set>
 #include<vector>
-#include<iostream>
+#include<ostream>
 
 #include"macro_bank.hpp"
 #include"token.hpp"
@@ -38,6 +38,7 @@ class game_items{
         void print_rbg_goals(std::ostream& out,messages_container& msg)const throw(message);
 
         game_board parse_board(messages_container& msg, std::set<token>& encountered_pieces)const throw(message);
+        std::string parse_name(messages_container& msg)const throw(message);
     public:
         game_items(const game_items&)=delete;
         game_items(game_items&& src);

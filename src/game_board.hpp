@@ -3,6 +3,7 @@
 
 #include<vector>
 #include<set>
+#include<ostream>
 
 #include"slice_iterator.hpp"
 #include"message.hpp"
@@ -20,6 +21,10 @@ class game_board{
         game_board(uint width, uint height);
 
         void fill_with_slice(slice_iterator& it,std::set<token>& encountered_pieces,messages_container& msg)throw(message);
+
+        friend std::ostream& operator<<(std::ostream& out,const game_board& brd);
 };
+
+std::ostream& operator<<(std::ostream& out,const game_board& brd);
 
 #endif

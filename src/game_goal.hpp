@@ -2,6 +2,7 @@
 #define GAME_GOAL
 
 #include<set>
+#include<ostream>
 
 #include"token.hpp"
 #include"message.hpp"
@@ -24,7 +25,10 @@ class atomic_goal{
 
         bool operator==(const atomic_goal& m)const;
         bool operator<(const atomic_goal& m)const;
+        friend std::ostream& operator<<(std::ostream& out,const atomic_goal& g);
 };
+
+std::ostream& operator<<(std::ostream& out,const atomic_goal& g);
 
 parser_result<atomic_goal> parse_atomic_goal(
     slice_iterator& it,
@@ -61,6 +65,7 @@ class negatable_goal{
         bool operator<(const negatable_goal& m)const;
 
         void negate(void);
+        void print_rbg(std::ostream& out,uint recurrence_depth)const;
 };
 
 parser_result<negatable_goal> parse_negatable_goal(
@@ -81,6 +86,7 @@ class goals_conjunction{
 
         bool operator==(const goals_conjunction& m)const;
         bool operator<(const goals_conjunction& m)const;
+        void print_rbg(std::ostream& out,uint recurrence_depth)const;
 };
 
 parser_result<goals_conjunction> parse_goals_conjunction(
@@ -102,7 +108,11 @@ class goals_alternative{
 
         bool operator==(const goals_alternative& m)const;
         bool operator<(const goals_alternative& m)const;
+        void print_rbg(std::ostream& out,uint recurrence_depth)const;
+        friend std::ostream& operator<<(std::ostream& out,const goals_alternative& g);
 };
+
+std::ostream& operator<<(std::ostream& out,const goals_alternative& g);
 
 parser_result<goals_alternative> parse_goals_alternative(
     slice_iterator& it,

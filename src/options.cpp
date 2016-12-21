@@ -52,6 +52,8 @@ output_name("a.gdl"){
                 warnings_as_errors = true;
             else if(!std::strcmp(args[i], "-p"))
                 to_stage = 0;
+            else if(!std::strcmp(args[i], "-s"))
+                to_stage = 1;
             else
                 throw wrong_argument_error("Unrecognized flag");
         }
@@ -71,6 +73,10 @@ bool options::escalating_warnings(void)const{
 
 bool options::just_preprocess(void)const{
     return to_stage == 0;
+}
+
+bool options::just_semisteps(void)const{
+    return to_stage == 1;
 }
 
 const std::string& options::output_file(void)const{

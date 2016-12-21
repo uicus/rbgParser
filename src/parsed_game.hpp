@@ -2,6 +2,8 @@
 #define PARSED_GAME
 
 #include<map>
+#include<string>
+#include<ostream>
 
 #include"game_board.hpp"
 #include"token.hpp"
@@ -9,12 +11,24 @@
 #include"game_goal.hpp"
 
 class parsed_game{
+        std::string name;
         game_board brd;
         game_order players;
         std::map<token,moves_sequence> moves;
         std::map<token,goals_alternative> goals;
+        std::set<token> known_pieces;
     public:
-        parsed_game(game_board&& brd,std::map<token,moves_sequence>&& m,std::map<token,goals_alternative>&& g,game_order&& pl);
+        parsed_game(
+            std::string&& name,
+            game_board&& brd,
+            std::map<token,moves_sequence>&& m,
+            std::map<token,goals_alternative>&& g,
+            game_order&& pl,
+            std::set<token>&& known_pieces);
+
+        friend std::ostream& operator<<(std::ostream& out,const parsed_game& g);
 };
+
+std::ostream& operator<<(std::ostream& out,const parsed_game& g);
 
 #endif

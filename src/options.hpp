@@ -30,6 +30,7 @@ class options{
         bool showing_warnings(void)const;
         bool escalating_warnings(void)const;
         bool just_preprocess(void)const;
+        bool just_semisteps(void)const;
         const std::string& output_file(void)const;
 };
 

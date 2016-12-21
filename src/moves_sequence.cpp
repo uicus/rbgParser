@@ -37,3 +37,15 @@ moves_sequence parse_moves_sequence(
         throw msg.build_message(it.create_call_stack("Unexpected tokens at the end of \'"+players.get_player_name(player_number,0).to_string()+"\' \'player\' segment"));
     return result;
 }
+
+std::ostream& operator<<(std::ostream& out,const moves_sequence& m){
+    if(!m.sequence.empty()){
+        out<<"    ";
+        m.sequence[0].print_rbg(out,2);
+        for(uint i=1;i<m.sequence.size();++i){
+            out<<" ++ ";
+            m.sequence[i].print_rbg(out,2);
+        }
+    }
+    return out;
+}

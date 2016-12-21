@@ -151,6 +151,11 @@ std::string token::to_string(void)const{
     }
 }
 
+std::string token::get_string_content(void)const{
+    assert(type == quotation);
+    return *contained_string;
+}
+
 uint token::get_value(void)const{
     assert(type == number);
     return number_value;

@@ -88,6 +88,28 @@ bool atomic_goal::operator<(const atomic_goal& m)const{
         || (compared_value==m.compared_value && compared_const==m.compared_const && kind_of_comparison<m.kind_of_comparison);
 }
 
+std::ostream& operator<<(std::ostream& out,const atomic_goal& g){
+    out<<'$'<<g.compared_value.to_string();
+    switch(g.kind_of_comparison){
+    case 0:
+        out<<'<';
+        break;
+    case 1:
+        out<<"<=";
+        break;
+    case 2:
+        out<<'=';
+        break;
+    case 3:
+        out<<">=";
+        break;
+    default:
+        out<<'>';
+    }
+    out<<g.compared_const;
+    return out;
+}
+
 negatable_goal::negatable_goal(void):
 negated(false),
 alternative(nullptr),
@@ -320,6 +342,27 @@ void negatable_goal::negate(void){
     negated = !negated;
 }
 
+void negatable_goal::print_rbg(std::ostream& out,uint recurrence_depth)const{
+    if(negated)
+        out<<"not ";
+    switch(tag){
+    case 0:
+        out<<"(\n";
+        alternative->print_rbg(out,recurrence_depth+1);
+        print_spaces(out,4*recurrence_depth);
+        out<<')';
+        break;
+    case 1:
+        out<<(*atomic);
+        break;
+    default:
+        out<<"move(\n    ";
+        move_goal->print_rbg(out,recurrence_depth+1);
+        print_spaces(out,4*recurrence_depth);
+        out<<')';
+    }
+}
+
 goals_conjunction::goals_conjunction(std::set<negatable_goal>&& src):
 content(std::move(src)){}
 
@@ -377,6 +420,17 @@ bool goals_conjunction::operator==(const goals_conjunction& m)const{
     }
 }
 
+void goals_conjunction::print_rbg(std::ostream& out,uint recurrence_depth)const{
+    if(!content.empty()){
+        auto it = content.begin();
+        it->print_rbg(out,recurrence_depth);
+        while((++it)!=content.end()){
+            out<<" and ";
+            it->print_rbg(out,recurrence_depth);
+        }
+    }
+}
+
 goals_alternative::goals_alternative(std::set<goals_conjunction>&& src):
 content(std::move(src)){}
 
@@ -431,4 +485,24 @@ bool goals_alternative::operator==(const goals_alternative& m)const{
                 return false;
         return true;
     }
+}
+
+void goals_alternative::print_rbg(std::ostream& out,uint recurrence_depth)const{
+    if(!content.empty()){
+        auto it = content.begin();
+        print_spaces(out,4*recurrence_depth);
+        it->print_rbg(out,recurrence_depth);
+        out<<'\n';
+        while((++it)!=content.end()){
+            print_spaces(out,4*(recurrence_depth-1));
+            out<<" or ";
+            it->print_rbg(out,recurrence_depth);
+            out<<'\n';
+        }
+    }
+}
+
+std::ostream& operator<<(std::ostream& out,const goals_alternative& g){
+    g.print_rbg(out,1);
+    return out;
 }

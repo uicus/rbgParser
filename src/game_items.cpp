@@ -270,6 +270,20 @@ game_board game_items::parse_board(messages_container& msg, std::set<token>& enc
     return brd;
 }
 
+std::string game_items::parse_name(messages_container& msg)const throw(message){
+    if(game_segment==nullptr)
+        throw msg.build_message("No \'game\' directive");
+    slice_iterator it(*game_segment,&macros);
+    if(!it.next(msg))
+        throw msg.build_message("Unexpected end of \'game\' directive");
+    if(it.current().get_type()!=quotation)
+        throw msg.build_message(it.create_call_stack("Expected string, encountered \'"+it.current().to_string()+"\'"));
+    std::string result = it.current().get_string_content();
+    if(it.next(msg))
+        throw msg.build_message(it.create_call_stack("Unexpected characters at the end of \'game\' directive"));
+    return result;
+}
+
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     std::set<token> encountered_pieces;
     slice_iterator order_it(*order_segment,&macros);
@@ -295,7 +309,14 @@ parsed_game game_items::parse_game(messages_container& msg)const throw(message){
             throw msg.build_message(goals_it.create_call_stack("Unexpected tokens at the end of \'"+name.to_string()+"\' \'goals\' segment"));
         players_goals[name] = result.move_value();
     }
-    return parsed_game(parse_board(msg,encountered_pieces),std::move(players_moves),std::move(players_goals),std::move(players));
+    game_board b = parse_board(msg,encountered_pieces);
+    return parsed_game(
+        parse_name(msg),
+        std::move(b),
+        std::move(players_moves),
+        std::move(players_goals),
+        std::move(players),
+        std::move(encountered_pieces));
 }
 
 void print_tabs(std::ostream& out,uint n){

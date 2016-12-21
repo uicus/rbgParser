@@ -4,6 +4,7 @@
 #include<set>
 #include<map>
 #include<vector>
+#include<ostream>
 
 #include"token.hpp"
 #include"parser_helpers.hpp"
@@ -22,6 +23,7 @@ class atomic_move{
         atomic_move(void);
         atomic_move(int x,int y,std::set<token>&& on,std::set<token>&& off);
         atomic_move(int x,int y,std::set<token>&& on_off, bool on_switch);
+        atomic_move(int x,int y);
 
         friend parser_result<atomic_move> parse_atomic_move(
             slice_iterator& it,
@@ -32,9 +34,13 @@ class atomic_move{
         bool operator==(const atomic_move& m)const;
 
         bool is_goal_eligible(void)const;
+        friend std::ostream& operator<<(std::ostream& out,const atomic_move& m);
+        void print_rbg(std::ostream& out)const;
 };
 
 parser_result<atomic_move> parse_atomic_move(slice_iterator& it, messages_container& msg)throw(message);
+std::ostream& operator<<(std::ostream& out,const atomic_move& m);
+std::ostream& operator<<(std::ostream& out,const std::set<token>& s);
 
 class turn_change_indicator{
         token player;
@@ -52,7 +58,10 @@ class turn_change_indicator{
         bool operator==(const turn_change_indicator& m)const;
 
         bool is_goal_eligible(void)const;
+        friend std::ostream& operator<<(std::ostream& out,const turn_change_indicator& m);
 };
+
+std::ostream& operator<<(std::ostream& out,const turn_change_indicator& m);
 
 parser_result<turn_change_indicator> parse_turn_change_indicator(
     slice_iterator& it,
@@ -95,6 +104,7 @@ class bracketed_move{
         void set_repetition_number(uint rn);
         void set_star(void);
         bool is_goal_eligible(void)const;
+        void print_rbg(std::ostream& out,uint recurrence_depth)const;
 };
 
 parser_result<bracketed_move> parse_bracketed_move(
@@ -123,6 +133,7 @@ class moves_concatenation{
         bool operator==(const moves_concatenation& m)const;
 
         bool is_goal_eligible(void)const;
+        void print_rbg(std::ostream& out,uint recurrence_depth)const;
 };
 
 parser_result<moves_concatenation> parse_moves_concatenation(
@@ -151,6 +162,7 @@ class moves_sum{
         bool operator==(const moves_sum& m)const;
 
         bool is_goal_eligible(void)const;
+        void print_rbg(std::ostream& out,uint recurrence_depth)const;
 };
 
 parser_result<moves_sum> parse_moves_sum(
@@ -160,5 +172,7 @@ parser_result<moves_sum> parse_moves_sum(
     int player_number,
     bool& contains_turn_changer,
     messages_container& msg)throw(message);
+
+void print_spaces(std::ostream& out,uint n);
 
 #endif

@@ -33,3 +33,17 @@ void game_board::fill_with_slice(slice_iterator& it, std::set<token>& encountere
         it.next(msg);
     }
 }
+
+std::ostream& operator<<(std::ostream& out,const game_board& brd){
+    out<<"#board "<<brd.width<<' '<<brd.height<<'\n';
+    for(uint i=0;i<brd.height;++i){
+        out<<"    ";
+        for(uint j=0;j<brd.width;++j){
+            out<<brd.initial_position[i][j].to_string();
+            if(j<brd.width)
+                out<<' ';
+        }
+        out<<'\n';
+    }
+    return out;
+}

@@ -64,6 +64,7 @@ class token{
         friend std::set<token> create_tokens_set(uint position);
         friend token create_quotation(uint position);
         std::string to_string(void)const;
+        std::string get_string_content(void)const;
         uint get_value(void)const;
         token_type get_type(void)const;
         bool could_be_next_character(char next_character, uint position)const;

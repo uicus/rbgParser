@@ -2,6 +2,7 @@
 #define MOVES_SEQUENCE
 
 #include<vector>
+#include<ostream>
 
 #include"game_move.hpp"
 #include"slice_iterator.hpp"
@@ -20,6 +21,7 @@ class moves_sequence{
             const game_order& players,
             uint player_number,
             messages_container& msg)throw(message);
+        friend std::ostream& operator<<(std::ostream& out,const moves_sequence& m);
 };
 
 moves_sequence parse_moves_sequence(
@@ -28,5 +30,6 @@ moves_sequence parse_moves_sequence(
     const game_order& players,
     uint player_number,
     messages_container& msg)throw(message);
+std::ostream& operator<<(std::ostream& out,const moves_sequence& m);
 
 #endif
