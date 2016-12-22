@@ -52,14 +52,14 @@ class token{
             std::string* contained_string;
             uint number_value;
         };
-        token(uint position, token_type type);
+        token(uint position, token_type type)noexcept;
     public:
-        token(void);
-        token(const token& src);
-        token(token&& src);
-        token& operator=(const token& src);
-        token& operator=(token&& src);
-        ~token(void);
+        token(void)noexcept;
+        token(const token& src)noexcept;
+        token(token&& src)noexcept;
+        token& operator=(const token& src)noexcept;
+        token& operator=(token&& src)noexcept;
+        ~token(void)noexcept;
 
         friend std::set<token> create_tokens_set(uint position);
         friend token create_quotation(uint position);

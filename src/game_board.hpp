@@ -18,7 +18,7 @@ class game_board{
         bool is_completely_filled(void)const;
         void add_piece(const token& piece);
     public:
-        game_board(uint width, uint height);
+        game_board(uint width, uint height)noexcept;
 
         void fill_with_slice(slice_iterator& it,std::set<token>& encountered_pieces,messages_container& msg)throw(message);
 

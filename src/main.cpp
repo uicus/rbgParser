@@ -37,8 +37,10 @@ int main(int argc, const char** argv){
                 g.print_rbg(out,msg);
             else{
                 parsed_game pg = g.parse_game(msg);
-                if(o.just_semisteps())
-                    out<<pg<<'\n';
+                if(o.just_semisteps()){
+                    pg.to_simple();
+                    out<<pg;
+                }
             }
         }
         catch(message& m){

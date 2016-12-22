@@ -8,7 +8,7 @@
 #include"moves_sequence.hpp"
 #include"game_goal.hpp"
 
-game_items::game_items(void):
+game_items::game_items(void)noexcept:
 macros(),
 game_segment(nullptr),
 board_segment(nullptr),
@@ -18,7 +18,7 @@ goal_segments(),
 next_item_context_order(0){
 }
 
-game_items::game_items(game_items&& src):
+game_items::game_items(game_items&& src)noexcept:
 macros(std::move(src.macros)),
 game_segment(src.game_segment),
 board_segment(src.board_segment),
@@ -29,7 +29,7 @@ next_item_context_order(src.next_item_context_order){
     src.game_segment = src.board_segment = src.order_segment = nullptr;
 }
 
-game_items& game_items::operator=(game_items&& src){
+game_items& game_items::operator=(game_items&& src)noexcept{
     if(this != &src){
         macro_bank temp(std::move(src.macros));
         src.macros = std::move(macros);
@@ -44,7 +44,7 @@ game_items& game_items::operator=(game_items&& src){
     return *this;
 }
 
-game_items::~game_items(void){
+game_items::~game_items(void)noexcept{
     delete game_segment;
     delete board_segment;
     delete order_segment;

@@ -2,7 +2,7 @@
 
 #include"slice.hpp"
 
-slice::slice(const slice& src, uint from, uint to):
+slice::slice(const slice& src, uint from, uint to)noexcept:
 data(src.data),
 begin(src.begin+from),
 end(src.begin+to),
@@ -11,7 +11,7 @@ replacements(src.replacements),
 context_order(src.context_order){
 }
 
-slice::slice(const std::vector<token>* d, uint b, uint e, uint co):
+slice::slice(const std::vector<token>* d, uint b, uint e, uint co)noexcept:
 data(d),
 begin(b),
 end(e),
@@ -21,7 +21,7 @@ context_order(co){
     assert(begin<=end && end <= d->size());
 }
 
-slice::slice(const slice& src):
+slice::slice(const slice& src)noexcept:
 data(src.data),
 begin(src.begin),
 end(src.end),
@@ -30,7 +30,7 @@ replacements(new std::map<token,slice>(*src.replacements)),
 context_order(src.context_order){
 }
 
-slice::slice(slice&& src):
+slice::slice(slice&& src)noexcept:
 data(src.data),
 begin(src.begin),
 end(src.end),
@@ -40,7 +40,7 @@ context_order(src.context_order){
     src.replacements = nullptr;
 }
 
-slice::~slice(void){
+slice::~slice(void)noexcept{
     if(replacements_owner)
         delete replacements;
 }

@@ -1,6 +1,6 @@
 #include"game_goal.hpp"
 
-atomic_goal::atomic_goal(void):
+atomic_goal::atomic_goal(void)noexcept:
 compared_value(), // dummy
 compared_const(0),
 kind_of_comparison(0){}
@@ -110,12 +110,12 @@ std::ostream& operator<<(std::ostream& out,const atomic_goal& g){
     return out;
 }
 
-negatable_goal::negatable_goal(void):
+negatable_goal::negatable_goal(void)noexcept:
 negated(false),
 alternative(nullptr),
 tag(0){}
 
-negatable_goal::negatable_goal(const negatable_goal& src):
+negatable_goal::negatable_goal(const negatable_goal& src)noexcept:
 negated(src.negated),
 alternative(nullptr),
 tag(src.tag){
@@ -131,7 +131,7 @@ tag(src.tag){
     }
 }
 
-negatable_goal& negatable_goal::operator=(const negatable_goal& src){
+negatable_goal& negatable_goal::operator=(const negatable_goal& src)noexcept{
     if(this != &src){
         negated = src.negated;
         switch(tag){
@@ -159,7 +159,7 @@ negatable_goal& negatable_goal::operator=(const negatable_goal& src){
     return *this;
 }
 
-negatable_goal::negatable_goal(negatable_goal&& src):
+negatable_goal::negatable_goal(negatable_goal&& src)noexcept:
 negated(src.negated),
 alternative(),
 tag(src.tag){
@@ -178,7 +178,7 @@ tag(src.tag){
     }
 }
 
-negatable_goal& negatable_goal::operator=(negatable_goal&& src){
+negatable_goal& negatable_goal::operator=(negatable_goal&& src)noexcept{
     if(this != &src){
         negated = src.negated;
         switch(tag){
@@ -208,25 +208,25 @@ negatable_goal& negatable_goal::operator=(negatable_goal&& src){
     return *this;
 }
 
-negatable_goal::negatable_goal(goals_alternative&& src):
+negatable_goal::negatable_goal(goals_alternative&& src)noexcept:
 negated(0),
 tag(0){
     alternative = new goals_alternative(std::move(src));
 }
 
-negatable_goal::negatable_goal(atomic_goal&& src):
+negatable_goal::negatable_goal(atomic_goal&& src)noexcept:
 negated(0),
 tag(1){
     atomic = new atomic_goal(std::move(src));
 }
 
-negatable_goal::negatable_goal(moves_sum&& src):
+negatable_goal::negatable_goal(moves_sum&& src)noexcept:
 negated(0),
 tag(2){
     move_goal = new moves_sum(std::move(src));
 }
 
-negatable_goal::~negatable_goal(void){
+negatable_goal::~negatable_goal(void)noexcept{
     switch(tag){
     case 0:
         delete alternative;
@@ -363,10 +363,10 @@ void negatable_goal::print_rbg(std::ostream& out,uint recurrence_depth)const{
     }
 }
 
-goals_conjunction::goals_conjunction(std::set<negatable_goal>&& src):
+goals_conjunction::goals_conjunction(std::set<negatable_goal>&& src)noexcept:
 content(std::move(src)){}
 
-goals_conjunction::goals_conjunction(void):
+goals_conjunction::goals_conjunction(void)noexcept:
 content(){}
 
 parser_result<goals_conjunction> parse_goals_conjunction(
@@ -431,10 +431,10 @@ void goals_conjunction::print_rbg(std::ostream& out,uint recurrence_depth)const{
     }
 }
 
-goals_alternative::goals_alternative(std::set<goals_conjunction>&& src):
+goals_alternative::goals_alternative(std::set<goals_conjunction>&& src)noexcept:
 content(std::move(src)){}
 
-goals_alternative::goals_alternative(void):
+goals_alternative::goals_alternative(void)noexcept:
 content(){}
 
 parser_result<goals_alternative> parse_goals_alternative(

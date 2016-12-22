@@ -13,7 +13,7 @@
 class moves_sequence{
         std::vector<moves_sum> sequence;
     public:
-        moves_sequence(void);
+        moves_sequence(void)noexcept;
 
         friend moves_sequence parse_moves_sequence(
             slice_iterator& it,
@@ -22,6 +22,7 @@ class moves_sequence{
             uint player_number,
             messages_container& msg)throw(message);
         friend std::ostream& operator<<(std::ostream& out,const moves_sequence& m);
+        void flatten(void);
 };
 
 moves_sequence parse_moves_sequence(

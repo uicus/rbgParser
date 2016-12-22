@@ -2,12 +2,12 @@
 
 #include"message.hpp"
 
-message::message(uint l, uint c, const std::string& d):
+message::message(uint l, uint c, const std::string& d)noexcept:
 call_stack(){
     call_stack.push_back(std::make_pair(std::make_pair(l,c),d));
 }
 
-message::message(std::vector<std::pair<std::pair<uint,uint>,std::string>>&& cs):
+message::message(std::vector<std::pair<std::pair<uint,uint>,std::string>>&& cs)noexcept:
 call_stack(std::move(cs)){
 }
 
@@ -47,7 +47,7 @@ uint messages_container::find_line_number(uint character)const{
     return middle+1;
 }
 
-messages_container::messages_container(void):
+messages_container::messages_container(void)noexcept:
 new_lines_positions(),
 warnings_list(){
     new_lines_positions.push_back(1);

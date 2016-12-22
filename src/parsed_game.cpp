@@ -6,13 +6,18 @@ parsed_game::parsed_game(
     std::map<token,moves_sequence>&& m,
     std::map<token,goals_alternative>&& g,
     game_order&& pl,
-    std::set<token>&& kp):
+    std::set<token>&& kp)noexcept:
 name(std::move(n)),
 brd(std::move(b)),
 players(std::move(pl)),
 moves(std::move(m)),
 goals(std::move(g)),
 known_pieces(std::move(kp)){}
+
+void parsed_game::to_simple(void){
+    for(auto& el:moves)
+        el.second.flatten();
+}
 
 std::ostream& operator<<(std::ostream& out,const parsed_game& g){
     out<<"#game \""<<g.name<<"\"\n\n";

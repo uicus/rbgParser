@@ -10,8 +10,8 @@
 class message{
         std::vector<std::pair<std::pair<uint,uint>,std::string>> call_stack;
     public:
-        message(uint line, uint character, const std::string& details);
-        message(std::vector<std::pair<std::pair<uint,uint>,std::string>>&& cs);
+        message(uint line, uint character, const std::string& details)noexcept;
+        message(std::vector<std::pair<std::pair<uint,uint>,std::string>>&& cs)noexcept;
 
         std::string as_warning(void)const;
         std::string as_error(void)const;
@@ -22,7 +22,7 @@ class messages_container{
         std::vector<message> warnings_list;
         uint find_line_number(uint character)const;
     public:
-        messages_container(void);
+        messages_container(void)noexcept;
 
         void add_message(uint character, const std::string& details);
         message build_message(uint character, const std::string& details)const;

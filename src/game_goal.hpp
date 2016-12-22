@@ -15,7 +15,7 @@ class atomic_goal{
         uint compared_const;
         uint kind_of_comparison : 3; // 0 -> '<', 1 -> '<=', 2 -> '=', 3 -> '>=', 4 -> '>'
     public:
-        atomic_goal(void);
+        atomic_goal(void)noexcept;
         atomic_goal(token&& t,uint n,uint kind);
 
         friend parser_result<atomic_goal> parse_atomic_goal(
@@ -45,16 +45,16 @@ class negatable_goal{
             moves_sum* move_goal;
         };
         uint tag : 2; // 0 -> alternative, 1 -> atomic, else -> move_goal
-        negatable_goal(goals_alternative&& src);
-        negatable_goal(atomic_goal&& src);
-        negatable_goal(moves_sum&& src);
+        negatable_goal(goals_alternative&& src)noexcept;
+        negatable_goal(atomic_goal&& src)noexcept;
+        negatable_goal(moves_sum&& src)noexcept;
     public:
-        negatable_goal(void);
-        negatable_goal(const negatable_goal& src);
-        negatable_goal& operator=(const negatable_goal& src);
-        negatable_goal(negatable_goal&& src);
-        negatable_goal& operator=(negatable_goal&& src);
-        ~negatable_goal(void);
+        negatable_goal(void)noexcept;
+        negatable_goal(const negatable_goal& src)noexcept;
+        negatable_goal& operator=(const negatable_goal& src)noexcept;
+        negatable_goal(negatable_goal&& src)noexcept;
+        negatable_goal& operator=(negatable_goal&& src)noexcept;
+        ~negatable_goal(void)noexcept;
 
         friend parser_result<negatable_goal> parse_negatable_goal(
             slice_iterator& it,
@@ -75,9 +75,9 @@ parser_result<negatable_goal> parse_negatable_goal(
 
 class goals_conjunction{
         std::set<negatable_goal> content;
-        goals_conjunction(std::set<negatable_goal>&& src);
+        goals_conjunction(std::set<negatable_goal>&& src)noexcept;
     public:
-        goals_conjunction(void);
+        goals_conjunction(void)noexcept;
 
         friend parser_result<goals_conjunction> parse_goals_conjunction(
             slice_iterator& it,
@@ -96,9 +96,9 @@ parser_result<goals_conjunction> parse_goals_conjunction(
 
 class goals_alternative{
         std::set<goals_conjunction> content;
-        goals_alternative(std::set<goals_conjunction>&& src);
+        goals_alternative(std::set<goals_conjunction>&& src)noexcept;
     public:
-        goals_alternative(void);
+        goals_alternative(void)noexcept;
 
         friend parser_result<goals_alternative> parse_goals_alternative(
             slice_iterator& it,

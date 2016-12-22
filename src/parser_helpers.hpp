@@ -23,8 +23,8 @@ class parser_result{
         parser_result(void):ok(false),value(){}
         parser_result(T&& result):ok(true),value(std::move(result)){}
     public:
-        friend parser_result failure<T>(void);
-        friend parser_result success<T>(T&& result);
+        friend parser_result failure<T>(void)noexcept;
+        friend parser_result success<T>(T&& result)noexcept;
         bool is_success(void)const{return ok;}
         const T& get_value(void)const{return value;}
         T move_value(void){auto a = std::move(value);value = T();return a;}

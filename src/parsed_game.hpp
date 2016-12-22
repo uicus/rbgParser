@@ -24,9 +24,10 @@ class parsed_game{
             std::map<token,moves_sequence>&& m,
             std::map<token,goals_alternative>&& g,
             game_order&& pl,
-            std::set<token>&& known_pieces);
+            std::set<token>&& known_pieces)noexcept;
 
         friend std::ostream& operator<<(std::ostream& out,const parsed_game& g);
+        void to_simple(void);
 };
 
 std::ostream& operator<<(std::ostream& out,const parsed_game& g);

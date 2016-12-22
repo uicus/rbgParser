@@ -2,7 +2,7 @@
 
 #include"slice_iterator.hpp"
 
-clipboard::clipboard(void):
+clipboard::clipboard(void)noexcept:
 stored(), // dummy token
 up_to_date(false),
 frozen(true){
@@ -51,7 +51,7 @@ const token& clipboard::get_current_token()const{
     return stored;
 }
 
-backtrace_info::backtrace_info(const slice& s,const std::shared_ptr<backtrace_info>& parent,uint current_begin,uint current_end):
+backtrace_info::backtrace_info(const slice& s,const std::shared_ptr<backtrace_info>& parent,uint current_begin,uint current_end)noexcept:
 parent_slice(parent),
 current_slice(s),
 parent_begin(current_begin),
@@ -59,7 +59,7 @@ parent_end(current_end),
 last_should_be_pasted(false){
 }
 
-backtrace_info::backtrace_info(const backtrace_info& src):
+backtrace_info::backtrace_info(const backtrace_info& src)noexcept:
 parent_slice(src.parent_slice),
 current_slice(src.current_slice),
 parent_begin(src.parent_begin),
@@ -67,7 +67,7 @@ parent_end(src.parent_end),
 last_should_be_pasted(src.last_should_be_pasted){
 }
 
-backtrace_info::backtrace_info(backtrace_info&& src):
+backtrace_info::backtrace_info(backtrace_info&& src)noexcept:
 parent_slice(src.parent_slice),
 current_slice(std::move(src.current_slice)),
 parent_begin(src.parent_begin),
@@ -75,7 +75,7 @@ parent_end(src.parent_end),
 last_should_be_pasted(src.last_should_be_pasted){
 }
 
-backtrace_info::~backtrace_info(void){
+backtrace_info::~backtrace_info(void)noexcept{
 }
 
 std::vector<slice> backtrace_info::parse_arguments(messages_container& msg,uint current_begin,uint& current_end)throw(message){
@@ -162,7 +162,7 @@ bool backtrace_info::has_value(uint current_end)const{
     return !current_slice.is_end(current_end);
 }
 
-slice_iterator::slice_iterator(const slice& s, const macro_bank* mcrs):
+slice_iterator::slice_iterator(const slice& s, const macro_bank* mcrs)noexcept:
 top(),
 c(),
 started(false),
@@ -174,7 +174,7 @@ macros(mcrs){
     top = std::shared_ptr<backtrace_info>(new backtrace_info(s,null,0,0));
 }
 
-slice_iterator::slice_iterator(const slice_iterator& src):
+slice_iterator::slice_iterator(const slice_iterator& src)noexcept:
 top(src.top),
 c(src.c),
 started(src.started),
@@ -184,7 +184,7 @@ base_context_order(src.base_context_order),
 macros(src.macros){
 }
 
-slice_iterator::slice_iterator(slice_iterator&& src):
+slice_iterator::slice_iterator(slice_iterator&& src)noexcept:
 top(src.top),
 c(src.c),
 started(src.started),

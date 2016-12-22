@@ -1,6 +1,6 @@
 #include"game_board.hpp"
 
-game_board::game_board(uint w, uint h):
+game_board::game_board(uint w, uint h)noexcept:
 width(w),
 height(h),
 currently_filled(0),

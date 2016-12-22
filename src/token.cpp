@@ -3,11 +3,11 @@
 
 #include"token.hpp"
 
-token::token(void):
+token::token(void)noexcept:
 position_in_file(0),
 type(dummy){}
 
-token::token(uint position, token_type t):
+token::token(uint position, token_type t)noexcept:
 position_in_file(position),
 type(t){
     if(type == number)
@@ -16,7 +16,7 @@ type(t){
         contained_string = new std::string;
 }
 
-token::token(const token& src):
+token::token(const token& src)noexcept:
 position_in_file(src.position_in_file),
 type(src.type){
     if(type == number)
@@ -25,7 +25,7 @@ type(src.type){
         contained_string = new std::string(*src.contained_string);
 }
 
-token::token(token&& src):
+token::token(token&& src)noexcept:
 position_in_file(src.position_in_file),
 type(src.type){
     if(type == number)
@@ -36,7 +36,7 @@ type(src.type){
     }
 }
 
-token& token::operator=(const token& src){
+token& token::operator=(const token& src)noexcept{
     if(this != &src){
         position_in_file = src.position_in_file;
         if(type == identifier || type == quotation)
@@ -49,7 +49,7 @@ token& token::operator=(const token& src){
     }
     return *this;
 }
-token& token::operator=(token&& src){
+token& token::operator=(token&& src)noexcept{
     if(this != &src){
         position_in_file = src.position_in_file;
         if(type == identifier || type == quotation)
@@ -65,7 +65,7 @@ token& token::operator=(token&& src){
     return *this;
 }
 
-token::~token(void){
+token::~token(void)noexcept{
     if(type == identifier || type == quotation)
         delete contained_string;
 }

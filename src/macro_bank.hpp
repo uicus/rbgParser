@@ -16,12 +16,12 @@ class macro{
         uint end;
         uint context_order;
     public:
-        macro(std::vector<token>&& arguments, const std::vector<token>* data, uint begin, uint end, uint context_order);
-        macro(const macro& src);
-        macro(macro&& src);
+        macro(std::vector<token>&& arguments, const std::vector<token>* data, uint begin, uint end, uint context_order)noexcept;
+        macro(const macro& src)noexcept;
+        macro(macro&& src)noexcept;
         macro& operator=(const macro&)=delete;
         macro& operator=(macro&&)=delete;
-        ~macro(void);
+        ~macro(void)noexcept;
 
         slice turn_into_slice(const std::vector<slice>& passed_values)const;
         uint get_arity(void)const;
@@ -32,7 +32,7 @@ class macro{
 class macro_bank{
         std::map<token,std::map<uint,macro>> content;
     public:
-        macro_bank(void);
+        macro_bank(void)noexcept;
         void add_macro(const token& name,macro&& m);
         slice get_macro_slice(const token& name,const std::vector<slice>& passed_values)const;
         bool could_be_macro_name(const token& name)const;

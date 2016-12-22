@@ -2,7 +2,7 @@
 
 #include<cassert>
 
-game_order::game_order(void):
+game_order::game_order(void)noexcept:
 players_set(),
 players_order(){}
 

@@ -2,7 +2,7 @@
 
 #include"game_move.hpp"
 
-atomic_move::atomic_move(void):
+atomic_move::atomic_move(void)noexcept:
 x(0),
 y(0),
 on(),
@@ -145,11 +145,18 @@ std::ostream& operator<<(std::ostream& out,const std::set<token>& s){
     return out;
 }
 
-turn_change_indicator::turn_change_indicator(const token& name):
+atomic_move atomic_move::flatten(void){
+    auto result = std::move(*this);
+    on.clear();
+    off.clear();
+    return result;
+}
+
+turn_change_indicator::turn_change_indicator(const token& name)noexcept:
 player(name){
 }
 
-turn_change_indicator::turn_change_indicator(void):
+turn_change_indicator::turn_change_indicator(void)noexcept:
 player(){}//dummy
 
 parser_result<turn_change_indicator> parse_turn_change_indicator(
@@ -198,12 +205,18 @@ std::ostream& operator<<(std::ostream& out,const turn_change_indicator& m){
     return out;
 }
 
-bracketed_move::bracketed_move(void):
+turn_change_indicator turn_change_indicator::flatten(void){
+    auto result = std::move(*this);
+    player = token();
+    return result;
+}
+
+bracketed_move::bracketed_move(void)noexcept:
 repetition_number(1),
 sum(nullptr),
 tag(0){}
 
-bracketed_move::bracketed_move(const bracketed_move& src):
+bracketed_move::bracketed_move(const bracketed_move& src)noexcept:
 repetition_number(src.repetition_number),
 sum(nullptr),
 tag(src.tag){
@@ -219,7 +232,7 @@ tag(src.tag){
     }
 }
 
-bracketed_move& bracketed_move::operator=(const bracketed_move& src){
+bracketed_move& bracketed_move::operator=(const bracketed_move& src)noexcept{
     if(this != &src){
         repetition_number = src.repetition_number;
         switch(tag){
@@ -247,7 +260,7 @@ bracketed_move& bracketed_move::operator=(const bracketed_move& src){
     return *this;
 }
 
-bracketed_move::bracketed_move(bracketed_move&& src):
+bracketed_move::bracketed_move(bracketed_move&& src)noexcept:
 repetition_number(src.repetition_number),
 sum(),
 tag(src.tag){
@@ -266,7 +279,7 @@ tag(src.tag){
     }
 }
 
-bracketed_move& bracketed_move::operator=(bracketed_move&& src){
+bracketed_move& bracketed_move::operator=(bracketed_move&& src)noexcept{
     if(this != &src){
         repetition_number = src.repetition_number;
         switch(tag){
@@ -296,25 +309,25 @@ bracketed_move& bracketed_move::operator=(bracketed_move&& src){
     return *this;
 }
 
-bracketed_move::bracketed_move(moves_sum&& src):
+bracketed_move::bracketed_move(moves_sum&& src)noexcept:
 repetition_number(1),
 tag(0){
     sum = new moves_sum(std::move(src));
 }
 
-bracketed_move::bracketed_move(atomic_move&& src):
+bracketed_move::bracketed_move(atomic_move&& src)noexcept:
 repetition_number(1),
 tag(1){
     atomic = new atomic_move(std::move(src));
 }
 
-bracketed_move::bracketed_move(turn_change_indicator&& src):
+bracketed_move::bracketed_move(turn_change_indicator&& src)noexcept:
 repetition_number(1),
 tag(2){
     turn_changer = new turn_change_indicator(std::move(src));
 }
 
-bracketed_move::~bracketed_move(void){
+bracketed_move::~bracketed_move(void)noexcept{
     switch(tag){
     case 0:
         delete sum;
@@ -400,11 +413,11 @@ bool bracketed_move::operator<(const bracketed_move& m)const{
         return false;
     switch(tag){
     case 0:
-        return *sum<*m.sum;
+        return sum==nullptr||(sum!=m.sum&&m.sum!=nullptr&&*sum<*m.sum);
     case 1:
-        return *atomic<*m.atomic;
+        return atomic==nullptr||(atomic!=m.atomic&&m.atomic!=nullptr&&*atomic<*m.atomic);
     default:
-        return *turn_changer<*m.turn_changer;
+        return turn_changer==nullptr||(turn_changer!=m.turn_changer&&m.turn_changer!=nullptr&&*turn_changer<*m.turn_changer);
     }
 }
 
@@ -413,11 +426,11 @@ bool bracketed_move::operator==(const bracketed_move& m)const{
         return false;
     switch(tag){
     case 0:
-        return *sum==*m.sum;
+        return sum==m.sum || (sum!=nullptr&&m.sum!=nullptr&&*sum==*m.sum);
     case 1:
-        return *atomic==*m.atomic;
+        return atomic==m.atomic || (atomic!=nullptr&&m.atomic!=nullptr&&*atomic==*m.atomic);
     default:
-        return *turn_changer==*m.turn_changer;
+        return turn_changer==m.turn_changer || (turn_changer!=nullptr&&m.turn_changer!=nullptr&&*turn_changer==*m.turn_changer);
     }
 }
 
@@ -461,10 +474,53 @@ void bracketed_move::print_rbg(std::ostream& out,uint recurrence_depth)const{
         out<<'^'<<repetition_number;
 }
 
-moves_concatenation::moves_concatenation(void):
+bracketed_move bracketed_move::flatten(void){
+    switch(tag){
+    case 0:
+        {auto result = sum->flatten();
+        delete sum;
+        sum = nullptr;
+        return moves_sum(std::move(result));}
+    case 1:
+        {auto result = atomic->flatten();
+        delete atomic;
+        atomic = nullptr;
+        return atomic_move(std::move(result));}
+    default:
+        {auto result = turn_changer->flatten();
+        delete turn_changer;
+        turn_changer = nullptr;
+        return turn_change_indicator(std::move(result));}
+    }
+}
+
+bool bracketed_move::is_single_concatenation(void)const{
+    if(tag!=0||sum==nullptr)
+        return false;
+    return sum->is_single_concatenation();
+}
+
+moves_concatenation bracketed_move::give_single_concatenation(void){
+    assert(is_single_concatenation());
+    return sum->give_single_concatenation();
+}
+
+bool bracketed_move::is_single_sum(void)const{
+    return tag==0 && sum!=nullptr;
+}
+
+moves_sum bracketed_move::give_single_sum(void){
+    assert(is_single_sum());
+    moves_sum result = std::move(*sum);
+    delete sum;
+    sum = nullptr;
+    return result;
+}
+
+moves_concatenation::moves_concatenation(void)noexcept:
 content(){}
 
-moves_concatenation::moves_concatenation(std::vector<bracketed_move>&& src):
+moves_concatenation::moves_concatenation(std::vector<bracketed_move>&& src)noexcept:
 content(std::move(src)){}
 
 parser_result<moves_concatenation> parse_moves_concatenation(
@@ -538,10 +594,43 @@ void moves_concatenation::print_rbg(std::ostream& out,uint recurrence_depth)cons
         el.print_rbg(out,recurrence_depth);
 }
 
-moves_sum::moves_sum(void):
+moves_concatenation moves_concatenation::flatten(void){
+    std::vector<std::pair<std::vector<bracketed_move>::iterator,std::vector<bracketed_move>>> moves_stack;
+    moves_stack.push_back(make_pair(content.begin(),std::move(content)));
+    moves_stack.back().first = moves_stack.back().second.begin(); // inelegant way to avoid undefined behavior
+    content.clear();
+    std::vector<bracketed_move> result;
+    while(!moves_stack.empty()){
+        if(moves_stack.back().first==moves_stack.back().second.end())
+            moves_stack.pop_back();
+        else if(moves_stack.back().first->is_single_concatenation()){
+            moves_concatenation next_level = moves_stack.back().first->give_single_concatenation();
+            ++moves_stack.back().first;
+            moves_stack.push_back(make_pair(next_level.content.begin(),std::move(next_level.content)));
+            moves_stack.back().first = moves_stack.back().second.begin();
+        }
+        else{
+            result.push_back(moves_stack.back().first->flatten());
+            ++moves_stack.back().first;
+        }
+    }
+    return moves_concatenation(std::move(result));
+}
+
+bool moves_concatenation::is_single_sum(void)const{
+    if(content.size()!=1)
+        return false;
+    return content[0].is_single_sum();
+}
+moves_sum moves_concatenation::give_single_sum(void){
+    assert(is_single_sum());
+    return content[0].give_single_sum();
+}
+
+moves_sum::moves_sum(void)noexcept:
 content(){}
 
-moves_sum::moves_sum(std::set<moves_concatenation>&& src):
+moves_sum::moves_sum(std::set<moves_concatenation>&& src)noexcept:
 content(std::move(src)){}
 
 parser_result<moves_sum> parse_moves_sum(
@@ -622,6 +711,42 @@ void moves_sum::print_rbg(std::ostream& out,uint recurrence_depth)const{
             out<<'\n';
         }
     }
+}
+
+moves_sum moves_sum::flatten(void){
+    std::vector<std::set<moves_concatenation>> moves_stack;
+    moves_stack.push_back(std::move(content));
+    content.clear();
+    std::set<moves_concatenation> result;
+    while(!moves_stack.empty()){
+        auto it = moves_stack.back().begin();
+        if(moves_stack.back().empty())
+            moves_stack.pop_back();
+        else if(it->is_single_sum()){
+            moves_concatenation mc = std::move(*it); // IS IT SAFE?!? DOESN'T SEEM SO
+            moves_stack.back().erase(it);
+            moves_sum next_level = mc.give_single_sum();
+            moves_stack.push_back(std::move(next_level.content));
+        }
+        else{
+            moves_concatenation mc = std::move(*it); // IS IT SAFE?!? DOESN'T SEEM SO
+            moves_stack.back().erase(it);
+            result.insert(mc.flatten());
+        }
+    }
+    return moves_sum(std::move(result));
+}
+
+bool moves_sum::is_single_concatenation(void)const{
+    return content.size()==1;
+}
+
+moves_concatenation moves_sum::give_single_concatenation(void){
+    assert(is_single_concatenation());
+    auto it = content.begin();
+    auto result = std::move(*it);
+    content.clear();
+    return result;
 }
 
 void print_spaces(std::ostream& out,uint n){

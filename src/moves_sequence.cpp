@@ -1,6 +1,6 @@
 #include"moves_sequence.hpp"
 
-moves_sequence::moves_sequence(void):
+moves_sequence::moves_sequence(void)noexcept:
 sequence(){}
 
 moves_sequence parse_moves_sequence(
@@ -48,4 +48,9 @@ std::ostream& operator<<(std::ostream& out,const moves_sequence& m){
         }
     }
     return out;
+}
+
+void moves_sequence::flatten(void){
+    for(uint i=0;i<sequence.size();++i)
+        sequence[i] = sequence[i].flatten();
 }

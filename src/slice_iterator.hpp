@@ -16,7 +16,7 @@ class clipboard{
         bool up_to_date : 1;
         bool frozen : 1;
     public:
-        clipboard(void);
+        clipboard(void)noexcept;
 
         void paste(const token& t)throw(std::string);
         void report_end(void);
@@ -35,12 +35,12 @@ class backtrace_info{
         uint parent_end;
         bool last_should_be_pasted : 1;
     public:
-        backtrace_info(const slice& s,const std::shared_ptr<backtrace_info>& parent,uint current_begin,uint current_end);
-        backtrace_info(const backtrace_info& src);
+        backtrace_info(const slice& s,const std::shared_ptr<backtrace_info>& parent,uint current_begin,uint current_end)noexcept;
+        backtrace_info(const backtrace_info& src)noexcept;
         backtrace_info& operator=(const backtrace_info&)=delete;
-        backtrace_info(backtrace_info&& src);
+        backtrace_info(backtrace_info&& src)noexcept;
         backtrace_info& operator=(backtrace_info&&)=delete;
-        ~backtrace_info(void);
+        ~backtrace_info(void)noexcept;
 
         std::vector<slice> parse_arguments(messages_container& msg,uint current_begin,uint& current_end)throw(message);
         std::shared_ptr<backtrace_info> get_parent(void)const;
@@ -71,11 +71,11 @@ class slice_iterator{
         bool handle_standard_token(messages_container& msg)throw(message);
         void move_cursor(void);
     public:
-        slice_iterator(const slice& s, const macro_bank* macros);
+        slice_iterator(const slice& s, const macro_bank* macros)noexcept;
         slice_iterator& operator=(const slice_iterator&)=delete;
         slice_iterator& operator=(slice_iterator&&)=delete;
-        slice_iterator(const slice_iterator& src);
-        slice_iterator(slice_iterator&& src);
+        slice_iterator(const slice_iterator& src)noexcept;
+        slice_iterator(slice_iterator&& src)noexcept;
 
         std::vector<std::pair<uint,std::string>> create_call_stack(const std::string& details)const;
         bool has_value(void)const;

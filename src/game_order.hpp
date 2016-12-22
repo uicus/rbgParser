@@ -15,7 +15,7 @@ class game_order{
         std::set<token> players_set;
         std::vector<token> players_order;
     public:
-        game_order(void);
+        game_order(void)noexcept;
 
         friend game_order parse_game_order(
             slice_iterator& it,

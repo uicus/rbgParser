@@ -21,7 +21,7 @@ class game_items{
         slice* order_segment;
         std::map<token,slice> goal_segments;
         uint next_item_context_order;
-        game_items(void);
+        game_items(void)noexcept;
 
         uint input_macro(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
         uint input_game(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
@@ -41,10 +41,10 @@ class game_items{
         std::string parse_name(messages_container& msg)const throw(message);
     public:
         game_items(const game_items&)=delete;
-        game_items(game_items&& src);
+        game_items(game_items&& src)noexcept;
         game_items& operator=(const game_items&)=delete;
-        game_items& operator=(game_items&& src);
-        ~game_items(void);
+        game_items& operator=(game_items&& src)noexcept;
+        ~game_items(void)noexcept;
 
         friend game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message);
         void print_rbg(std::ostream& out, messages_container& msg)const throw(message);

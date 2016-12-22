@@ -14,14 +14,14 @@ class slice{
         bool replacements_owner;
         std::map<token,slice>* replacements;
         uint context_order;
-        slice(const slice& src, uint from, uint to);
+        slice(const slice& src, uint from, uint to)noexcept;
     public:
-        slice(const std::vector<token>* data, uint begin, uint end, uint context_order);
-        slice(const slice& src);
-        slice(slice&& src);
+        slice(const std::vector<token>* data, uint begin, uint end, uint context_order)noexcept;
+        slice(const slice& src)noexcept;
+        slice(slice&& src)noexcept;
         slice& operator=(const slice&)=delete;
         slice& operator=(slice&&)=delete;
-        ~slice(void);
+        ~slice(void)noexcept;
 
         slice cut_slice(uint from, uint to)const; // relative coords
         void add_replacement(const token& ident,const slice& value);

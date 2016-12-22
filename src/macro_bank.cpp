@@ -2,7 +2,7 @@
 
 #include"macro_bank.hpp"
 
-macro::macro(std::vector<token>&& args, const std::vector<token>* d, uint b, uint e, uint co):
+macro::macro(std::vector<token>&& args, const std::vector<token>* d, uint b, uint e, uint co)noexcept:
 arguments(std::move(args)),
 data(d),
 begin(b),
@@ -10,7 +10,7 @@ end(e),
 context_order(co){
 }
 
-macro::macro(const macro& src):
+macro::macro(const macro& src)noexcept:
 arguments(src.arguments),
 data(src.data),
 begin(src.begin),
@@ -18,7 +18,7 @@ end(src.end),
 context_order(src.context_order){
 }
 
-macro::macro(macro&& src):
+macro::macro(macro&& src)noexcept:
 arguments(src.arguments),
 data(src.data),
 begin(src.begin),
@@ -26,7 +26,7 @@ end(src.end),
 context_order(src.context_order){
 }
 
-macro::~macro(void){
+macro::~macro(void)noexcept{
 }
 
 slice macro::turn_into_slice(const std::vector<slice>& passed_values)const{
@@ -49,7 +49,7 @@ bool macro::is_empty(void)const{
     return end <= begin;
 }
 
-macro_bank::macro_bank(void):
+macro_bank::macro_bank(void)noexcept:
 content(){
 }
 
