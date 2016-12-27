@@ -36,6 +36,10 @@ class atomic_move{
         bool is_goal_eligible(void)const;
         friend std::ostream& operator<<(std::ostream& out,const atomic_move& m);
         atomic_move flatten(void); // moves out value
+        bool can_absorb(const atomic_move& right_hand_side)const;
+        void absorb(atomic_move&& right_hand_side);
+        bool can_be_absorbed(const atomic_move& left_hand_side)const;
+        void be_absorbed(atomic_move&& left_hand_side);
 };
 
 parser_result<atomic_move> parse_atomic_move(slice_iterator& it, messages_container& msg)throw(message);
@@ -81,9 +85,9 @@ class bracketed_move{
             turn_change_indicator* turn_changer;
         };
         uint tag : 2; // 0 -> sum, 1 -> atomic, else -> turn_changer
-        bracketed_move(moves_sum&& src)noexcept;
-        bracketed_move(atomic_move&& src)noexcept;
-        bracketed_move(turn_change_indicator&& src)noexcept;
+        bracketed_move(moves_sum&& src,uint repetition_number=1)noexcept;
+        bracketed_move(atomic_move&& src,uint repetition_number=1)noexcept;
+        bracketed_move(turn_change_indicator&& src,uint repetition_number=1)noexcept;
     public:
         bracketed_move(void)noexcept;
         bracketed_move(const bracketed_move& src)noexcept;
@@ -106,13 +110,19 @@ class bracketed_move{
         void set_repetition_number(uint rn);
         void set_star(void);
         bool is_goal_eligible(void)const;
+        bool is_atomic_move(void)const;
+        const atomic_move& show_atomic_move(void)const;
+        atomic_move give_atomic_move(void); // moves out value
         void print_rbg(std::ostream& out,uint recurrence_depth)const;
         bracketed_move flatten(void); // moves out value
         bool is_single_concatenation(void)const;
         moves_concatenation give_single_concatenation(void); // moves out value
         bool is_single_sum(void)const;
         moves_sum give_single_sum(void); // moves out value
-
+        bool can_absorb(const atomic_move& right_hand_side)const;
+        void absorb(atomic_move&& right_hand_side);
+        bool can_be_absorbed(const atomic_move& left_hand_side)const;
+        void be_absorbed(atomic_move&& left_hand_side);
 };
 
 parser_result<bracketed_move> parse_bracketed_move(
@@ -145,6 +155,10 @@ class moves_concatenation{
         moves_concatenation flatten(void); // moves out value
         bool is_single_sum(void)const;
         moves_sum give_single_sum(void); // moves out value
+        bool can_absorb(const atomic_move& right_hand_side)const;
+        void absorb(atomic_move&& right_hand_side);
+        bool can_be_absorbed(const atomic_move& left_hand_side)const;
+        void be_absorbed(atomic_move&& left_hand_side);
 };
 
 parser_result<moves_concatenation> parse_moves_concatenation(
@@ -177,6 +191,10 @@ class moves_sum{
         moves_sum flatten(void); // moves out value
         bool is_single_concatenation(void)const;
         moves_concatenation give_single_concatenation(void); // moves out value
+        bool can_absorb(const atomic_move& right_hand_side)const;
+        void absorb(atomic_move&& right_hand_side);
+        bool can_be_absorbed(const atomic_move& left_hand_side)const;
+        void be_absorbed(atomic_move&& left_hand_side);
 };
 
 parser_result<moves_sum> parse_moves_sum(

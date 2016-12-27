@@ -152,6 +152,29 @@ atomic_move atomic_move::flatten(void){
     return result;
 }
 
+bool atomic_move::can_absorb(const atomic_move& right_hand_side)const{
+    return right_hand_side.x == 0
+        && right_hand_side.y == 0
+        && (   (no_off && right_hand_side.every_on_legal)
+            || (!no_off && !right_hand_side.every_on_legal && off == right_hand_side.on));
+}
+
+void atomic_move::absorb(atomic_move&& right_hand_side){
+    off = std::move(right_hand_side.off);
+    no_off = right_hand_side.no_off;
+}
+
+bool atomic_move::can_be_absorbed(const atomic_move& left_hand_side)const{
+    return left_hand_side.can_absorb(*this);
+}
+
+void atomic_move::be_absorbed(atomic_move&& left_hand_side){
+    x = left_hand_side.x;
+    y = left_hand_side.y;
+    on = std::move(left_hand_side.on);
+    every_on_legal = left_hand_side.every_on_legal;
+}
+
 turn_change_indicator::turn_change_indicator(const token& name)noexcept:
 player(name){
 }
@@ -309,20 +332,20 @@ bracketed_move& bracketed_move::operator=(bracketed_move&& src)noexcept{
     return *this;
 }
 
-bracketed_move::bracketed_move(moves_sum&& src)noexcept:
-repetition_number(1),
+bracketed_move::bracketed_move(moves_sum&& src,uint rn)noexcept:
+repetition_number(rn),
 tag(0){
     sum = new moves_sum(std::move(src));
 }
 
-bracketed_move::bracketed_move(atomic_move&& src)noexcept:
-repetition_number(1),
+bracketed_move::bracketed_move(atomic_move&& src,uint rn)noexcept:
+repetition_number(rn),
 tag(1){
     atomic = new atomic_move(std::move(src));
 }
 
-bracketed_move::bracketed_move(turn_change_indicator&& src)noexcept:
-repetition_number(1),
+bracketed_move::bracketed_move(turn_change_indicator&& src,uint rn)noexcept:
+repetition_number(rn),
 tag(2){
     turn_changer = new turn_change_indicator(std::move(src));
 }
@@ -445,6 +468,20 @@ bool bracketed_move::is_goal_eligible(void)const{
     }
 }
 
+bool bracketed_move::is_atomic_move(void)const{
+    return tag == 1;
+}
+
+const atomic_move& bracketed_move::show_atomic_move(void)const{
+    assert(is_atomic_move());
+    return *atomic;
+}
+
+atomic_move bracketed_move::give_atomic_move(void){
+    assert(is_atomic_move());
+    return std::move(*atomic);
+}
+
 void bracketed_move::set_repetition_number(uint rn){
     assert(rn>0);
     repetition_number = rn;
@@ -478,24 +515,24 @@ bracketed_move bracketed_move::flatten(void){
     switch(tag){
     case 0:
         {auto result = sum->flatten();
-        delete sum;
-        sum = nullptr;
-        return moves_sum(std::move(result));}
+        //delete sum;
+        //sum = nullptr;
+        return bracketed_move(moves_sum(std::move(result)),repetition_number);}
     case 1:
         {auto result = atomic->flatten();
-        delete atomic;
-        atomic = nullptr;
-        return atomic_move(std::move(result));}
+        //delete atomic;
+        //atomic = nullptr;
+        return bracketed_move(atomic_move(std::move(result)),repetition_number);}
     default:
         {auto result = turn_changer->flatten();
-        delete turn_changer;
-        turn_changer = nullptr;
-        return turn_change_indicator(std::move(result));}
+        //delete turn_changer;
+        //turn_changer = nullptr;
+        return bracketed_move(turn_change_indicator(std::move(result)),repetition_number);}
     }
 }
 
 bool bracketed_move::is_single_concatenation(void)const{
-    if(tag!=0||sum==nullptr)
+    if(repetition_number!=1||tag!=0||sum==nullptr)
         return false;
     return sum->is_single_concatenation();
 }
@@ -506,7 +543,7 @@ moves_concatenation bracketed_move::give_single_concatenation(void){
 }
 
 bool bracketed_move::is_single_sum(void)const{
-    return tag==0 && sum!=nullptr;
+    return repetition_number==1 && tag==0 && sum!=nullptr;
 }
 
 moves_sum bracketed_move::give_single_sum(void){
@@ -515,6 +552,60 @@ moves_sum bracketed_move::give_single_sum(void){
     delete sum;
     sum = nullptr;
     return result;
+}
+
+bool bracketed_move::can_absorb(const atomic_move& right_hand_side)const{
+    if(repetition_number!=1)
+        return false;
+    switch(tag){
+    case 0:
+        return sum->can_absorb(right_hand_side);
+    case 1:
+        return atomic->can_absorb(right_hand_side);
+    default:
+        return false;
+    }
+}
+
+void bracketed_move::absorb(atomic_move&& right_hand_side){
+    assert(repetition_number==1);
+    switch(tag){
+    case 0:
+        sum->absorb(std::move(right_hand_side));
+        break;
+    case 1:
+        atomic->absorb(std::move(right_hand_side));
+        break;
+    default:
+        assert(false);
+    }
+}
+
+bool bracketed_move::can_be_absorbed(const atomic_move& left_hand_side)const{
+    if(repetition_number!=1)
+        return false;
+    switch(tag){
+    case 0:
+        return sum->can_be_absorbed(left_hand_side);
+    case 1:
+        return atomic->can_be_absorbed(left_hand_side);
+    default:
+        return false;
+    }
+}
+
+void bracketed_move::be_absorbed(atomic_move&& left_hand_side){
+    assert(repetition_number==1);
+    switch(tag){
+    case 0:
+        sum->be_absorbed(std::move(left_hand_side));
+        break;
+    case 1:
+        atomic->be_absorbed(std::move(left_hand_side));
+        break;
+    default:
+        assert(false);
+    }
 }
 
 moves_concatenation::moves_concatenation(void)noexcept:
@@ -610,7 +701,19 @@ moves_concatenation moves_concatenation::flatten(void){
             moves_stack.back().first = moves_stack.back().second.begin();
         }
         else{
-            result.push_back(moves_stack.back().first->flatten());
+            bracketed_move next_to_insert = moves_stack.back().first->flatten();
+            if(result.empty())
+                result.push_back(std::move(next_to_insert));
+            else{
+                if(result.back().is_atomic_move()&&next_to_insert.can_be_absorbed(result.back().show_atomic_move())){
+                    next_to_insert.be_absorbed(result.back().give_atomic_move());
+                    result.back() = std::move(next_to_insert);
+                }
+                else if(next_to_insert.is_atomic_move()&&result.back().can_absorb(next_to_insert.show_atomic_move()))
+                    result.back().absorb(next_to_insert.give_atomic_move());
+                else
+                    result.push_back(std::move(next_to_insert));
+            }
             ++moves_stack.back().first;
         }
     }
@@ -625,6 +728,26 @@ bool moves_concatenation::is_single_sum(void)const{
 moves_sum moves_concatenation::give_single_sum(void){
     assert(is_single_sum());
     return content[0].give_single_sum();
+}
+
+bool moves_concatenation::can_absorb(const atomic_move& right_hand_side)const{
+    if(content.empty())
+        return false;
+    return content.back().can_absorb(right_hand_side);
+}
+
+void moves_concatenation::absorb(atomic_move&& right_hand_side){
+    content.back().absorb(std::move(right_hand_side));
+}
+
+bool moves_concatenation::can_be_absorbed(const atomic_move& left_hand_side)const{
+    if(content.empty())
+        return false;
+    return content.front().can_be_absorbed(left_hand_side);
+}
+
+void moves_concatenation::be_absorbed(atomic_move&& left_hand_side){
+    content.front().be_absorbed(std::move(left_hand_side));
 }
 
 moves_sum::moves_sum(void)noexcept:
@@ -714,24 +837,26 @@ void moves_sum::print_rbg(std::ostream& out,uint recurrence_depth)const{
 }
 
 moves_sum moves_sum::flatten(void){
-    std::vector<std::set<moves_concatenation>> moves_stack;
-    moves_stack.push_back(std::move(content));
+    std::vector<std::pair<std::set<moves_concatenation>::iterator,std::set<moves_concatenation>>> moves_stack;
+    moves_stack.push_back(make_pair(content.begin(),std::move(content)));
+    moves_stack.back().first = moves_stack.back().second.begin(); // inelegant way to avoid undefined behavior
     content.clear();
     std::set<moves_concatenation> result;
     while(!moves_stack.empty()){
-        auto it = moves_stack.back().begin();
-        if(moves_stack.back().empty())
+        auto it = moves_stack.back().first;
+        if(it == moves_stack.back().second.end())
             moves_stack.pop_back();
-        else if(it->is_single_sum()){
-            moves_concatenation mc = std::move(*it); // IS IT SAFE?!? DOESN'T SEEM SO
-            moves_stack.back().erase(it);
-            moves_sum next_level = mc.give_single_sum();
-            moves_stack.push_back(std::move(next_level.content));
-        }
         else{
             moves_concatenation mc = std::move(*it); // IS IT SAFE?!? DOESN'T SEEM SO
-            moves_stack.back().erase(it);
-            result.insert(mc.flatten());
+            ++moves_stack.back().first;
+            mc = mc.flatten();
+            if(mc.is_single_sum()){
+                moves_sum next_level = mc.give_single_sum();
+                moves_stack.push_back(make_pair(next_level.content.begin(),std::move(next_level.content)));
+                moves_stack.back().first = moves_stack.back().second.begin(); // inelegant way to avoid undefined behavior
+            }
+            else
+                result.insert(std::move(mc));
         }
     }
     return moves_sum(std::move(result));
@@ -747,6 +872,40 @@ moves_concatenation moves_sum::give_single_concatenation(void){
     auto result = std::move(*it);
     content.clear();
     return result;
+}
+
+bool moves_sum::can_absorb(const atomic_move& right_hand_side)const{
+    for(const auto& el: content)
+        if(!el.can_absorb(right_hand_side))
+            return false;
+    return true;
+}
+
+void moves_sum::absorb(atomic_move&& right_hand_side){
+    std::set<moves_concatenation> result;
+    for(const auto& el: content){
+        moves_concatenation temp = std::move(el);
+        temp.absorb(atomic_move(right_hand_side));
+        result.insert(std::move(temp));
+    }
+    std::swap(result,content);
+}
+
+bool moves_sum::can_be_absorbed(const atomic_move& left_hand_side)const{
+    for(const auto& el: content)
+        if(!el.can_be_absorbed(left_hand_side))
+            return false;
+    return true;
+}
+
+void moves_sum::be_absorbed(atomic_move&& left_hand_side){
+    std::set<moves_concatenation> result;
+    for(const auto& el: content){
+        moves_concatenation temp = std::move(el);
+        temp.be_absorbed(atomic_move(left_hand_side));
+        result.insert(std::move(temp));
+    }
+    std::swap(result,content);
 }
 
 void print_spaces(std::ostream& out,uint n){
