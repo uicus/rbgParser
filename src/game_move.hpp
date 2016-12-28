@@ -40,6 +40,9 @@ class atomic_move{
         void absorb(atomic_move&& right_hand_side);
         bool can_be_absorbed(const atomic_move& left_hand_side)const;
         void be_absorbed(atomic_move&& left_hand_side);
+        bool has_off(void)const;
+        bool is_in_place(void)const;
+        std::pair<atomic_move,atomic_move> prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id); // moves out value
 };
 
 parser_result<atomic_move> parse_atomic_move(slice_iterator& it, messages_container& msg)throw(message);
@@ -119,10 +122,17 @@ class bracketed_move{
         moves_concatenation give_single_concatenation(void); // moves out value
         bool is_single_sum(void)const;
         moves_sum give_single_sum(void); // moves out value
+        bool is_similar_repetitionwise(uint repetition_number_above)const;
         bool can_absorb(const atomic_move& right_hand_side)const;
         void absorb(atomic_move&& right_hand_side);
         bool can_be_absorbed(const atomic_move& left_hand_side)const;
         void be_absorbed(atomic_move&& left_hand_side);
+        std::vector<bracketed_move> prepare_to_split(
+            std::set<token>& known_pieces,
+            std::set<token>& pieces_after_split,
+            uint& current_id,
+            bool is_beginning,
+            bool& is_end); // moves out value
 };
 
 parser_result<bracketed_move> parse_bracketed_move(
@@ -135,8 +145,8 @@ parser_result<bracketed_move> parse_bracketed_move(
 
 class moves_concatenation{
         std::vector<bracketed_move> content;
-        moves_concatenation(std::vector<bracketed_move>&& src)noexcept;
     public:
+        moves_concatenation(std::vector<bracketed_move>&& src)noexcept;
         moves_concatenation(void)noexcept;
 
         friend parser_result<moves_concatenation> parse_moves_concatenation(
@@ -155,10 +165,18 @@ class moves_concatenation{
         moves_concatenation flatten(void); // moves out value
         bool is_single_sum(void)const;
         moves_sum give_single_sum(void); // moves out value
+        bool is_single_bracket(uint repetition_number_above)const;
+        bracketed_move give_single_bracket(void); // moves out value
         bool can_absorb(const atomic_move& right_hand_side)const;
         void absorb(atomic_move&& right_hand_side);
         bool can_be_absorbed(const atomic_move& left_hand_side)const;
         void be_absorbed(atomic_move&& left_hand_side);
+        moves_concatenation prepare_to_split(
+            std::set<token>& known_pieces,
+            std::set<token>& pieces_after_split,
+            uint& current_id,
+            bool is_beginning,
+            bool& is_end); // moves out value
 };
 
 parser_result<moves_concatenation> parse_moves_concatenation(
@@ -171,8 +189,8 @@ parser_result<moves_concatenation> parse_moves_concatenation(
 
 class moves_sum{
         std::set<moves_concatenation> content;
-        moves_sum(std::set<moves_concatenation>&& src)noexcept;
     public:
+        moves_sum(std::set<moves_concatenation>&& src)noexcept;
         moves_sum(void)noexcept;
 
         friend parser_result<moves_sum> parse_moves_sum(
@@ -191,10 +209,18 @@ class moves_sum{
         moves_sum flatten(void); // moves out value
         bool is_single_concatenation(void)const;
         moves_concatenation give_single_concatenation(void); // moves out value
+        bool is_single_bracket(uint repetition_number_above)const;
+        bracketed_move give_single_bracket(void); // moves out value
         bool can_absorb(const atomic_move& right_hand_side)const;
         void absorb(atomic_move&& right_hand_side);
         bool can_be_absorbed(const atomic_move& left_hand_side)const;
         void be_absorbed(atomic_move&& left_hand_side);
+        moves_sum prepare_to_split(
+            std::set<token>& known_pieces,
+            std::set<token>& pieces_after_split,
+            uint& current_id,
+            bool is_beginning,
+            bool& is_end); // moves out value
 };
 
 parser_result<moves_sum> parse_moves_sum(

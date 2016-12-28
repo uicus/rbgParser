@@ -65,6 +65,12 @@ token& token::operator=(token&& src)noexcept{
     return *this;
 }
 
+token::token(std::string&& name)noexcept:
+position_in_file(0),
+type(identifier),
+contained_string(new std::string(std::move(name))){
+}
+
 token::~token(void)noexcept{
     if(type == identifier || type == quotation)
         delete contained_string;

@@ -1,4 +1,5 @@
 #include<cassert>
+#include<algorithm>
 
 #include"game_move.hpp"
 
@@ -173,6 +174,30 @@ void atomic_move::be_absorbed(atomic_move&& left_hand_side){
     y = left_hand_side.y;
     on = std::move(left_hand_side.on);
     every_on_legal = left_hand_side.every_on_legal;
+}
+
+bool atomic_move::has_off(void)const{
+    return !no_off;
+}
+
+bool atomic_move::is_in_place(void)const{
+    return x==0 && y==0;
+}
+
+std::pair<atomic_move,atomic_move> atomic_move::prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id){
+    token splitter;
+    do{
+        splitter = "splitter"+std::to_string(current_id);
+        ++current_id;
+    }while(known_pieces.count(splitter));
+    known_pieces.insert(splitter);
+    pieces_after_split.insert(splitter);
+    std::set<token> splitter_singleton1,splitter_singleton2;
+    splitter_singleton1.insert(splitter);
+    splitter_singleton2.insert(splitter);
+    return std::make_pair(
+        (every_on_legal ? atomic_move(x,y,std::move(splitter_singleton1),false) : atomic_move(x,y,std::move(on),std::move(splitter_singleton1))),
+        (no_off ? atomic_move(0,0,std::move(splitter_singleton2),true) : atomic_move(0,0,std::move(splitter_singleton2),std::move(off))));
 }
 
 turn_change_indicator::turn_change_indicator(const token& name)noexcept:
@@ -514,10 +539,17 @@ void bracketed_move::print_rbg(std::ostream& out,uint recurrence_depth)const{
 bracketed_move bracketed_move::flatten(void){
     switch(tag){
     case 0:
-        {auto result = sum->flatten();
-        //delete sum;
-        //sum = nullptr;
-        return bracketed_move(moves_sum(std::move(result)),repetition_number);}
+        if(sum->is_single_bracket(repetition_number)){
+            bracketed_move lower_brackets = sum->give_single_bracket();
+            lower_brackets.repetition_number = lower_brackets.repetition_number*repetition_number;
+            return lower_brackets;
+        }
+        else{
+            auto result = sum->flatten();
+            //delete sum;
+            //sum = nullptr;
+            return bracketed_move(moves_sum(std::move(result)),repetition_number);
+        }
     case 1:
         {auto result = atomic->flatten();
         //delete atomic;
@@ -540,6 +572,13 @@ bool bracketed_move::is_single_concatenation(void)const{
 moves_concatenation bracketed_move::give_single_concatenation(void){
     assert(is_single_concatenation());
     return sum->give_single_concatenation();
+}
+
+bool bracketed_move::is_similar_repetitionwise(uint repetition_number_above)const{
+    return repetition_number_above==1
+        || repetition_number==1
+        || (repetition_number_above==0 && repetition_number==0)
+        || (repetition_number_above>0 && repetition_number>0);
 }
 
 bool bracketed_move::is_single_sum(void)const{
@@ -605,6 +644,66 @@ void bracketed_move::be_absorbed(atomic_move&& left_hand_side){
         break;
     default:
         assert(false);
+    }
+}
+
+std::vector<bracketed_move> bracketed_move::prepare_to_split(
+    std::set<token>& known_pieces,
+    std::set<token>& pieces_after_split,
+    uint& current_id,
+    bool is_beginning,
+    bool& is_end){
+    std::vector<bracketed_move> result;
+    switch(tag){
+    case 0:
+        if(repetition_number<=1){
+            if(repetition_number==0)is_end=false;
+            moves_sum sum_result = sum->prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&repetition_number==1,is_end);
+            result.push_back(bracketed_move(std::move(sum_result),repetition_number));
+            return result;
+        }
+        else{
+            result.resize(repetition_number);
+            for(uint i=repetition_number;i>0;--i)
+                result[i-1] = moves_sum(*sum).prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&i==1,is_end);
+            return result;
+        }
+    case 1:
+        if(atomic->has_off()){
+            if(repetition_number==0){
+                is_end=false;
+                auto atomic_result = atomic->prepare_to_split(known_pieces,pieces_after_split,current_id);
+                std::vector<bracketed_move> vectored_pair;
+                vectored_pair.push_back(bracketed_move(std::move(atomic_result.first)));
+                vectored_pair.push_back(bracketed_move(std::move(atomic_result.second)));
+                std::set<moves_concatenation> temp;
+                temp.insert(std::move(vectored_pair));
+                result.push_back(bracketed_move(std::move(temp),0));
+                return result;
+            }
+            else{
+                for(uint i=repetition_number;i>0;--i){
+                    if((is_beginning&&i==1&&atomic->is_in_place())||is_end)
+                        result.push_back(std::move(*this));
+                    else{
+                        auto atomic_result = atomic->prepare_to_split(known_pieces,pieces_after_split,current_id);
+                        result.push_back(bracketed_move(std::move(atomic_result.second)));
+                        result.push_back(bracketed_move(std::move(atomic_result.first)));
+                    }
+                    is_end=false;
+                }
+                std::reverse(result.begin(),result.end());
+                return result;
+            }
+        }
+        else{
+            result.push_back(std::move(*this));
+            is_end=false;
+            return result;
+        }
+    default:
+        result.push_back(std::move(*this));
+        return result;
     }
 }
 
@@ -730,6 +829,14 @@ moves_sum moves_concatenation::give_single_sum(void){
     return content[0].give_single_sum();
 }
 
+bool moves_concatenation::is_single_bracket(uint repetition_number_above)const{
+    return content.size()==1 && content.front().is_similar_repetitionwise(repetition_number_above);
+}
+
+bracketed_move moves_concatenation::give_single_bracket(void){
+    return std::move(content.front());
+}
+
 bool moves_concatenation::can_absorb(const atomic_move& right_hand_side)const{
     if(content.empty())
         return false;
@@ -748,6 +855,22 @@ bool moves_concatenation::can_be_absorbed(const atomic_move& left_hand_side)cons
 
 void moves_concatenation::be_absorbed(atomic_move&& left_hand_side){
     content.front().be_absorbed(std::move(left_hand_side));
+}
+
+moves_concatenation moves_concatenation::prepare_to_split(
+    std::set<token>& known_pieces,
+    std::set<token>& pieces_after_split,
+    uint& current_id,
+    bool is_beginning,
+    bool& is_end){
+    std::vector<bracketed_move> result;
+    for(uint i=content.size();i>0;--i){
+        std::vector<bracketed_move> lower_result = content[i-1].prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&i==1,is_end);
+        for(uint j=lower_result.size();j>0;--j)
+            result.push_back(std::move(lower_result[j-1]));
+    }
+    std::reverse(result.begin(),result.end());
+    return moves_concatenation(std::move(result));
 }
 
 moves_sum::moves_sum(void)noexcept:
@@ -874,6 +997,15 @@ moves_concatenation moves_sum::give_single_concatenation(void){
     return result;
 }
 
+bool moves_sum::is_single_bracket(uint repetition_number_above)const{
+    return content.size()==1 && content.begin()->is_single_bracket(repetition_number_above);
+}
+
+bracketed_move moves_sum::give_single_bracket(void){
+    auto result = std::move(*content.begin());
+    return result.give_single_bracket();
+}
+
 bool moves_sum::can_absorb(const atomic_move& right_hand_side)const{
     for(const auto& el: content)
         if(!el.can_absorb(right_hand_side))
@@ -906,6 +1038,24 @@ void moves_sum::be_absorbed(atomic_move&& left_hand_side){
         result.insert(std::move(temp));
     }
     std::swap(result,content);
+}
+
+moves_sum moves_sum::prepare_to_split(
+    std::set<token>& known_pieces,
+    std::set<token>& pieces_after_split,
+    uint& current_id,
+    bool is_beginning,
+    bool& is_end){
+    std::set<moves_concatenation> result;
+    bool is_end_temp;
+    bool is_end_final = true;
+    for(const auto& el: content){
+        is_end_temp = is_end;
+        result.insert(moves_concatenation(el).prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning,is_end_temp));
+        is_end_final &= is_end_temp;
+    }
+    is_end = is_end_final;
+    return moves_sum(std::move(result));
 }
 
 void print_spaces(std::ostream& out,uint n){

@@ -59,6 +59,7 @@ class token{
         token(token&& src)noexcept;
         token& operator=(const token& src)noexcept;
         token& operator=(token&& src)noexcept;
+        token(std::string&& name)noexcept;
         ~token(void)noexcept;
 
         friend std::set<token> create_tokens_set(uint position);

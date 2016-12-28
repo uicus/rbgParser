@@ -15,8 +15,12 @@ goals(std::move(g)),
 known_pieces(std::move(kp)){}
 
 void parsed_game::to_simple(void){
-    for(auto& el:moves)
+    std::set<token> splitters;
+    uint current_id = 0;
+    for(auto& el:moves){
         el.second.flatten();
+        el.second.prepare_to_split(known_pieces,splitters,current_id);
+    }
 }
 
 std::ostream& operator<<(std::ostream& out,const parsed_game& g){

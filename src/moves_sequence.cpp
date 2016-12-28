@@ -54,3 +54,10 @@ void moves_sequence::flatten(void){
     for(uint i=0;i<sequence.size();++i)
         sequence[i] = sequence[i].flatten();
 }
+
+void moves_sequence::prepare_to_split(std::set<token>& known_pieces,std::set<token> pieces_after_split,uint& current_id){
+    for(uint i=0;i<sequence.size();++i){
+        bool is_end = true;
+        sequence[i] = sequence[i].prepare_to_split(known_pieces,pieces_after_split,current_id,true,is_end);
+    }
+}
