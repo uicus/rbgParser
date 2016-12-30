@@ -663,9 +663,17 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
             return result;
         }
         else{
-            result.resize(repetition_number);
-            for(uint i=repetition_number;i>0;--i)
-                result[i-1] = moves_sum(*sum).prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&i==1,is_end);
+            for(uint i=repetition_number;i>0;--i){
+                moves_sum temp = moves_sum(*sum).prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&i==1,is_end);
+                if(temp.is_single_concatenation()){
+                    std::vector<bracketed_move> lower_result = temp.give_single_concatenation().move_out();
+                    for(uint j=lower_result.size();j>0;--j)
+                        result.push_back(std::move(lower_result[j-1]));
+                }
+                else
+                    result.push_back(std::move(temp));
+            }
+            std::reverse(result.begin(),result.end());
             return result;
         }
     case 1:
@@ -684,9 +692,11 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
             else{
                 for(uint i=repetition_number;i>0;--i){
                     if((is_beginning&&i==1&&atomic->is_in_place())||is_end)
-                        result.push_back(std::move(*this));
+                        result.push_back(i==1 ? std::move(*this) : atomic_move(*atomic));
                     else{
-                        auto atomic_result = atomic->prepare_to_split(known_pieces,pieces_after_split,current_id);
+                        auto atomic_result = (i==1 ?
+                            atomic->prepare_to_split(known_pieces,pieces_after_split,current_id) :
+                            atomic_move(*atomic).prepare_to_split(known_pieces,pieces_after_split,current_id));
                         result.push_back(bracketed_move(std::move(atomic_result.second)));
                         result.push_back(bracketed_move(std::move(atomic_result.first)));
                     }
@@ -855,6 +865,12 @@ bool moves_concatenation::can_be_absorbed(const atomic_move& left_hand_side)cons
 
 void moves_concatenation::be_absorbed(atomic_move&& left_hand_side){
     content.front().be_absorbed(std::move(left_hand_side));
+}
+
+std::vector<bracketed_move> moves_concatenation::move_out(void){
+    auto result = std::move(content);
+    content.clear();
+    return result;
 }
 
 moves_concatenation moves_concatenation::prepare_to_split(
@@ -1056,6 +1072,50 @@ moves_sum moves_sum::prepare_to_split(
     }
     is_end = is_end_final;
     return moves_sum(std::move(result));
+}
+
+void moves_sum::concat_move(moves_sum&& m){
+    if(content.empty()||m.content.empty())
+        content.clear();
+    else if(is_single_concatenation()&&m.is_single_concatenation()){
+        std::vector<bracketed_move> result = give_single_concatenation().move_out();
+        std::vector<bracketed_move> next_elem = m.give_single_concatenation().move_out();
+        for(uint i=0;i<next_elem.size();++i)
+            result.push_back(std::move(next_elem[i]));
+        content.clear();
+        content.insert(std::move(result));
+    }
+    else{
+        std::vector<bracketed_move> result;
+        result.push_back(std::move(*this));
+        result.push_back(std::move(m));
+        content.clear();
+        content.insert(std::move(result));
+    }
+}
+
+void moves_sum::set_star(void){
+    if(is_single_bracket(0)){
+        bracketed_move lower_result = give_single_bracket();
+        lower_result.set_star();
+        std::vector<bracketed_move> result;
+        result.push_back(std::move(lower_result));
+        content.clear();
+        content.insert(std::move(result));
+    }
+    else{
+        bracketed_move lower_result(std::move(*this));
+        lower_result.set_star();
+        std::vector<bracketed_move> result;
+        result.push_back(std::move(lower_result));
+        content.clear();
+        content.insert(std::move(result));
+    }
+}
+
+void moves_sum::add_move(moves_sum&& m){
+    for(const auto& el: m.content)
+        content.insert(el);
 }
 
 void print_spaces(std::ostream& out,uint n){

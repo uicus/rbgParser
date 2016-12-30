@@ -88,11 +88,11 @@ class bracketed_move{
             turn_change_indicator* turn_changer;
         };
         uint tag : 2; // 0 -> sum, 1 -> atomic, else -> turn_changer
+    public:
+        bracketed_move(void)noexcept;
         bracketed_move(moves_sum&& src,uint repetition_number=1)noexcept;
         bracketed_move(atomic_move&& src,uint repetition_number=1)noexcept;
         bracketed_move(turn_change_indicator&& src,uint repetition_number=1)noexcept;
-    public:
-        bracketed_move(void)noexcept;
         bracketed_move(const bracketed_move& src)noexcept;
         bracketed_move& operator=(const bracketed_move& src)noexcept;
         bracketed_move(bracketed_move&& src)noexcept;
@@ -171,6 +171,7 @@ class moves_concatenation{
         void absorb(atomic_move&& right_hand_side);
         bool can_be_absorbed(const atomic_move& left_hand_side)const;
         void be_absorbed(atomic_move&& left_hand_side);
+        std::vector<bracketed_move> move_out(void);
         moves_concatenation prepare_to_split(
             std::set<token>& known_pieces,
             std::set<token>& pieces_after_split,
@@ -221,6 +222,9 @@ class moves_sum{
             uint& current_id,
             bool is_beginning,
             bool& is_end); // moves out value
+        void concat_move(moves_sum&& m);
+        void set_star(void);
+        void add_move(moves_sum&& m);
 };
 
 parser_result<moves_sum> parse_moves_sum(
