@@ -12,6 +12,8 @@
 #include"message.hpp"
 #include"game_order.hpp"
 
+class moves_sum;
+
 class atomic_move{
         int x;
         int y;
@@ -43,6 +45,12 @@ class atomic_move{
         bool has_off(void)const;
         bool is_in_place(void)const;
         std::pair<atomic_move,atomic_move> prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id); // moves out value
+        void to_semisteps(
+            moves_sum& N,
+            moves_sum& B,
+            moves_sum& T,
+            moves_sum& BT,
+            const std::set<token>& splitters); // moves out value
 };
 
 parser_result<atomic_move> parse_atomic_move(slice_iterator& it, messages_container& msg)throw(message);
@@ -67,6 +75,11 @@ class turn_change_indicator{
         bool is_goal_eligible(void)const;
         friend std::ostream& operator<<(std::ostream& out,const turn_change_indicator& m);
         turn_change_indicator flatten(void); // moves out value
+        void to_semisteps(
+            moves_sum& N,
+            moves_sum& B,
+            moves_sum& T,
+            moves_sum& BT); // moves out value
 };
 
 std::ostream& operator<<(std::ostream& out,const turn_change_indicator& m);
@@ -77,7 +90,6 @@ parser_result<turn_change_indicator> parse_turn_change_indicator(
     int player_number,
     messages_container& msg)throw(message);
 
-class moves_sum;
 class moves_concatenation;
 
 class bracketed_move{
@@ -133,6 +145,12 @@ class bracketed_move{
             uint& current_id,
             bool is_beginning,
             bool& is_end); // moves out value
+        void to_semisteps(
+            moves_sum& N,
+            moves_sum& B,
+            moves_sum& T,
+            moves_sum& BT,
+            const std::set<token>& splitters); // moves out value
 };
 
 parser_result<bracketed_move> parse_bracketed_move(
@@ -178,6 +196,13 @@ class moves_concatenation{
             uint& current_id,
             bool is_beginning,
             bool& is_end); // moves out value
+        bool is_epsilon(void)const;
+        void to_semisteps(
+            moves_sum& N,
+            moves_sum& B,
+            moves_sum& T,
+            moves_sum& BT,
+            const std::set<token>& splitters); // moves out value
 };
 
 parser_result<moves_concatenation> parse_moves_concatenation(
@@ -189,9 +214,9 @@ parser_result<moves_concatenation> parse_moves_concatenation(
     messages_container& msg)throw(message);
 
 class moves_sum{
-        std::set<moves_concatenation> content;
+        std::vector<moves_concatenation> content;
     public:
-        moves_sum(std::set<moves_concatenation>&& src)noexcept;
+        moves_sum(std::vector<moves_concatenation>&& src)noexcept;
         moves_sum(void)noexcept;
 
         friend parser_result<moves_sum> parse_moves_sum(
@@ -222,9 +247,17 @@ class moves_sum{
             uint& current_id,
             bool is_beginning,
             bool& is_end); // moves out value
+        bool is_epsilon(void)const;
+        bool is_empty(void)const;
         void concat_move(moves_sum&& m);
         void set_star(void);
         void add_move(moves_sum&& m);
+        void to_semisteps(
+            moves_sum& N,
+            moves_sum& B,
+            moves_sum& T,
+            moves_sum& BT,
+            const std::set<token>& splitters); // moves out value
 };
 
 parser_result<moves_sum> parse_moves_sum(
@@ -234,6 +267,10 @@ parser_result<moves_sum> parse_moves_sum(
     int player_number,
     bool& contains_turn_changer,
     messages_container& msg)throw(message);
+moves_sum epsilon(void);
+moves_sum empty_expression(void);
+moves_sum single_letter(atomic_move&& m);
+moves_sum single_letter(turn_change_indicator&& m);
 
 void print_spaces(std::ostream& out,uint n);
 

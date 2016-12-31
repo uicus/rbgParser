@@ -24,7 +24,8 @@ class moves_sequence{
             messages_container& msg)throw(message);
         friend std::ostream& operator<<(std::ostream& out,const moves_sequence& m);
         void flatten(void);
-        void prepare_to_split(std::set<token>& known_pieces,std::set<token> pieces_after_split,uint& current_id);
+        void prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id);
+        void split_into_semisteps(const std::set<token>& splitters);
 };
 
 moves_sequence parse_moves_sequence(

@@ -55,9 +55,23 @@ void moves_sequence::flatten(void){
         sequence[i] = sequence[i].flatten();
 }
 
-void moves_sequence::prepare_to_split(std::set<token>& known_pieces,std::set<token> pieces_after_split,uint& current_id){
+void moves_sequence::prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id){
     for(uint i=0;i<sequence.size();++i){
         bool is_end = true;
         sequence[i] = sequence[i].prepare_to_split(known_pieces,pieces_after_split,current_id,true,is_end);
     }
+}
+
+void moves_sequence::split_into_semisteps(const std::set<token>& splitters){
+    moves_sum highest_priority_move;
+    moves_sum N,B,T,BT;
+    for(uint i=0;i<sequence.size();++i){
+        sequence[i].to_semisteps(N,B,T,BT,splitters);
+        highest_priority_move.add_move(std::move(B));
+        highest_priority_move.add_move(std::move(BT));
+        sequence[i] = std::move(N);
+        sequence[i].add_move(std::move(T));
+    }
+    if(!highest_priority_move.is_empty())
+        sequence.insert(sequence.begin(),std::move(highest_priority_move));
 }

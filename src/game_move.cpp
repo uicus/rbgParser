@@ -200,6 +200,30 @@ std::pair<atomic_move,atomic_move> atomic_move::prepare_to_split(std::set<token>
         (no_off ? atomic_move(0,0,std::move(splitter_singleton2),true) : atomic_move(0,0,std::move(splitter_singleton2),std::move(off))));
 }
 
+void atomic_move::to_semisteps(
+    moves_sum& N,
+    moves_sum& B,
+    moves_sum& T,
+    moves_sum& BT,
+    const std::set<token>& splitters){
+    if(off.size()==1&&splitters.count(*off.begin())==1){
+        N = empty_expression();
+        B = empty_expression();
+        T = single_letter(std::move(*this));
+    }
+    else if(on.size()==1&&splitters.count(*on.begin())==1){
+        N = empty_expression();
+        B = single_letter(std::move(*this));
+        T = empty_expression();
+    }
+    else{
+        N = single_letter(std::move(*this));
+        B = empty_expression();
+        T = empty_expression();
+    }
+    BT = empty_expression();
+}
+
 turn_change_indicator::turn_change_indicator(const token& name)noexcept:
 player(name){
 }
@@ -257,6 +281,17 @@ turn_change_indicator turn_change_indicator::flatten(void){
     auto result = std::move(*this);
     player = token();
     return result;
+}
+
+void turn_change_indicator::to_semisteps(
+    moves_sum& N,
+    moves_sum& B,
+    moves_sum& T,
+    moves_sum& BT){
+    N = single_letter(std::move(*this));
+    B = empty_expression();
+    T = empty_expression();
+    BT = empty_expression();
 }
 
 bracketed_move::bracketed_move(void)noexcept:
@@ -684,8 +719,8 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
                 std::vector<bracketed_move> vectored_pair;
                 vectored_pair.push_back(bracketed_move(std::move(atomic_result.first)));
                 vectored_pair.push_back(bracketed_move(std::move(atomic_result.second)));
-                std::set<moves_concatenation> temp;
-                temp.insert(std::move(vectored_pair));
+                std::vector<moves_concatenation> temp;
+                temp.push_back(std::move(vectored_pair));
                 result.push_back(bracketed_move(std::move(temp),0));
                 return result;
             }
@@ -714,6 +749,50 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
     default:
         result.push_back(std::move(*this));
         return result;
+    }
+}
+
+void bracketed_move::to_semisteps(
+    moves_sum& N,
+    moves_sum& B,
+    moves_sum& T,
+    moves_sum& BT,
+    const std::set<token>& splitters){
+    assert(repetition_number<=1);
+    if(repetition_number==0){
+        moves_sum lower_N,lower_B,lower_T,lower_BT;
+        switch(tag){
+        case 0:
+            sum->to_semisteps(lower_N,lower_B,lower_T,lower_BT,splitters);
+            break;
+        case 1:
+            atomic->to_semisteps(lower_N,lower_B,lower_T,lower_BT,splitters);
+            break;
+        default:
+            assert(false);
+        }
+        lower_N.set_star();
+        N = lower_N;
+        B = lower_B;
+        B.concat_move(moves_sum(lower_N));
+        T = lower_N;
+        T.concat_move(moves_sum(lower_T));
+        BT = std::move(B);
+        BT.concat_move(std::move(lower_N));
+        BT.concat_move(std::move(lower_T));
+        BT.add_move(std::move(lower_BT));
+    }
+    else{
+        switch(tag){
+        case 0:
+            sum->to_semisteps(N,B,T,BT,splitters);
+            break;
+        case 1:
+            atomic->to_semisteps(N,B,T,BT,splitters);
+            break;
+        default:
+            turn_changer->to_semisteps(N,B,T,BT);
+        }
     }
 }
 
@@ -790,8 +869,12 @@ bool moves_concatenation::is_goal_eligible(void)const{
 }
 
 void moves_concatenation::print_rbg(std::ostream& out,uint recurrence_depth)const{
-    for(const auto& el: content)
-        el.print_rbg(out,recurrence_depth);
+    if(is_epsilon())
+        out<<"(0,0)";
+    else{
+        for(const auto& el: content)
+            el.print_rbg(out,recurrence_depth);
+    }
 }
 
 moves_concatenation moves_concatenation::flatten(void){
@@ -889,10 +972,58 @@ moves_concatenation moves_concatenation::prepare_to_split(
     return moves_concatenation(std::move(result));
 }
 
+bool moves_concatenation::is_epsilon(void)const{
+    return content.empty();
+}
+
+void moves_concatenation::to_semisteps(
+    moves_sum& N,
+    moves_sum& B,
+    moves_sum& T,
+    moves_sum& BT,
+    const std::set<token>& splitters){
+    N = epsilon();
+    B = T = BT = empty_expression();
+    std::vector<moves_sum> Ns(content.size()),Bs(content.size()),Ts(content.size()),BTs(content.size());
+    for(uint i=0;i<content.size();++i)
+        content[i].to_semisteps(Ns[i],Bs[i],Ts[i],BTs[i],splitters);
+    for(uint i=0;i<Ns.size();++i)
+        N.concat_move(moves_sum(Ns[i]));
+    if(!Bs.empty()){
+        B = Bs[0];
+        for(uint i=1;i<Bs.size();++i){
+            B.concat_move(moves_sum(Ns[i]));
+            B.add_move(moves_sum(Bs[i]));
+        }
+    }
+    if(!Ts.empty()){
+        T = Ts.back();
+        for(uint i=Ts.size()-1;i>0;--i){
+            moves_sum temp = std::move(T);
+            T = Ns[i-1];
+            T.concat_move(std::move(temp));
+            T.add_move(moves_sum(Ts[i-1]));
+        }
+    }
+    if(!BTs.empty())
+        for(uint i=0;i<BTs.size();++i){
+            BT.add_move(std::move(BTs[i]));
+            if(i>0){
+                moves_sum temp = Bs[0];
+                for(uint j=1;j<i;++j){
+                    temp.concat_move(moves_sum(Ns[j]));
+                    temp.add_move(moves_sum(Bs[j]));
+                }
+                temp.concat_move(std::move(Ts[i]));
+                BT.add_move(std::move(temp));
+            }
+        }
+}
+
 moves_sum::moves_sum(void)noexcept:
 content(){}
 
-moves_sum::moves_sum(std::set<moves_concatenation>&& src)noexcept:
+moves_sum::moves_sum(std::vector<moves_concatenation>&& src)noexcept:
 content(std::move(src)){}
 
 parser_result<moves_sum> parse_moves_sum(
@@ -904,12 +1035,12 @@ parser_result<moves_sum> parse_moves_sum(
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<moves_sum>();
-    std::set<moves_concatenation> result;
+    std::vector<moves_concatenation> result;
     bool concatenation_contains_turn_changer = false;
     parser_result<moves_concatenation> concat_result = parse_moves_concatenation(it,encountered_pieces,players,player_number,concatenation_contains_turn_changer,msg);
     contains_turn_changer |= concatenation_contains_turn_changer;
     if(concat_result.is_success())
-        result.insert(concat_result.move_value());
+        result.push_back(concat_result.move_value());
     else
         return failure<moves_sum>();
     while(it.has_value() && it.current().get_type() == plus){
@@ -921,7 +1052,7 @@ parser_result<moves_sum> parse_moves_sum(
         if(!concat_result.is_success())
             throw msg.build_message(it.create_call_stack("Expected moves concatenation, encountered \'"+it.current().to_string()+"\'"));
         else
-            result.insert(concat_result.move_value());
+            result.push_back(concat_result.move_value());
     }
     return success(moves_sum(std::move(result)));
 }
@@ -976,17 +1107,17 @@ void moves_sum::print_rbg(std::ostream& out,uint recurrence_depth)const{
 }
 
 moves_sum moves_sum::flatten(void){
-    std::vector<std::pair<std::set<moves_concatenation>::iterator,std::set<moves_concatenation>>> moves_stack;
+    std::vector<std::pair<std::vector<moves_concatenation>::iterator,std::vector<moves_concatenation>>> moves_stack;
     moves_stack.push_back(make_pair(content.begin(),std::move(content)));
     moves_stack.back().first = moves_stack.back().second.begin(); // inelegant way to avoid undefined behavior
     content.clear();
-    std::set<moves_concatenation> result;
+    std::vector<moves_concatenation> result;
     while(!moves_stack.empty()){
         auto it = moves_stack.back().first;
         if(it == moves_stack.back().second.end())
             moves_stack.pop_back();
         else{
-            moves_concatenation mc = std::move(*it); // IS IT SAFE?!? DOESN'T SEEM SO
+            moves_concatenation mc = std::move(*it);
             ++moves_stack.back().first;
             mc = mc.flatten();
             if(mc.is_single_sum()){
@@ -995,7 +1126,7 @@ moves_sum moves_sum::flatten(void){
                 moves_stack.back().first = moves_stack.back().second.begin(); // inelegant way to avoid undefined behavior
             }
             else
-                result.insert(std::move(mc));
+                result.push_back(std::move(mc));
         }
     }
     return moves_sum(std::move(result));
@@ -1007,18 +1138,19 @@ bool moves_sum::is_single_concatenation(void)const{
 
 moves_concatenation moves_sum::give_single_concatenation(void){
     assert(is_single_concatenation());
-    auto it = content.begin();
-    auto result = std::move(*it);
+    auto result = std::move(content[0]);
     content.clear();
     return result;
 }
 
 bool moves_sum::is_single_bracket(uint repetition_number_above)const{
-    return content.size()==1 && content.begin()->is_single_bracket(repetition_number_above);
+    return content.size()==1 && content[0].is_single_bracket(repetition_number_above);
 }
 
 bracketed_move moves_sum::give_single_bracket(void){
-    auto result = std::move(*content.begin());
+    assert(content.size()==1);
+    auto result = std::move(content[0]);
+    content.clear();
     return result.give_single_bracket();
 }
 
@@ -1030,13 +1162,8 @@ bool moves_sum::can_absorb(const atomic_move& right_hand_side)const{
 }
 
 void moves_sum::absorb(atomic_move&& right_hand_side){
-    std::set<moves_concatenation> result;
-    for(const auto& el: content){
-        moves_concatenation temp = std::move(el);
-        temp.absorb(atomic_move(right_hand_side));
-        result.insert(std::move(temp));
-    }
-    std::swap(result,content);
+    for(uint i=0;i<content.size();++i)
+        content[i].absorb((i==content.size()-1 ? std::move(right_hand_side) : atomic_move(right_hand_side)));
 }
 
 bool moves_sum::can_be_absorbed(const atomic_move& left_hand_side)const{
@@ -1047,13 +1174,8 @@ bool moves_sum::can_be_absorbed(const atomic_move& left_hand_side)const{
 }
 
 void moves_sum::be_absorbed(atomic_move&& left_hand_side){
-    std::set<moves_concatenation> result;
-    for(const auto& el: content){
-        moves_concatenation temp = std::move(el);
-        temp.be_absorbed(atomic_move(left_hand_side));
-        result.insert(std::move(temp));
-    }
-    std::swap(result,content);
+    for(uint i=0;i<content.size();++i)
+        content[i].be_absorbed((i==content.size()-1 ? std::move(left_hand_side) : atomic_move(left_hand_side)));
 }
 
 moves_sum moves_sum::prepare_to_split(
@@ -1062,20 +1184,28 @@ moves_sum moves_sum::prepare_to_split(
     uint& current_id,
     bool is_beginning,
     bool& is_end){
-    std::set<moves_concatenation> result;
+    std::vector<moves_concatenation> result;
     bool is_end_temp;
     bool is_end_final = true;
-    for(const auto& el: content){
+    for(uint i=0;i<content.size();++i){
         is_end_temp = is_end;
-        result.insert(moves_concatenation(el).prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning,is_end_temp));
+        result.push_back(content[i].prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning,is_end_temp));
         is_end_final &= is_end_temp;
     }
     is_end = is_end_final;
     return moves_sum(std::move(result));
 }
 
+bool moves_sum::is_epsilon(void)const{
+    return content.size() == 1 && content.begin()->is_epsilon();
+}
+
+bool moves_sum::is_empty(void)const{
+    return content.empty();
+}
+
 void moves_sum::concat_move(moves_sum&& m){
-    if(content.empty()||m.content.empty())
+    if(is_empty()||m.is_empty())
         content.clear();
     else if(is_single_concatenation()&&m.is_single_concatenation()){
         std::vector<bracketed_move> result = give_single_concatenation().move_out();
@@ -1083,25 +1213,38 @@ void moves_sum::concat_move(moves_sum&& m){
         for(uint i=0;i<next_elem.size();++i)
             result.push_back(std::move(next_elem[i]));
         content.clear();
-        content.insert(std::move(result));
+        content.push_back(std::move(result));
     }
     else{
         std::vector<bracketed_move> result;
-        result.push_back(std::move(*this));
-        result.push_back(std::move(m));
+        if(is_single_concatenation())
+            result = give_single_concatenation().move_out();
+        else
+            result.push_back(std::move(*this));
+        if(m.is_single_concatenation()){
+            std::vector<bracketed_move> temp = m.give_single_concatenation().move_out();
+            for(uint i=0;i<temp.size();++i)
+                result.push_back(temp[i]);
+        }
+        else
+            result.push_back(std::move(m));
         content.clear();
-        content.insert(std::move(result));
+        content.push_back(std::move(result));
     }
 }
 
 void moves_sum::set_star(void){
-    if(is_single_bracket(0)){
+    if(is_empty()||is_epsilon()){
+        content.clear();
+        content.push_back(std::vector<bracketed_move>());
+    }
+    else if(is_single_bracket(0)){
         bracketed_move lower_result = give_single_bracket();
         lower_result.set_star();
         std::vector<bracketed_move> result;
         result.push_back(std::move(lower_result));
         content.clear();
-        content.insert(std::move(result));
+        content.push_back(std::move(result));
     }
     else{
         bracketed_move lower_result(std::move(*this));
@@ -1109,13 +1252,58 @@ void moves_sum::set_star(void){
         std::vector<bracketed_move> result;
         result.push_back(std::move(lower_result));
         content.clear();
-        content.insert(std::move(result));
+        content.push_back(std::move(result));
     }
 }
 
 void moves_sum::add_move(moves_sum&& m){
-    for(const auto& el: m.content)
-        content.insert(el);
+    if(is_empty())
+        content = std::move(m.content);
+    else
+        for(uint i=0;i<m.content.size();++i)
+            content.push_back(std::move(m.content[i]));
+}
+
+void moves_sum::to_semisteps(
+    moves_sum& N,
+    moves_sum& B,
+    moves_sum& T,
+    moves_sum& BT,
+    const std::set<token>& splitters){
+    N = B = T = BT = empty_expression();
+    for(uint i=0;i<content.size();++i){
+        moves_sum tempN,tempB,tempT,tempBT;
+        content[i].to_semisteps(tempN,tempB,tempT,tempBT,splitters);
+        N.add_move(std::move(tempN));
+        B.add_move(std::move(tempB));
+        T.add_move(std::move(tempT));
+        BT.add_move(std::move(tempBT));
+    }
+}
+
+moves_sum epsilon(void){
+    std::vector<moves_concatenation> temp2;
+    temp2.push_back(std::vector<bracketed_move>());
+    return moves_sum(std::move(temp2));
+}
+moves_sum empty_expression(void){
+    return moves_sum(std::vector<moves_concatenation>());
+}
+
+moves_sum single_letter(atomic_move&& m){
+    std::vector<bracketed_move> temp1;
+    temp1.push_back(std::move(m));
+    std::vector<moves_concatenation> temp2;
+    temp2.push_back(std::move(temp1));
+    return moves_sum(std::move(temp2));
+}
+
+moves_sum single_letter(turn_change_indicator&& m){
+    std::vector<bracketed_move> temp1;
+    temp1.push_back(std::move(m));
+    std::vector<moves_concatenation> temp2;
+    temp2.push_back(std::move(temp1));
+    return moves_sum(std::move(temp2));
 }
 
 void print_spaces(std::ostream& out,uint n){

@@ -15,11 +15,12 @@ goals(std::move(g)),
 known_pieces(std::move(kp)){}
 
 void parsed_game::to_simple(void){
-    std::set<token> splitters;
     uint current_id = 0;
     for(auto& el:moves){
+        std::set<token> splitters;
         el.second.flatten();
         el.second.prepare_to_split(known_pieces,splitters,current_id);
+        el.second.split_into_semisteps(splitters);
     }
 }
 
