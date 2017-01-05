@@ -16,7 +16,9 @@ int main(int argc, const char** argv){
         std::cerr<<"Usage: \"rbg2gdl [flags] input_file\""<<std::endl;
         std::cerr<<"Available flags:"<<std::endl;
         std::cerr<<"\"-o output_file\" - write output to file with given name; defaults to \"a.gdl\""<<std::endl;
+        std::cerr<<"\"-p\" - just preprocess"<<std::endl;
         std::cerr<<"\"-v\" - just verify input; do not generate output file"<<std::endl;
+        std::cerr<<"\"-s\" - translate to simple form"<<std::endl;
         std::cerr<<"\"-Whide\" - do not show warnings"<<std::endl;
         std::cerr<<"\"-Werror\" - treat warnings as errors"<<std::endl;
     }

@@ -777,7 +777,7 @@ void bracketed_move::to_semisteps(
         B.concat_move(moves_sum(lower_N));
         T = lower_N;
         T.concat_move(moves_sum(lower_T));
-        BT = std::move(B);
+        BT = std::move(lower_B);
         BT.concat_move(std::move(lower_N));
         BT.concat_move(std::move(lower_T));
         BT.add_move(std::move(lower_BT));
