@@ -1,0 +1,70 @@
+#game "Chess Alpha"
+
+
+#def INITP(upperpawn,s,lowerpawn) =
+               upperpawn upperpawn upperpawn upperpawn upperpawn upperpawn upperpawn upperpawn 
+               s~rooku s~knight s~bishop s~queen s~kingu s~bishop s~knight s~rooku
+               lowerpawn lowerpawn lowerpawn lowerpawn lowerpawn lowerpawn lowerpawn lowerpawn
+
+#def INITE = empty empty empty empty empty empty empty empty 
+#def INITZ = zone zone zone zone zone zone zone zone
+
+#board 8 10 INITZ INITP(,b,bpawn) INITE INITE INITE INITE INITP(wpawn,w,) INITZ 
+
+
+#def PIECES(s) = s~rookm,s~rooku,s~knight,s~bishop,s~queen,s~kingm,s~kingu,s~pawn,s~pawnd
+#def ANYSQUARE = {PIECES(w),PIECES(b),empty}
+
+#def PROMOTEPIECES(s) = {s~rookm,s~knight,s~bishop,s~queen}
+
+
+#def RIDE(x,y,o,fig) = (/empty)(x,y,{empty})^*(x,y,{empty,PIECES(o)}/fig)
+
+#def ROOK(s,o,fig) = RIDE(1,0,o,fig) + RIDE(-1,0,o,fig) + RIDE(0,1,o,fig) + RIDE(0,-1,o,fig) 
+#def ROOK(s,o)     = ROOK(s,o,s~rookm) // po ruchu zawsze moved
+
+#def BISHOP(s,o,fig) = RIDE(1,1,o,fig) + RIDE(-1,1,o,fig) + RIDE(1,-1,o,fig) + RIDE(-1,-1,o,fig)
+#def BISHOP(s,o)     = BISHOP(s,o,s~bishop)
+
+#def QUEEN(s,o) = ROOK(s,o,s~queen) + BISHOP(s,o,s~queen)
+
+
+#def HOP(x,y,o,fig)       = (/empty)(x,y,{empty,PIECES(o)}/fig)
+#def HOPAROUND(x,y,o,fig) = HOP(x,y,o,fig) + HOP(x,-y,o,fig) + HOP(-x,y,o,fig) + HOP(-x,-y,o,fig) 
+
+#def KNIGHT(s,o) = HOPAROUND(1,2,o,s~knight) + HOPAROUND(2,1,o,s~knight)
+
+#def KING(s,o) = HOP(1,0,o,s~kingm)+HOP(-1,0,o,s~kingm)+HOP(0,1,o,s~kingm)+HOP(0,-1,o,s~kingm)
+               + HOPAROUND(1,1,o,s~kingm)
+
+
+#def CASTLING(s) = (s~rooku/empty)(1,0,empty)(1,0,empty/s~kingm)(1,0,empty/s~rookm)(1,0,s~kingu/empty) 
+                 + (s~rooku/empty)(-1,0,empty/s~kingm)(-1,0,empty/s~rookm)(-1,0,s~kingu/empty) 
+
+
+
+#def PAWNPROMOTE(s,g) = ((0,g 1,ANYSQUARE) + (/PROMOTEPIECES(s))(0,g 1,zone))
+
+#def PAWN(s,o,g,d)
+      = (/empty)((0,g 1,empty/s~pawn) + (-1,g 1,{PIECES(o)}/s~pawn) + (1,g 1,{PIECES(o)}/s~pawn))PAWNPROMOTE(s,g) // standard move
+	  + (/empty)((-1,0,o~pawnd/empty)+(1,0,o~pawnd/empty))(0,g 1,empty/s~pawn) // en-passant
+	  + (/empty)(0,g 1,empty)(0,g 6,zone)(0,d 5,empty/s~pawnd) // initial double move
+
+
+
+#def REMOVEDOUBLEPAWN(s) = (s~pawnd/s~pawn)
+
+#def LEGALS(s,o,g,d) = ({s~rooku,s~rookm})(ROOK(s,o)) + (s~bishop)(BISHOP(s,o)) + ({s~kingu,s~kingm})(KING(s,o))
+                 + (s~queen)(QUEEN(s,o)) + (s~knight)(KNIGHT(s,o)) + ({s~pawn,s~pawnd})(PAWN(s,o,g,d))
+                 + CASTLING(s)
+
+
+#player white REMOVEDOUBLEPAWN(w)[white] ++ (LEGALS(w,b,,-))[black]
+#player black REMOVEDOUBLEPAWN(b)[black] ++ (LEGALS(b,w,-,))[white]
+#order white black
+
+#def GOALS(o) = ($o~kingu<1 and $o~kingm<1) or $turn >= 200
+
+#goal white GOALS(b)
+#goal black GOALS(w)
+
