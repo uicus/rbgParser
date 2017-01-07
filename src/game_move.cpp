@@ -124,8 +124,8 @@ bool atomic_move::is_goal_eligible(void)const{
 }
 
 std::ostream& operator<<(std::ostream& out,const atomic_move& m){
-    out<<m.x<<','<<m.y;
-    if(!m.every_on_legal||!m.no_off)
+    if(m.x!=0||m.y!=0)out<<m.x<<','<<m.y;
+    if((!m.every_on_legal||!m.no_off)&&(m.x!=0||m.y!=0))
         out<<',';
     if(!m.every_on_legal)
         out<<m.on;
@@ -727,7 +727,7 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
             else{
                 for(uint i=repetition_number;i>0;--i){
                     if((is_beginning&&i==1&&atomic->is_in_place())||is_end)
-                        result.push_back(i==1 ? std::move(*this) : atomic_move(*atomic));
+                        result.push_back(i==1 ? std::move(*atomic) : atomic_move(*atomic));
                     else{
                         auto atomic_result = (i==1 ?
                             atomic->prepare_to_split(known_pieces,pieces_after_split,current_id) :
@@ -742,7 +742,8 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
             }
         }
         else{
-            result.push_back(std::move(*this));
+            for(uint i=repetition_number;i>0;--i)
+                result.push_back(i==1 ? std::move(*atomic) : atomic_move(*atomic));
             is_end=false;
             return result;
         }

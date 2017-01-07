@@ -20,7 +20,7 @@ void parsed_game::to_simple(void){
         std::set<token> splitters;
         el.second.flatten();
         el.second.prepare_to_split(known_pieces,splitters,current_id);
-        el.second.split_into_semisteps(splitters);
+        //el.second.split_into_semisteps(splitters);
     }
 }
 
