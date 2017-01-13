@@ -21,6 +21,7 @@ int main(int argc, const char** argv){
         std::cerr<<"\"-s\" - translate to simple form"<<std::endl;
         std::cerr<<"\"-Whide\" - do not show warnings"<<std::endl;
         std::cerr<<"\"-Werror\" - treat warnings as errors"<<std::endl;
+        std::cerr<<"\"-unfold\" - unfold moves in simple form if they are under ^n"<<std::endl;
     }
     else{
         messages_container msg;
@@ -40,7 +41,7 @@ int main(int argc, const char** argv){
             else{
                 parsed_game pg = g.parse_game(msg);
                 if(o.just_semisteps()){
-                    pg.to_simple();
+                    pg.to_simple(o);
                     out<<pg;
                 }
             }

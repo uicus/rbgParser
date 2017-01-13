@@ -9,6 +9,7 @@
 #include"token.hpp"
 #include"moves_sequence.hpp"
 #include"game_goal.hpp"
+#include"options.hpp"
 
 class parsed_game{
         std::string name;
@@ -27,7 +28,7 @@ class parsed_game{
             std::set<token>&& known_pieces)noexcept;
 
         friend std::ostream& operator<<(std::ostream& out,const parsed_game& g);
-        void to_simple(void);
+        void to_simple(const options& o);
 };
 
 std::ostream& operator<<(std::ostream& out,const parsed_game& g);

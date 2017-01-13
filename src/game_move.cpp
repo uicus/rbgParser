@@ -184,10 +184,22 @@ bool atomic_move::is_in_place(void)const{
     return x==0 && y==0;
 }
 
+std::string atomic_move::make_splitter_name(void)const{
+    assert(!no_off);
+    std::string result;
+    for(const auto& el: off){
+        result+=el.to_string();
+        if(result.size()>15)
+            return "splitter";
+    }
+    return result;
+}
+
 std::pair<atomic_move,atomic_move> atomic_move::prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id){
     token splitter;
+    std::string spliiter_name = make_splitter_name();
     do{
-        splitter = "splitter"+std::to_string(current_id);
+        splitter = spliiter_name+std::to_string(current_id);
         ++current_id;
     }while(known_pieces.count(splitter));
     known_pieces.insert(splitter);
@@ -687,19 +699,27 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
     std::set<token>& pieces_after_split,
     uint& current_id,
     bool is_beginning,
-    bool& is_end){
+    bool& is_end,
+    bool& contains_splitter,
+    const options& o){
     std::vector<bracketed_move> result;
     switch(tag){
     case 0:
         if(repetition_number<=1){
             if(repetition_number==0)is_end=false;
-            moves_sum sum_result = sum->prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&repetition_number==1,is_end);
+            moves_sum sum_result = sum->prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&repetition_number==1,is_end,contains_splitter,o);
             result.push_back(bracketed_move(std::move(sum_result),repetition_number));
             return result;
         }
         else{
+            bool contains_splitter_temp=contains_splitter=false;
             for(uint i=repetition_number;i>0;--i){
-                moves_sum temp = moves_sum(*sum).prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&i==1,is_end);
+                moves_sum temp = moves_sum(*sum).prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&i==1,is_end,contains_splitter_temp,o);
+                contains_splitter |= contains_splitter_temp;
+                if(!contains_splitter&&!o.unfolding_simples()){
+                    result.push_back(std::move(*this));
+                    return result;
+                }
                 if(temp.is_single_concatenation()){
                     std::vector<bracketed_move> lower_result = temp.give_single_concatenation().move_out();
                     for(uint j=lower_result.size();j>0;--j)
@@ -713,6 +733,7 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
         }
     case 1:
         if(atomic->has_off()){
+            contains_splitter = true;
             if(repetition_number==0){
                 is_end=false;
                 auto atomic_result = atomic->prepare_to_split(known_pieces,pieces_after_split,current_id);
@@ -742,8 +763,11 @@ std::vector<bracketed_move> bracketed_move::prepare_to_split(
             }
         }
         else{
-            for(uint i=repetition_number;i>0;--i)
-                result.push_back(i==1 ? std::move(*atomic) : atomic_move(*atomic));
+            if(o.unfolding_simples())
+                for(uint i=repetition_number;i>0;--i)
+                    result.push_back(i==1 ? std::move(*atomic) : atomic_move(*atomic));
+            else
+                result.push_back(std::move(*this));
             is_end=false;
             return result;
         }
@@ -759,7 +783,6 @@ void bracketed_move::to_semisteps(
     moves_sum& T,
     moves_sum& BT,
     const std::set<token>& splitters){
-    assert(repetition_number<=1);
     if(repetition_number==0){
         moves_sum lower_N,lower_B,lower_T,lower_BT;
         switch(tag){
@@ -783,7 +806,7 @@ void bracketed_move::to_semisteps(
         BT.concat_move(std::move(lower_T));
         BT.add_move(std::move(lower_BT));
     }
-    else{
+    else if(repetition_number==1){
         switch(tag){
         case 0:
             sum->to_semisteps(N,B,T,BT,splitters);
@@ -794,6 +817,14 @@ void bracketed_move::to_semisteps(
         default:
             turn_changer->to_semisteps(N,B,T,BT);
         }
+    }
+    else{
+        std::vector<bracketed_move> b;
+        b.push_back(std::move(*this));
+        std::vector<moves_concatenation> c;
+        c.push_back(std::move(b));
+        N = std::move(c);
+        B = T = BT = empty_expression();
     }
 }
 
@@ -962,12 +993,16 @@ moves_concatenation moves_concatenation::prepare_to_split(
     std::set<token>& pieces_after_split,
     uint& current_id,
     bool is_beginning,
-    bool& is_end){
+    bool& is_end,
+    bool& contains_splitter,
+    const options& o){
     std::vector<bracketed_move> result;
+    bool contains_splitter_temp=contains_splitter=false;
     for(uint i=content.size();i>0;--i){
-        std::vector<bracketed_move> lower_result = content[i-1].prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&i==1,is_end);
+        std::vector<bracketed_move> lower_result = content[i-1].prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning&&i==1,is_end,contains_splitter_temp,o);
         for(uint j=lower_result.size();j>0;--j)
             result.push_back(std::move(lower_result[j-1]));
+        contains_splitter |= contains_splitter_temp;
     }
     std::reverse(result.begin(),result.end());
     return moves_concatenation(std::move(result));
@@ -1184,14 +1219,18 @@ moves_sum moves_sum::prepare_to_split(
     std::set<token>& pieces_after_split,
     uint& current_id,
     bool is_beginning,
-    bool& is_end){
+    bool& is_end,
+    bool& contains_splitter,
+    const options& o){
     std::vector<moves_concatenation> result;
     bool is_end_temp;
     bool is_end_final = true;
+    bool contains_splitter_temp=contains_splitter=false;
     for(uint i=0;i<content.size();++i){
         is_end_temp = is_end;
-        result.push_back(content[i].prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning,is_end_temp));
+        result.push_back(content[i].prepare_to_split(known_pieces,pieces_after_split,current_id,is_beginning,is_end_temp,contains_splitter_temp,o));
         is_end_final &= is_end_temp;
+        contains_splitter |= contains_splitter_temp;
     }
     is_end = is_end_final;
     return moves_sum(std::move(result));

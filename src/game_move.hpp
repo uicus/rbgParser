@@ -11,6 +11,7 @@
 #include"slice_iterator.hpp"
 #include"message.hpp"
 #include"game_order.hpp"
+#include"options.hpp"
 
 class moves_sum;
 
@@ -21,6 +22,7 @@ class atomic_move{
         std::set<token> off;
         bool every_on_legal : 1;
         bool no_off : 1;
+        std::string make_splitter_name(void)const;
     public:
         atomic_move(void)noexcept;
         atomic_move(int x,int y,std::set<token>&& on,std::set<token>&& off);
@@ -144,7 +146,9 @@ class bracketed_move{
             std::set<token>& pieces_after_split,
             uint& current_id,
             bool is_beginning,
-            bool& is_end); // moves out value
+            bool& is_end,
+            bool& contains_splitter,
+            const options& o); // moves out value
         void to_semisteps(
             moves_sum& N,
             moves_sum& B,
@@ -195,7 +199,9 @@ class moves_concatenation{
             std::set<token>& pieces_after_split,
             uint& current_id,
             bool is_beginning,
-            bool& is_end); // moves out value
+            bool& is_end,
+            bool& contains_splitter,
+            const options& o); // moves out value
         bool is_epsilon(void)const;
         void to_semisteps(
             moves_sum& N,
@@ -246,7 +252,9 @@ class moves_sum{
             std::set<token>& pieces_after_split,
             uint& current_id,
             bool is_beginning,
-            bool& is_end); // moves out value
+            bool& is_end,
+            bool& contains_splitter,
+            const options& o); // moves out value
         bool is_epsilon(void)const;
         bool is_empty(void)const;
         void concat_move(moves_sum&& m);
