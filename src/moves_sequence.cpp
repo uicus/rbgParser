@@ -43,7 +43,7 @@ std::ostream& operator<<(std::ostream& out,const moves_sequence& m){
         out<<"    ";
         m.sequence[0].print_rbg(out,2);
         for(uint i=1;i<m.sequence.size();++i){
-            out<<" ++ ";
+            out<<" +> ";
             m.sequence[i].print_rbg(out,2);
         }
     }

@@ -298,18 +298,18 @@ parsed_game game_items::parse_game(messages_container& msg)const throw(message){
             throw msg.build_message("Empty "+name.to_string()+" \'player\' directive");
         players_moves[name] = parse_moves_sequence(moves_it,encountered_pieces,players,i,msg);
     }
+    game_board b = parse_board(msg,encountered_pieces);
     std::map<token,goals_alternative> players_goals;
     for(uint i=0;i<players.get_number_of_players();++i){
         const token& name = players.get_player_name(i,0);
         slice_iterator goals_it(goal_segments.at(name),&macros);
         goals_it.next(msg);
-        parser_result<goals_alternative> result = parse_goals_alternative(goals_it,encountered_pieces,msg,true);
+        parser_result<goals_alternative> result = parse_goals_alternative(goals_it,encountered_pieces,b.get_height(),b.get_width(),msg,true);
         assert(result.is_success());
         if(goals_it.has_value())
             throw msg.build_message(goals_it.create_call_stack("Unexpected tokens at the end of \'"+name.to_string()+"\' \'goals\' segment"));
         players_goals[name] = result.move_value();
     }
-    game_board b = parse_board(msg,encountered_pieces);
     return parsed_game(
         parse_name(msg),
         std::move(b),

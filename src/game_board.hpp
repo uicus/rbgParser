@@ -22,6 +22,9 @@ class game_board{
 
         void fill_with_slice(slice_iterator& it,std::set<token>& encountered_pieces,messages_container& msg)throw(message);
 
+        uint get_height(void)const;
+        uint get_width(void)const;
+
         friend std::ostream& operator<<(std::ostream& out,const game_board& brd);
 };
 

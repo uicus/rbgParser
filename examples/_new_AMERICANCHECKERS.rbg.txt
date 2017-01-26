@@ -21,13 +21,13 @@ INITA(white) INITB(white) INITA(white) INITZ
 
 #def PROMOTE(s,g) = (0,g 1,null) + (/s~king)(0,g 1,zone)
 
-#def MAN(s,o,g) = (CAPTURESIDE(o,g,s~man))(CAPTURESIDE(o,g,s~man))^*(PROMOTE(s,g))[o] ++ (MOVESIDE(g,s~man))(PROMOTE(s,g))[o]
+#def MAN(s,o,g) = (CAPTURESIDE(o,g,s~man))(CAPTURESIDE(o,g,s~man))^*(PROMOTE(s,g))[o] +> (MOVESIDE(g,s~man))(PROMOTE(s,g))[o]
 
-#def KING(s,o,g) = (CAPTUREANYDIR(o,s~king))(CAPTUREANYDIR(o,s~king))^*[o] ++ (MOVEANYDIR(s~king))[o]
+#def KING(s,o,g) = (CAPTUREANYDIR(o,s~king))(CAPTUREANYDIR(o,s~king))^*[o] +> (MOVEANYDIR(s~king))[o]
 
 
-#player red MAN(red,white,-) ++ KING(red,white,-)
-#player white MAN(white,red,+) ++ KING(white,red,+)
+#player red MAN(red,white,-) +> KING(red,white,-)
+#player white MAN(white,red,+) +> KING(white,red,+)
 #order red white
 
 

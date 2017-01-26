@@ -59,9 +59,9 @@ parser_result<token> parse_variable(slice_iterator& it, const std::set<token>& e
         return failure<token>();
     if(!it.next(msg))
         throw msg.build_message("Unexpected end of variable");
-    if(it.current().get_type()!=identifier)
-        throw msg.build_message(it.create_call_stack("Expected identifier, encountered \'"+it.current().to_string()+"\'"));
-    if(encountered_pieces.count(it.current())==0&&it.current().to_string()!="turn")
+    if(it.current().get_type()!=identifier&&it.current().get_type()!=turn)
+        throw msg.build_message(it.create_call_stack("Expected identifier or \'turn\' token, encountered \'"+it.current().to_string()+"\'"));
+    if(it.current().get_type()!=turn&&encountered_pieces.count(it.current())==0)
         throw msg.build_message(it.create_call_stack("There's no piece \'"+it.current().to_string()+"\'"));
     token result = it.current();
     it.next(msg);

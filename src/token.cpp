@@ -89,10 +89,11 @@ std::string tokens_table[] = {
 "+",
 "^",
 "*",
-"++",
+"+>",
 ",",
 "/",
 "$",
+"@",
 "=",
 "<",
 "<=",
@@ -102,6 +103,7 @@ std::string tokens_table[] = {
 "or",
 "not",
 "move",
+"turn",
 "def",
 "game",
 "player",
@@ -128,6 +130,7 @@ std::string token::to_string(void)const{
         case comma:
         case slash:
         case dollar:
+        case at_sign:
         case equal:
         case less:
         case less_equal:
@@ -137,6 +140,7 @@ std::string token::to_string(void)const{
         case logical_or:
         case logical_not:
         case move:
+        case turn:
         case def:
         case game:
         case player:
@@ -210,7 +214,7 @@ uint token::get_position(void)const{
 }
 
 token& token::operator+=(const token& t)throw(std::string){
-    if(type == plus && t.type == plus)
+    if(type == plus && t.type == greater)
         type = double_plus;
     else if(type == less && t.type == equal)
         type = less_equal;

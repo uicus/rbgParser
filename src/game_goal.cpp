@@ -110,6 +110,61 @@ std::ostream& operator<<(std::ostream& out,const atomic_goal& g){
     return out;
 }
 
+piece_placement_goal::piece_placement_goal(void)noexcept:piece(),x(0),y(0){
+}
+piece_placement_goal::piece_placement_goal(token&& p,uint x_coord,uint y_coord):piece(std::move(p)),x(x_coord),y(y_coord){
+}
+
+parser_result<piece_placement_goal> parse_piece_placement_goal(
+    slice_iterator& it,
+    const std::set<token>& encountered_pieces,
+    uint board_height,
+    uint board_width,
+    messages_container& msg)throw(message){
+    if(!it.has_value()||it.current().get_type()!=at_sign)
+        return failure<piece_placement_goal>();
+    if(!it.next(msg))
+        throw msg.build_message("Unexpected end of goal");
+    if(it.current().get_type()!=identifier)
+        throw msg.build_message(it.create_call_stack("Expected identifier, encountered \'"+it.current().to_string()+"\'"));
+    if(encountered_pieces.count(it.current())==0)
+        throw msg.build_message(it.create_call_stack("There's no piece \'"+it.current().to_string()+"\'"));
+    token piece = it.current();
+    if(!it.next(msg))
+        throw msg.build_message("Unexpected end of goal");
+    slice_iterator before_x = it;
+    parser_result<int> coord = parse_int(it,msg);
+    if(!coord.is_success())
+        throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
+    if(coord.get_value()<0||coord.get_value()>=int(board_width))
+        throw msg.build_message(before_x.create_call_stack("Coord out of board"));
+    uint x = coord.get_value();
+    if(!it.has_value())
+        throw msg.build_message("Unexpected end of goal");
+    slice_iterator before_y = it;
+    coord = parse_int(it,msg);
+    if(!coord.is_success())
+        throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
+    if(coord.get_value()<0||coord.get_value()>=int(board_height))
+        throw msg.build_message(before_y.create_call_stack("Coord out of board"));
+    uint y = coord.get_value();
+    return success(piece_placement_goal(std::move(piece),x,y));
+}
+
+bool piece_placement_goal::operator==(const piece_placement_goal& m)const{
+    return piece==m.piece&&x==m.x&&y==m.y;
+}
+
+bool piece_placement_goal::operator<(const piece_placement_goal& m)const{
+    return piece<m.piece
+        || (piece==m.piece&&x<m.x)
+        || (piece==m.piece&&x==m.x&&y<m.y);
+}
+
+std::ostream& operator<<(std::ostream& out,const piece_placement_goal& g){
+    return out<<'@'<<g.piece.to_string()<<' '<<g.x<<' '<<g.y;
+}
+
 negatable_goal::negatable_goal(void)noexcept:
 negated(false),
 alternative(nullptr),
@@ -126,8 +181,11 @@ tag(src.tag){
     case 1:
         atomic = new atomic_goal(*src.atomic);
         break;
-    default:
+    case 2:
         move_goal = new moves_sum(*src.move_goal);
+        break;
+    default:
+        piece_placement = new piece_placement_goal(*src.piece_placement);
     }
 }
 
@@ -141,8 +199,11 @@ negatable_goal& negatable_goal::operator=(const negatable_goal& src)noexcept{
         case 1:
             delete atomic;
             break;
-        default:
+        case 2:
             delete move_goal;
+            break;
+        default:
+            delete piece_placement;
         }
         tag = src.tag;
         switch(src.tag){
@@ -152,8 +213,11 @@ negatable_goal& negatable_goal::operator=(const negatable_goal& src)noexcept{
         case 1:
             atomic = new atomic_goal(*src.atomic);
             break;
-        default:
+        case 2:
             move_goal = new moves_sum(*src.move_goal);
+            break;
+        default:
+            piece_placement = new piece_placement_goal(*src.piece_placement);
         }
     }
     return *this;
@@ -172,9 +236,14 @@ tag(src.tag){
         atomic = src.atomic;
         src.atomic = nullptr;
         break;
-    default:
+    case 2:
         move_goal = src.move_goal;
         src.move_goal = nullptr;
+        break;
+    default:
+        piece_placement = src.piece_placement;
+        src.piece_placement = nullptr;
+        break;
     }
 }
 
@@ -188,8 +257,11 @@ negatable_goal& negatable_goal::operator=(negatable_goal&& src)noexcept{
         case 1:
             delete atomic;
             break;
-        default:
+        case 2:
             delete move_goal;
+            break;
+        default:
+            delete piece_placement;
         }
         tag = src.tag;
         switch(src.tag){
@@ -199,8 +271,11 @@ negatable_goal& negatable_goal::operator=(negatable_goal&& src)noexcept{
         case 1:
             atomic = src.atomic;
             break;
-        default:
+        case 2:
             move_goal = src.move_goal;
+            break;
+        default:
+            piece_placement = src.piece_placement;
         }
         src.tag = 0;
         src.alternative = nullptr;
@@ -226,6 +301,12 @@ tag(2){
     move_goal = new moves_sum(std::move(src));
 }
 
+negatable_goal::negatable_goal(piece_placement_goal&& src)noexcept:
+negated(0),
+tag(3){
+    piece_placement = new piece_placement_goal(std::move(src));
+}
+
 negatable_goal::~negatable_goal(void)noexcept{
     switch(tag){
     case 0:
@@ -234,14 +315,19 @@ negatable_goal::~negatable_goal(void)noexcept{
     case 1:
         delete atomic;
         break;
-    default:
+    case 2:
         delete move_goal;
+        break;
+    default:
+        delete piece_placement;
     }
 }
 
 parser_result<negatable_goal> parse_negatable_goal(
     slice_iterator& it,
     const std::set<token>& encountered_pieces,
+    uint board_height,
+    uint board_width,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<negatable_goal>();
@@ -257,7 +343,7 @@ parser_result<negatable_goal> parse_negatable_goal(
     if(it.current().get_type()==left_round_bracket){
         if(!it.next(msg))
             throw msg.build_message("Unexpected end of goal");
-        parser_result<goals_alternative> g_result = parse_goals_alternative(it,encountered_pieces,msg);
+        parser_result<goals_alternative> g_result = parse_goals_alternative(it,encountered_pieces,board_height,board_width,msg);
         if(!g_result.is_success())
             throw msg.build_message(it.create_call_stack("Expected goals alternative, encountered \'"+it.current().to_string()+"\'"));
         if(!it.has_value())
@@ -291,14 +377,19 @@ parser_result<negatable_goal> parse_negatable_goal(
         result = g_result.move_value();
     }
     else{
-        parser_result<atomic_goal> g_result = parse_atomic_goal(it,encountered_pieces,msg);
-        if(g_result.is_success())
-            result = g_result.move_value();
+        parser_result<piece_placement_goal> p_result = parse_piece_placement_goal(it,encountered_pieces,board_height,board_width,msg);
+        if(p_result.is_success())
+            result = p_result.move_value();
         else{
-            if(fatal)
-                throw msg.build_message(it.create_call_stack("Expected goals alternative, atomic goal or \'move\' token, encountered \'"+it.current().to_string()+"\'"));
-            else
-                return failure<negatable_goal>();
+            parser_result<atomic_goal> g_result = parse_atomic_goal(it,encountered_pieces,msg);
+            if(g_result.is_success())
+                result = g_result.move_value();
+            else{
+                if(fatal)
+                    throw msg.build_message(it.create_call_stack("Expected goals alternative, atomic goal or \'move\' token, encountered \'"+it.current().to_string()+"\'"));
+                else
+                    return failure<negatable_goal>();
+            }
         }
     }
     if(negated)
@@ -320,8 +411,10 @@ bool negatable_goal::operator<(const negatable_goal& m)const{
         return *alternative<*m.alternative;
     case 1:
         return *atomic<*m.atomic;
-    default:
+    case 2:
         return *move_goal<*m.move_goal;
+    default:
+        return *piece_placement<*piece_placement;
     }
 }
 
@@ -333,8 +426,10 @@ bool negatable_goal::operator==(const negatable_goal& m)const{
         return *alternative==*m.alternative;
     case 1:
         return *atomic==*m.atomic;
-    default:
+    case 2:
         return *move_goal==*m.move_goal;
+    default:
+        return *piece_placement==*piece_placement;
     }
 }
 
@@ -355,11 +450,14 @@ void negatable_goal::print_rbg(std::ostream& out,uint recurrence_depth)const{
     case 1:
         out<<(*atomic);
         break;
-    default:
+    case 2:
         out<<"move(\n    ";
         move_goal->print_rbg(out,recurrence_depth+1);
         print_spaces(out,4*recurrence_depth);
         out<<')';
+        break;
+    default:
+        out<<(*piece_placement);
     }
 }
 
@@ -372,11 +470,13 @@ content(){}
 parser_result<goals_conjunction> parse_goals_conjunction(
     slice_iterator& it,
     const std::set<token>& encountered_pieces,
+    uint board_height,
+    uint board_width,
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<goals_conjunction>();
     std::set<negatable_goal> result;
-    parser_result<negatable_goal> g_result = parse_negatable_goal(it,encountered_pieces,msg);
+    parser_result<negatable_goal> g_result = parse_negatable_goal(it,encountered_pieces,board_height,board_width,msg);
     if(g_result.is_success())
         result.insert(g_result.move_value());
     else
@@ -384,9 +484,9 @@ parser_result<goals_conjunction> parse_goals_conjunction(
     while(it.has_value() && it.current().get_type() == logical_and){
         if(!it.next(msg))
             throw msg.build_message("Unexpected end of goals conjunction");
-        g_result = parse_negatable_goal(it,encountered_pieces,msg);
+        g_result = parse_negatable_goal(it,encountered_pieces,board_height,board_width,msg);
         if(!g_result.is_success())
-            throw msg.build_message(it.create_call_stack("Expected goals alternative, atomic goal, move pattern or their negation, encountered \'"+it.current().to_string()+"\'"));
+            throw msg.build_message(it.create_call_stack("Expected goals alternative, atomic goal, move pattern, piece placement goal or their negation, encountered \'"+it.current().to_string()+"\'"));
         else
             result.insert(g_result.move_value());
     }
@@ -440,10 +540,12 @@ content(){}
 parser_result<goals_alternative> parse_goals_alternative(
     slice_iterator& it,
     const std::set<token>& encountered_pieces,
+    uint board_height,
+    uint board_width,
     messages_container& msg,
     bool can_be_empty)throw(message){
     std::set<goals_conjunction> result;
-    parser_result<goals_conjunction> g_result = parse_goals_conjunction(it,encountered_pieces,msg);
+    parser_result<goals_conjunction> g_result = parse_goals_conjunction(it,encountered_pieces,board_height,board_width,msg);
     if(g_result.is_success())
         result.insert(g_result.move_value());
     else
@@ -451,7 +553,7 @@ parser_result<goals_alternative> parse_goals_alternative(
     while(it.has_value() && it.current().get_type() == logical_or){
         if(!it.next(msg))
             throw msg.build_message("Unexpected end of goals alternative");
-        g_result = parse_goals_conjunction(it,encountered_pieces,msg);
+        g_result = parse_goals_conjunction(it,encountered_pieces,board_height,board_width,msg);
         if(!g_result.is_success())
             throw msg.build_message(it.create_call_stack("Expected goals conjunction, encountered \'"+it.current().to_string()+"\'"));
         else

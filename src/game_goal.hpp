@@ -35,6 +35,35 @@ parser_result<atomic_goal> parse_atomic_goal(
     const std::set<token>& encountered_pieces,
     messages_container& msg)throw(message);
 
+class piece_placement_goal{
+        token piece;
+        uint x;
+        uint y;
+    public:
+        piece_placement_goal(void)noexcept;
+        piece_placement_goal(token&& piece,uint x,uint y);
+
+        friend parser_result<piece_placement_goal> parse_piece_placement_goal(
+            slice_iterator& it,
+            const std::set<token>& encountered_pieces,
+            uint board_height,
+            uint board_width,
+            messages_container& msg)throw(message);
+
+        bool operator==(const piece_placement_goal& m)const;
+        bool operator<(const piece_placement_goal& m)const;
+        friend std::ostream& operator<<(std::ostream& out,const piece_placement_goal& g);
+};
+
+std::ostream& operator<<(std::ostream& out,const piece_placement_goal& g);
+
+parser_result<piece_placement_goal> parse_piece_placement_goal(
+    slice_iterator& it,
+    const std::set<token>& encountered_pieces,
+    uint board_height,
+    uint board_width,
+    messages_container& msg)throw(message);
+
 class goals_alternative;
 
 class negatable_goal{
@@ -43,11 +72,13 @@ class negatable_goal{
             goals_alternative* alternative;
             atomic_goal* atomic;
             moves_sum* move_goal;
+            piece_placement_goal* piece_placement;
         };
-        uint tag : 2; // 0 -> alternative, 1 -> atomic, else -> move_goal
+        uint tag : 2; // 0 -> alternative, 1 -> atomic, 2 -> move_goal, else -> piece_placement
         negatable_goal(goals_alternative&& src)noexcept;
         negatable_goal(atomic_goal&& src)noexcept;
         negatable_goal(moves_sum&& src)noexcept;
+        negatable_goal(piece_placement_goal&& src)noexcept;
     public:
         negatable_goal(void)noexcept;
         negatable_goal(const negatable_goal& src)noexcept;
@@ -59,6 +90,8 @@ class negatable_goal{
         friend parser_result<negatable_goal> parse_negatable_goal(
             slice_iterator& it,
             const std::set<token>& encountered_pieces,
+            uint board_height,
+            uint board_width,
             messages_container& msg)throw(message);
 
         bool operator==(const negatable_goal& m)const;
@@ -71,6 +104,8 @@ class negatable_goal{
 parser_result<negatable_goal> parse_negatable_goal(
     slice_iterator& it,
     const std::set<token>& encountered_pieces,
+    uint board_height,
+    uint board_width,
     messages_container& msg)throw(message);
 
 class goals_conjunction{
@@ -82,6 +117,8 @@ class goals_conjunction{
         friend parser_result<goals_conjunction> parse_goals_conjunction(
             slice_iterator& it,
             const std::set<token>& encountered_pieces,
+            uint board_height,
+            uint board_width,
             messages_container& msg)throw(message);
 
         bool operator==(const goals_conjunction& m)const;
@@ -92,6 +129,8 @@ class goals_conjunction{
 parser_result<goals_conjunction> parse_goals_conjunction(
     slice_iterator& it,
     const std::set<token>& encountered_pieces,
+    uint board_height,
+    uint board_width,
     messages_container& msg)throw(message);
 
 class goals_alternative{
@@ -103,6 +142,8 @@ class goals_alternative{
         friend parser_result<goals_alternative> parse_goals_alternative(
             slice_iterator& it,
             const std::set<token>& encountered_pieces,
+            uint board_height,
+            uint board_width,
             messages_container& msg,
             bool can_be_empty)throw(message);
 
@@ -117,6 +158,8 @@ std::ostream& operator<<(std::ostream& out,const goals_alternative& g);
 parser_result<goals_alternative> parse_goals_alternative(
     slice_iterator& it,
     const std::set<token>& encountered_pieces,
+    uint board_height,
+    uint board_width,
     messages_container& msg,
     bool can_be_empty=false)throw(message);
 

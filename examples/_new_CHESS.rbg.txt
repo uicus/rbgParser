@@ -59,8 +59,8 @@
                  + CASTLING(s)
 
 
-#player white REMOVEDOUBLEPAWN(w)[white] ++ (LEGALS(w,b,,-))[black]
-#player black REMOVEDOUBLEPAWN(b)[black] ++ (LEGALS(b,w,-,))[white]
+#player white REMOVEDOUBLEPAWN(w)[white] +> (LEGALS(w,b,,-))[black]
+#player black REMOVEDOUBLEPAWN(b)[black] +> (LEGALS(b,w,-,))[white]
 #order white black
 
 #def GOALS(o) = ($o~kingu<1 and $o~kingm<1) or $turn >= 200

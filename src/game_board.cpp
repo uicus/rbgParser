@@ -34,6 +34,14 @@ void game_board::fill_with_slice(slice_iterator& it, std::set<token>& encountere
     }
 }
 
+uint game_board::get_height(void)const{
+    return height;
+}
+
+uint game_board::get_width(void)const{
+    return width;
+}
+
 std::ostream& operator<<(std::ostream& out,const game_board& brd){
     out<<"#board "<<brd.width<<' '<<brd.height<<'\n';
     for(uint i=0;i<brd.height;++i){
