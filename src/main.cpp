@@ -19,9 +19,13 @@ int main(int argc, const char** argv){
         std::cerr<<"\"-p\" - just preprocess"<<std::endl;
         std::cerr<<"\"-v\" - just verify input; do not generate output file"<<std::endl;
         std::cerr<<"\"-s\" - translate to simple form"<<std::endl;
+        std::cerr<<"\"-g\" - translate to gdl (default)"<<std::endl;
         std::cerr<<"\"-Whide\" - do not show warnings"<<std::endl;
         std::cerr<<"\"-Werror\" - treat warnings as errors"<<std::endl;
         std::cerr<<"\"-unfold\" - unfold moves in simple form if they are under ^n"<<std::endl;
+        std::cerr<<"\"-skip-comments\" - do not generate comments in *.gdl"<<std::endl;
+        std::cerr<<"\"-skip-base\" - do not generate base predicates in *.gdl"<<std::endl;
+        std::cerr<<"\"-skip-input\" - do not generate input predicates in *.gdl"<<std::endl;
     }
     else{
         messages_container msg;
@@ -40,10 +44,11 @@ int main(int argc, const char** argv){
                 g.print_rbg(out,msg);
             else{
                 parsed_game pg = g.parse_game(msg);
-                if(o.just_semisteps()){
-                    pg.to_simple(o);
+                pg.to_simple(o);
+                if(o.just_semisteps())
                     out<<pg;
-                }
+                else
+                    pg.to_gdl(out,o);
             }
         }
         catch(message& m){

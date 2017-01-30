@@ -1,4 +1,5 @@
 #include"parsed_game.hpp"
+#include"gdl_constants.hpp"
 
 parsed_game::parsed_game(
     std::string&& n,
@@ -33,4 +34,17 @@ std::ostream& operator<<(std::ostream& out,const parsed_game& g){
     for(const auto& el: g.goals)
         out<<"#goal "<<el.first.to_string()<<'\n'<<el.second<<'\n';
     return out;
+}
+
+void parsed_game::print_roles(std::ostream& out,const options& o)const{
+    if(o.printing_comments())
+        out<<section_title("Roles")<<'\n';
+    for(uint i=0;i<players.get_number_of_players();++i)
+        out<<"(role "<<players.get_player_name(i).to_string()<<")\n";
+}
+
+void parsed_game::to_gdl(std::ostream& out,const options& o)const{
+    if(o.printing_comments())
+        out<<section_title(std::string(name))<<'\n';
+    print_roles(out,o);
 }

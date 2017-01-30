@@ -22,7 +22,7 @@ class game_order{
             messages_container& msg,
             const std::map<token,slice>& players)throw(message);
 
-        const token& get_player_name(uint my_number,int delta)const;
+        const token& get_player_name(uint my_number,int delta=0)const;
         bool exists(const token& player_name)const;
         uint get_number_of_players(void)const;
         friend std::ostream& operator<<(std::ostream& out,const game_order& g);

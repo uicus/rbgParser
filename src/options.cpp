@@ -24,6 +24,9 @@ just_verify(false),
 show_warnings(true),
 warnings_as_errors(false),
 unfold_simple_powers(false),
+no_comments(false),
+no_base(false),
+no_input(false),
 to_stage(2),
 output_name("a.gdl"){
 }
@@ -33,6 +36,9 @@ just_verify(false),
 show_warnings(true),
 warnings_as_errors(false),
 unfold_simple_powers(false),
+no_comments(false),
+no_base(false),
+no_input(false),
 to_stage(2),
 output_name("a.gdl"){
     for(uint i=0;i<number_of_args;++i){
@@ -54,10 +60,18 @@ output_name("a.gdl"){
                 warnings_as_errors = true;
             else if(!std::strcmp(args[i], "-unfold"))
                 unfold_simple_powers = true;
+            else if(!std::strcmp(args[i], "-skip-comments"))
+                no_comments = true;
+            else if(!std::strcmp(args[i], "-skip-base"))
+                no_base = true;
+            else if(!std::strcmp(args[i], "-skip-input"))
+                no_input = true;
             else if(!std::strcmp(args[i], "-p"))
                 to_stage = 0;
             else if(!std::strcmp(args[i], "-s"))
                 to_stage = 1;
+            else if(!std::strcmp(args[i], "-g"))
+                to_stage = 2;
             else
                 throw wrong_argument_error("Unrecognized flag");
         }
@@ -79,12 +93,28 @@ bool options::unfolding_simples(void)const{
     return unfold_simple_powers;
 }
 
+bool options::printing_comments(void)const{
+    return !no_comments;
+}
+
+bool options::printing_base(void)const{
+    return !no_base;
+}
+
+bool options::printing_input(void)const{
+    return !no_input;
+}
+
 bool options::just_preprocess(void)const{
     return to_stage == 0;
 }
 
 bool options::just_semisteps(void)const{
     return to_stage == 1;
+}
+
+bool options::full_translation(void)const{
+    return to_stage == 2;
 }
 
 const std::string& options::output_file(void)const{

@@ -18,6 +18,7 @@ class parsed_game{
         std::map<token,moves_sequence> moves;
         std::map<token,goals_alternative> goals;
         std::set<token> known_pieces;
+        void print_roles(std::ostream& out,const options& o)const;
     public:
         parsed_game(
             std::string&& name,
@@ -29,6 +30,7 @@ class parsed_game{
 
         friend std::ostream& operator<<(std::ostream& out,const parsed_game& g);
         void to_simple(const options& o);
+        void to_gdl(std::ostream& out,const options& o)const;
 };
 
 std::ostream& operator<<(std::ostream& out,const parsed_game& g);
