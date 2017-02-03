@@ -10,6 +10,7 @@
 #include"message.hpp"
 #include"slice.hpp"
 #include"slice_iterator.hpp"
+#include"options.hpp"
 
 class game_order{
         std::set<token> players_set;
@@ -26,6 +27,7 @@ class game_order{
         bool exists(const token& player_name)const;
         uint get_number_of_players(void)const;
         friend std::ostream& operator<<(std::ostream& out,const game_order& g);
+        void print_roles(std::ostream& out,const options& o)const;
 };
 
 game_order parse_game_order(

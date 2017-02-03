@@ -36,15 +36,35 @@ std::ostream& operator<<(std::ostream& out,const parsed_game& g){
     return out;
 }
 
-void parsed_game::print_roles(std::ostream& out,const options& o)const{
+void parsed_game::print_pieces(std::ostream& out,const options& o)const{
     if(o.printing_comments())
-        out<<section_title("Roles")<<'\n';
-    for(uint i=0;i<players.get_number_of_players();++i)
-        out<<"(role "<<players.get_player_name(i).to_string()<<")\n";
+        out<<section_title("Pieces")<<'\n';
+    for(const auto& el: known_pieces)
+        out<<"(pieceType "+el.to_string()+")\n";
+    out<<'\n';
+    // TODO
+}
+
+void parsed_game::print_base(std::ostream& out,const options& o)const{
+    if(o.printing_comments())
+        out<<section_title("Base")<<'\n';
+    out<<"(<= (base (cell ?x ?y ?piece))\n    (file ?x)\n    (rank ?y)\n    (pieceType ?piece))\n";
+    out<<'\n';
+}
+
+void parsed_game::print_initial_state(std::ostream& out,const options& o)const{
+    if(o.printing_comments())
+        out<<section_title("Initial state")<<'\n';
+    brd.print_initial_setting(out);
 }
 
 void parsed_game::to_gdl(std::ostream& out,const options& o)const{
     if(o.printing_comments())
         out<<section_title(std::string(name))<<'\n';
-    print_roles(out,o);
+    players.print_roles(out,o);
+    if(o.printing_base())
+        print_base(out,o);
+    print_initial_state(out,o);
+    brd.print_files_and_ranks(out,o);
+    print_pieces(out,o);
 }

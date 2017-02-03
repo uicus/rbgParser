@@ -2,6 +2,8 @@
 
 #include<cassert>
 
+#include"gdl_constants.hpp"
+
 game_order::game_order(void)noexcept:
 players_set(),
 players_order(){}
@@ -46,4 +48,12 @@ std::ostream& operator<<(std::ostream& out,const game_order& g){
     for(uint i=0;i<g.get_number_of_players();++i)
         out<<"    "<<g.players_order[i].to_string()<<'\n';
     return out;
+}
+
+void game_order::print_roles(std::ostream& out,const options& o)const{
+    if(o.printing_comments())
+        out<<section_title("Roles")<<'\n';
+    for(uint i=0;i<players_order.size();++i)
+        out<<"(role "<<players_order[i].to_string()<<")\n";
+    out<<'\n';
 }

@@ -9,6 +9,7 @@
 #include"message.hpp"
 #include"types.hpp"
 #include"token.hpp"
+#include"options.hpp"
 
 class game_board{
         uint width;
@@ -26,6 +27,8 @@ class game_board{
         uint get_width(void)const;
 
         friend std::ostream& operator<<(std::ostream& out,const game_board& brd);
+        void print_files_and_ranks(std::ostream& out,const options& o)const;
+        void print_initial_setting(std::ostream& out)const;
 };
 
 std::ostream& operator<<(std::ostream& out,const game_board& brd);
