@@ -65,6 +65,7 @@ parser_result<piece_placement_goal> parse_piece_placement_goal(
     messages_container& msg)throw(message);
 
 class goals_alternative;
+class goals_conjunction;
 
 class negatable_goal{
         bool negated;
@@ -75,11 +76,11 @@ class negatable_goal{
             piece_placement_goal* piece_placement;
         };
         uint tag : 2; // 0 -> alternative, 1 -> atomic, 2 -> move_goal, else -> piece_placement
+    public:
         negatable_goal(goals_alternative&& src)noexcept;
         negatable_goal(atomic_goal&& src)noexcept;
         negatable_goal(moves_sum&& src)noexcept;
         negatable_goal(piece_placement_goal&& src)noexcept;
-    public:
         negatable_goal(void)noexcept;
         negatable_goal(const negatable_goal& src)noexcept;
         negatable_goal& operator=(const negatable_goal& src)noexcept;
@@ -99,6 +100,12 @@ class negatable_goal{
 
         void negate(void);
         void print_rbg(std::ostream& out,uint recurrence_depth)const;
+        void apply_negation(bool should_be_negated=false);
+        bool is_single_alternative(void)const;
+        goals_alternative give_single_alternative(void); // moves out value
+        bool is_single_conjunction(void)const;
+        goals_conjunction give_single_conjunction(void); // moves out value
+        negatable_goal flatten(void); // moves out value
 };
 
 parser_result<negatable_goal> parse_negatable_goal(
@@ -109,9 +116,10 @@ parser_result<negatable_goal> parse_negatable_goal(
     messages_container& msg)throw(message);
 
 class goals_conjunction{
-        std::set<negatable_goal> content;
-        goals_conjunction(std::set<negatable_goal>&& src)noexcept;
+        std::vector<negatable_goal> content;
     public:
+        goals_conjunction(std::vector<negatable_goal>&& src)noexcept;
+        goals_conjunction(negatable_goal&& src)noexcept;
         goals_conjunction(void)noexcept;
 
         friend parser_result<goals_conjunction> parse_goals_conjunction(
@@ -124,6 +132,12 @@ class goals_conjunction{
         bool operator==(const goals_conjunction& m)const;
         bool operator<(const goals_conjunction& m)const;
         void print_rbg(std::ostream& out,uint recurrence_depth)const;
+        void apply_negation(bool should_be_negated=false);
+        bool is_single_negation(void)const;
+        negatable_goal give_single_negation(void); // moves out value
+        bool is_single_alternative(void)const;
+        goals_alternative give_single_alternative(void); // moves out value
+        goals_conjunction flatten(void); // moves out value
 };
 
 parser_result<goals_conjunction> parse_goals_conjunction(
@@ -134,9 +148,10 @@ parser_result<goals_conjunction> parse_goals_conjunction(
     messages_container& msg)throw(message);
 
 class goals_alternative{
-        std::set<goals_conjunction> content;
-        goals_alternative(std::set<goals_conjunction>&& src)noexcept;
+        std::vector<goals_conjunction> content;
     public:
+        goals_alternative(std::vector<goals_conjunction>&& src)noexcept;
+        goals_alternative(goals_conjunction&& src)noexcept;
         goals_alternative(void)noexcept;
 
         friend parser_result<goals_alternative> parse_goals_alternative(
@@ -151,6 +166,12 @@ class goals_alternative{
         bool operator<(const goals_alternative& m)const;
         void print_rbg(std::ostream& out,uint recurrence_depth)const;
         friend std::ostream& operator<<(std::ostream& out,const goals_alternative& g);
+        void apply_negation(bool should_be_negated=false);
+        bool is_single_conjunction(void)const;
+        goals_conjunction give_single_conjunction(void); // moves out value
+        bool is_single_negation(void)const;
+        negatable_goal give_single_negation(void); // moves out value
+        goals_alternative flatten(void); // moves out value
 };
 
 std::ostream& operator<<(std::ostream& out,const goals_alternative& g);

@@ -23,6 +23,10 @@ void parsed_game::to_simple(const options& o){
         el.second.prepare_to_split(known_pieces,splitters,current_id,o);
         el.second.split_into_semisteps(splitters);
     }
+    for(auto& el:goals){
+        el.second.apply_negation();
+        el.second = el.second.flatten();
+    }
 }
 
 std::ostream& operator<<(std::ostream& out,const parsed_game& g){

@@ -1,5 +1,7 @@
 #include"game_goal.hpp"
 
+#include<cassert>
+
 atomic_goal::atomic_goal(void)noexcept:
 compared_value(), // dummy
 compared_const(0),
@@ -461,8 +463,66 @@ void negatable_goal::print_rbg(std::ostream& out,uint recurrence_depth)const{
     }
 }
 
-goals_conjunction::goals_conjunction(std::set<negatable_goal>&& src)noexcept:
+void negatable_goal::apply_negation(bool should_be_negated){
+    if(negated&&should_be_negated){
+        negated=false;
+        should_be_negated=false;
+    }
+    else if(negated){
+        negated=false;
+        should_be_negated=true;
+    }
+    switch(tag){
+        case 0:
+            alternative->apply_negation(should_be_negated);
+            break;
+        case 1:
+        case 2:
+        default:
+            negated = should_be_negated;
+    }
+}
+
+bool negatable_goal::is_single_alternative(void)const{
+    return tag==0;
+}
+
+goals_alternative negatable_goal::give_single_alternative(void){
+    assert(is_single_alternative());
+    goals_alternative result = std::move(*alternative);
+    return result;
+}
+
+bool negatable_goal::is_single_conjunction(void)const{
+    return tag==0&&alternative->is_single_conjunction();
+}
+
+goals_conjunction negatable_goal::give_single_conjunction(void){
+    assert(is_single_conjunction());
+    return alternative->give_single_conjunction();
+}
+
+negatable_goal negatable_goal::flatten(void){
+    switch(tag){
+        case 0:
+            if(alternative->is_single_negation())
+                return alternative->give_single_negation().flatten();
+            else
+                return alternative->flatten();
+        case 1:
+        case 2:
+        default:
+            return std::move(*this);
+    }
+}
+
+goals_conjunction::goals_conjunction(std::vector<negatable_goal>&& src)noexcept:
 content(std::move(src)){}
+
+goals_conjunction::goals_conjunction(negatable_goal&& src)noexcept:
+content(){
+    content.push_back(std::move(src));
+}
 
 goals_conjunction::goals_conjunction(void)noexcept:
 content(){}
@@ -475,10 +535,10 @@ parser_result<goals_conjunction> parse_goals_conjunction(
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<goals_conjunction>();
-    std::set<negatable_goal> result;
+    std::vector<negatable_goal> result;
     parser_result<negatable_goal> g_result = parse_negatable_goal(it,encountered_pieces,board_height,board_width,msg);
     if(g_result.is_success())
-        result.insert(g_result.move_value());
+        result.push_back(g_result.move_value());
     else
         return failure<goals_conjunction>();
     while(it.has_value() && it.current().get_type() == logical_and){
@@ -488,7 +548,7 @@ parser_result<goals_conjunction> parse_goals_conjunction(
         if(!g_result.is_success())
             throw msg.build_message(it.create_call_stack("Expected goals alternative, atomic goal, move pattern, piece placement goal or their negation, encountered \'"+it.current().to_string()+"\'"));
         else
-            result.insert(g_result.move_value());
+            result.push_back(g_result.move_value());
     }
     return success(goals_conjunction(std::move(result)));
 }
@@ -531,8 +591,72 @@ void goals_conjunction::print_rbg(std::ostream& out,uint recurrence_depth)const{
     }
 }
 
-goals_alternative::goals_alternative(std::set<goals_conjunction>&& src)noexcept:
+void goals_conjunction::apply_negation(bool should_be_negated){
+    std::vector<goals_conjunction> possible_result;
+    for(uint i=0;i<content.size();++i){
+        content[i].apply_negation(should_be_negated);
+        if(should_be_negated)
+            possible_result.push_back(goals_conjunction(std::move(content[i])));
+    }
+    if(should_be_negated){
+        content.clear();
+        content.push_back(goals_alternative(std::move(possible_result)));
+    }
+}
+
+bool goals_conjunction::is_single_negation(void)const{
+    return content.size()==1;
+}
+
+negatable_goal goals_conjunction::give_single_negation(void){
+    assert(is_single_negation());
+    negatable_goal result = std::move(content.back());
+    content.clear();
+    return result;
+}
+
+bool goals_conjunction::is_single_alternative(void)const{
+    return content.size()==1&&content.back().is_single_alternative();
+}
+
+goals_alternative goals_conjunction::give_single_alternative(void){
+    assert(is_single_alternative());
+    goals_alternative result = content.back().give_single_alternative();
+    content.clear();
+    return result;
+}
+
+goals_conjunction goals_conjunction::flatten(void){
+    std::vector<std::pair<std::vector<negatable_goal>::iterator,std::vector<negatable_goal>>> goals_stack;
+    goals_stack.push_back(make_pair(content.begin(),std::move(content)));
+    goals_stack.back().first = goals_stack.back().second.begin(); // inelegant way to avoid undefined behavior
+    content.clear();
+    std::vector<negatable_goal> result;
+    while(!goals_stack.empty()){
+        auto it = goals_stack.back().first;
+        if(it == goals_stack.back().second.end())
+            goals_stack.pop_back();
+        else if(it->is_single_conjunction()){
+            goals_conjunction next_level = it->give_single_conjunction();
+            ++goals_stack.back().first;
+            goals_stack.push_back(make_pair(next_level.content.begin(),std::move(next_level.content)));
+            goals_stack.back().first = goals_stack.back().second.begin(); // inelegant way to avoid undefined behavior
+        }
+        else{
+            result.push_back(goals_stack.back().first->flatten());
+            ++goals_stack.back().first;
+        }
+    }
+    return goals_conjunction(std::move(result));
+}
+
+goals_alternative::goals_alternative(std::vector<goals_conjunction>&& src)noexcept:
 content(std::move(src)){}
+
+goals_alternative::goals_alternative(goals_conjunction&& src)noexcept:
+content(){
+    content.push_back(std::move(src));
+}
 
 goals_alternative::goals_alternative(void)noexcept:
 content(){}
@@ -544,10 +668,10 @@ parser_result<goals_alternative> parse_goals_alternative(
     uint board_width,
     messages_container& msg,
     bool can_be_empty)throw(message){
-    std::set<goals_conjunction> result;
+    std::vector<goals_conjunction> result;
     parser_result<goals_conjunction> g_result = parse_goals_conjunction(it,encountered_pieces,board_height,board_width,msg);
     if(g_result.is_success())
-        result.insert(g_result.move_value());
+        result.push_back(g_result.move_value());
     else
         return (can_be_empty ? success(goals_alternative(std::move(result))) : failure<goals_alternative>());
     while(it.has_value() && it.current().get_type() == logical_or){
@@ -557,7 +681,7 @@ parser_result<goals_alternative> parse_goals_alternative(
         if(!g_result.is_success())
             throw msg.build_message(it.create_call_stack("Expected goals conjunction, encountered \'"+it.current().to_string()+"\'"));
         else
-            result.insert(g_result.move_value());
+            result.push_back(g_result.move_value());
     }
     return success(goals_alternative(std::move(result)));
 }
@@ -607,4 +731,63 @@ void goals_alternative::print_rbg(std::ostream& out,uint recurrence_depth)const{
 std::ostream& operator<<(std::ostream& out,const goals_alternative& g){
     g.print_rbg(out,1);
     return out;
+}
+
+void goals_alternative::apply_negation(bool should_be_negated){
+    std::vector<negatable_goal> possible_result;
+    for(uint i=0;i<content.size();++i){
+        content[i].apply_negation(should_be_negated);
+        if(should_be_negated)
+            possible_result.push_back(negatable_goal(std::move(content[i])));
+    }
+    if(should_be_negated){
+        content.clear();
+        content.push_back(std::move(possible_result));
+    }
+}
+
+bool goals_alternative::is_single_conjunction(void)const{
+    return content.size()==1;
+}
+
+goals_conjunction goals_alternative::give_single_conjunction(void){
+    assert(is_single_conjunction());
+    goals_conjunction result = std::move(content.back());
+    content.clear();
+    return result;
+}
+
+bool goals_alternative::is_single_negation(void)const{
+    return content.size()==1&&content.back().is_single_negation();
+}
+
+negatable_goal goals_alternative::give_single_negation(void){
+    assert(is_single_negation());
+    negatable_goal result = content.back().give_single_negation();
+    content.clear();
+    return result;
+}
+
+goals_alternative goals_alternative::flatten(void){
+    std::vector<std::pair<std::vector<goals_conjunction>::iterator,std::vector<goals_conjunction>>> goals_stack;
+    goals_stack.push_back(make_pair(content.begin(),std::move(content)));
+    goals_stack.back().first = goals_stack.back().second.begin(); // inelegant way to avoid undefined behavior
+    content.clear();
+    std::vector<goals_conjunction> result;
+    while(!goals_stack.empty()){
+        auto it = goals_stack.back().first;
+        if(it == goals_stack.back().second.end())
+            goals_stack.pop_back();
+        else if(it->is_single_alternative()){
+            goals_alternative next_level = it->give_single_alternative();
+            ++goals_stack.back().first;
+            goals_stack.push_back(make_pair(next_level.content.begin(),std::move(next_level.content)));
+            goals_stack.back().first = goals_stack.back().second.begin(); // inelegant way to avoid undefined behavior
+        }
+        else{
+            result.push_back(goals_stack.back().first->flatten());
+            ++goals_stack.back().first;
+        }
+    }
+    return goals_alternative(std::move(result));
 }
