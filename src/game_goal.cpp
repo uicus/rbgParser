@@ -3,14 +3,23 @@
 #include<cassert>
 
 atomic_goal::atomic_goal(void)noexcept:
-compared_value(), // dummy
-compared_const(0),
+first_value(), // dummy
+second_value(), // dummy
 kind_of_comparison(0){}
 
-atomic_goal::atomic_goal(token&& t,uint n,uint kind):
-compared_value(std::move(t)),
-compared_const(n),
-kind_of_comparison(kind){}
+atomic_goal::atomic_goal(token&& first,token&& second,uint kind):
+first_value(std::move(first)),
+second_value(std::move(second)),
+kind_of_comparison(kind){
+    if(second_value.get_type()==number&&(kind_of_comparison==4||kind_of_comparison==1)){
+        second_value.increase();
+        --kind_of_comparison;
+    }
+    else if(first_value.get_type()==number&&(kind_of_comparison==3||kind_of_comparison==0)){
+        first_value.increase();
+        ++kind_of_comparison;
+    }
+}
 
 parser_result<atomic_goal> parse_atomic_goal(
     slice_iterator& it,
@@ -18,80 +27,47 @@ parser_result<atomic_goal> parse_atomic_goal(
     messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<atomic_goal>();
-    parser_result<token> variable = parse_variable(it,encountered_pieces,msg);
+    parser_result<token> first_variable = parse_variable(it,encountered_pieces,msg);
     uint kind;
-    if(variable.is_success()){
-        if(!it.has_value())
-            throw msg.build_message("Unexpected end of goal");
-        if(it.current().get_type()==less)
-            kind = 0;
-        else if(it.current().get_type()==less_equal)
-            kind = 1;
-        else if(it.current().get_type()==equal)
-            kind = 2;
-        else if(it.current().get_type()==greater_equal)
-            kind = 3;
-        else if(it.current().get_type()==greater)
-            kind = 4;
-        else
-            throw msg.build_message(it.create_call_stack("Expected \'<\', \'<=\', \'=\', \'>=\' or \'>\', encountered \'"+it.current().to_string()+"\'"));
-        if(!it.next(msg))
-            throw msg.build_message("Unexpected end of goal");
-        slice_iterator before_int(it);
-        parser_result<int> constant = parse_int(it,msg);
-        if(constant.is_success()){
-            if(constant.get_value()<0)
-                throw msg.build_message(before_int.create_call_stack("Constants in goal must be non-negative"));
-            return success(atomic_goal(variable.move_value(),constant.get_value(),kind));
-        }
-        else
-            throw msg.build_message(before_int.create_call_stack("Expected non-negative integer, enountered \'"+before_int.current().to_string()+"\'"));
-    }
-    else{
-        slice_iterator before_int(it);
-        parser_result<int> constant = parse_int(it,msg);
-        if(constant.is_success()){
-            if(constant.get_value()<0)
-                throw msg.build_message(before_int.create_call_stack("Constants in goal must be non-negative"));
-            if(!it.has_value())
-                throw msg.build_message("Unexpected end of goal");
-            if(it.current().get_type()==less)
-                kind = 4;
-            else if(it.current().get_type()==less_equal)
-                kind = 3;
-            else if(it.current().get_type()==equal)
-                kind = 2;
-            else if(it.current().get_type()==greater_equal)
-                kind = 1;
-            else if(it.current().get_type()==greater)
-                kind = 0;
-            else
-                throw msg.build_message(it.create_call_stack("Expected \'<\', \'<=\', \'=\', \'>=\' or \'>\', encountered \'"+it.current().to_string()+"\'"));
-            if(!it.next(msg))
-                throw msg.build_message("Unexpected end of goal");
-            variable = parse_variable(it,encountered_pieces,msg);
-            if(variable.is_success())
-                return success(atomic_goal(variable.move_value(),constant.get_value(),kind));
-            else
-                throw msg.build_message(it.create_call_stack("Expected \'$\' preceded piece name or \'turn\' string, encountered \'"+it.current().to_string()+"\'"));
-        }
-        else
-            return failure<atomic_goal>();
-    }
+    if(!first_variable.is_success())
+        return failure<atomic_goal>();
+    if(!it.has_value())
+        throw msg.build_message("Unexpected end of goal");
+    if(it.current().get_type()==less)
+        kind = 0;
+    else if(it.current().get_type()==less_equal)
+        kind = 1;
+    else if(it.current().get_type()==equal)
+        kind = 2;
+    else if(it.current().get_type()==greater_equal)
+        kind = 3;
+    else if(it.current().get_type()==greater)
+        kind = 4;
+    else
+        throw msg.build_message(it.create_call_stack("Expected \'<\', \'<=\', \'=\', \'>=\' or \'>\', encountered \'"+it.current().to_string()+"\'"));
+    if(!it.next(msg))
+        throw msg.build_message("Unexpected end of goal");
+    parser_result<token> second_variable = parse_variable(it,encountered_pieces,msg);
+    if(!second_variable.is_success())
+        throw msg.build_message(it.create_call_stack("Expected variable or non-negative integer, encountered \'"+it.current().to_string()+"\'"));
+    return success(atomic_goal(first_variable.move_value(),second_variable.move_value(),kind));
 }
 
 bool atomic_goal::operator==(const atomic_goal& m)const{
-    return compared_value==m.compared_value && compared_const==m.compared_const && kind_of_comparison==m.kind_of_comparison;
+    return first_value==m.first_value && second_value==m.second_value && kind_of_comparison==m.kind_of_comparison;
 }
 
 bool atomic_goal::operator<(const atomic_goal& m)const{
-    return compared_value<m.compared_value
-        || (compared_value==m.compared_value && compared_const<m.compared_const)
-        || (compared_value==m.compared_value && compared_const==m.compared_const && kind_of_comparison<m.kind_of_comparison);
+    return first_value<m.first_value
+        || (first_value==m.first_value && second_value<m.second_value)
+        || (first_value==m.first_value && second_value==m.second_value && kind_of_comparison<m.kind_of_comparison);
 }
 
 std::ostream& operator<<(std::ostream& out,const atomic_goal& g){
-    out<<'$'<<g.compared_value.to_string();
+    if(g.first_value.get_type()==number)
+        out<<g.first_value.get_value();
+    else
+        out<<'$'<<g.first_value.to_string();
     switch(g.kind_of_comparison){
     case 0:
         out<<'<';
@@ -108,8 +84,51 @@ std::ostream& operator<<(std::ostream& out,const atomic_goal& g){
     default:
         out<<'>';
     }
-    out<<g.compared_const;
+    if(g.second_value.get_type()==number)
+        out<<g.second_value.get_value();
+    else
+        out<<'$'<<g.second_value.to_string();
     return out;
+}
+
+void atomic_goal::gather_information(
+    int& max_turn_number,
+    std::map<token,std::set<int>>& possible_comparisons,
+    std::set<token>& should_count,
+    uint board_size)const{
+    if(first_value.get_type()==turn){
+        if(second_value.get_type()!=number){
+            max_turn_number = std::max(max_turn_number,int(kind_of_comparison==4||kind_of_comparison==1?board_size+1:board_size));
+        }
+        else
+            max_turn_number = std::max(max_turn_number,int(second_value.get_value()));
+        if(second_value.get_type()==identifier)
+            should_count.insert(second_value);
+    }
+    else if(first_value.get_type()==identifier){
+        if(second_value.get_type()==identifier){
+            should_count.insert(first_value);
+            should_count.insert(second_value);
+        }
+        else if(second_value.get_type()==turn){
+            max_turn_number = std::max(max_turn_number,int(kind_of_comparison==4||kind_of_comparison==1?board_size+1:board_size));
+            should_count.insert(first_value);
+        }
+        else{
+            if(possible_comparisons.count(first_value)==0)
+                possible_comparisons[first_value] = std::set<int>();
+            possible_comparisons[first_value].insert(second_value.get_value());
+        }
+    }
+    else{
+        if(second_value.get_type()==identifier){
+            if(possible_comparisons.count(second_value)==0)
+                possible_comparisons[second_value] = std::set<int>();
+            possible_comparisons[second_value].insert(first_value.get_value());
+        }
+        else if(second_value.get_type()==turn)
+            max_turn_number = std::max(max_turn_number,int(second_value.get_value()));
+    }
 }
 
 piece_placement_goal::piece_placement_goal(void)noexcept:piece(),x(0),y(0){
@@ -516,6 +535,24 @@ negatable_goal negatable_goal::flatten(void){
     }
 }
 
+void negatable_goal::gather_information(
+    int& max_turn_number,
+    std::map<token,std::set<int>>& possible_comparisons,
+    std::set<token>& should_count,
+    uint board_size)const{
+    switch(tag){
+        case 0:
+            alternative->gather_information(max_turn_number,possible_comparisons,should_count,board_size);
+            break;
+        case 1:
+            atomic->gather_information(max_turn_number,possible_comparisons,should_count,board_size);
+            break;
+        case 2:
+        default:
+            break;
+    }
+}
+
 goals_conjunction::goals_conjunction(std::vector<negatable_goal>&& src)noexcept:
 content(std::move(src)){}
 
@@ -648,6 +685,15 @@ goals_conjunction goals_conjunction::flatten(void){
         }
     }
     return goals_conjunction(std::move(result));
+}
+
+void goals_conjunction::gather_information(
+    int& max_turn_number,
+    std::map<token,std::set<int>>& possible_comparisons,
+    std::set<token>& should_count,
+    uint board_size)const{
+    for(uint i=0;i<content.size();++i)
+        content[i].gather_information(max_turn_number,possible_comparisons,should_count,board_size);
 }
 
 goals_alternative::goals_alternative(std::vector<goals_conjunction>&& src)noexcept:
@@ -790,4 +836,13 @@ goals_alternative goals_alternative::flatten(void){
         }
     }
     return goals_alternative(std::move(result));
+}
+
+void goals_alternative::gather_information(
+    int& max_turn_number,
+    std::map<token,std::set<int>>& possible_comparisons,
+    std::set<token>& should_count,
+    uint board_size)const{
+    for(uint i=0;i<content.size();++i)
+        content[i].gather_information(max_turn_number,possible_comparisons,should_count,board_size);
 }

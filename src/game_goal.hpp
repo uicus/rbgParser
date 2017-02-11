@@ -2,6 +2,7 @@
 #define GAME_GOAL
 
 #include<set>
+#include<map>
 #include<ostream>
 
 #include"token.hpp"
@@ -11,12 +12,12 @@
 #include"game_move.hpp"
 
 class atomic_goal{
-        token compared_value;
-        uint compared_const;
+        token first_value;
+        token second_value;
         uint kind_of_comparison : 3; // 0 -> '<', 1 -> '<=', 2 -> '=', 3 -> '>=', 4 -> '>'
     public:
         atomic_goal(void)noexcept;
-        atomic_goal(token&& t,uint n,uint kind);
+        atomic_goal(token&& first,token&& second,uint kind);
 
         friend parser_result<atomic_goal> parse_atomic_goal(
             slice_iterator& it,
@@ -26,6 +27,12 @@ class atomic_goal{
         bool operator==(const atomic_goal& m)const;
         bool operator<(const atomic_goal& m)const;
         friend std::ostream& operator<<(std::ostream& out,const atomic_goal& g);
+
+        void gather_information(
+            int& max_turn_number,
+            std::map<token,std::set<int>>& possible_comparisons,
+            std::set<token>& should_count,
+            uint board_size)const;
 };
 
 std::ostream& operator<<(std::ostream& out,const atomic_goal& g);
@@ -106,6 +113,12 @@ class negatable_goal{
         bool is_single_conjunction(void)const;
         goals_conjunction give_single_conjunction(void); // moves out value
         negatable_goal flatten(void); // moves out value
+
+        void gather_information(
+            int& max_turn_number,
+            std::map<token,std::set<int>>& possible_comparisons,
+            std::set<token>& should_count,
+            uint board_size)const;
 };
 
 parser_result<negatable_goal> parse_negatable_goal(
@@ -138,6 +151,12 @@ class goals_conjunction{
         bool is_single_alternative(void)const;
         goals_alternative give_single_alternative(void); // moves out value
         goals_conjunction flatten(void); // moves out value
+
+        void gather_information(
+            int& max_turn_number,
+            std::map<token,std::set<int>>& possible_comparisons,
+            std::set<token>& should_count,
+            uint board_size)const;
 };
 
 parser_result<goals_conjunction> parse_goals_conjunction(
@@ -172,6 +191,12 @@ class goals_alternative{
         bool is_single_negation(void)const;
         negatable_goal give_single_negation(void); // moves out value
         goals_alternative flatten(void); // moves out value
+
+        void gather_information(
+            int& max_turn_number,
+            std::map<token,std::set<int>>& possible_comparisons,
+            std::set<token>& should_count,
+            uint board_size)const;
 };
 
 std::ostream& operator<<(std::ostream& out,const goals_alternative& g);

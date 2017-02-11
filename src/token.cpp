@@ -171,6 +171,11 @@ uint token::get_value(void)const{
     return number_value;
 }
 
+void token::increase(void){
+    assert(type == number);
+    ++number_value;
+}
+
 token_type token::get_type(void)const{
     return type;
 }

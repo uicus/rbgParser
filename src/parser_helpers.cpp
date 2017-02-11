@@ -55,15 +55,33 @@ parser_result<std::set<token>> parse_tokens_set(slice_iterator& it, messages_con
 parser_result<token> parse_variable(slice_iterator& it, const std::set<token>& encountered_pieces, messages_container& msg)throw(message){
     if(!it.has_value())
         return failure<token>();
-    if(it.current().get_type()!=dollar)
-        return failure<token>();
-    if(!it.next(msg))
-        throw msg.build_message("Unexpected end of variable");
-    if(it.current().get_type()!=identifier&&it.current().get_type()!=turn)
-        throw msg.build_message(it.create_call_stack("Expected identifier or \'turn\' token, encountered \'"+it.current().to_string()+"\'"));
-    if(it.current().get_type()!=turn&&encountered_pieces.count(it.current())==0)
-        throw msg.build_message(it.create_call_stack("There's no piece \'"+it.current().to_string()+"\'"));
-    token result = it.current();
-    it.next(msg);
-    return success(std::move(result));
+    if(it.current().get_type()!=dollar){
+        if(it.current().get_type()==plus){
+            if(!it.next(msg))
+                throw msg.build_message("Unexpected end of number");
+            if(it.current().get_type()!=number)
+                throw msg.build_message(it.create_call_stack("Expected digit, encountered \'"+it.current().to_string()+"\'"));
+            token result = it.current();
+            it.next(msg);
+            return success(std::move(result));
+        }
+        else{
+            if(it.current().get_type()!=number)
+                return failure<token>();
+            token result = it.current();
+            it.next(msg);
+            return success(std::move(result));
+        }
+    }
+    else{
+        if(!it.next(msg))
+            throw msg.build_message("Unexpected end of variable");
+        if(it.current().get_type()!=identifier&&it.current().get_type()!=turn)
+            throw msg.build_message(it.create_call_stack("Expected identifier or \'turn\' token, encountered \'"+it.current().to_string()+"\'"));
+        if(it.current().get_type()!=turn&&encountered_pieces.count(it.current())==0)
+            throw msg.build_message(it.create_call_stack("There's no piece \'"+it.current().to_string()+"\'"));
+        token result = it.current();
+        it.next(msg);
+        return success(std::move(result));
+    }
 }
