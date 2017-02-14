@@ -30,6 +30,7 @@ class atomic_goal{
 
         void gather_information(
             int& max_turn_number,
+            int& max_turns_pieces_equivalency,
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
             uint board_size)const;
@@ -116,6 +117,7 @@ class negatable_goal{
 
         void gather_information(
             int& max_turn_number,
+            int& max_turns_pieces_equivalency,
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
             uint board_size)const;
@@ -154,6 +156,7 @@ class goals_conjunction{
 
         void gather_information(
             int& max_turn_number,
+            int& max_turns_pieces_equivalency,
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
             uint board_size)const;
@@ -194,6 +197,7 @@ class goals_alternative{
 
         void gather_information(
             int& max_turn_number,
+            int& max_turns_pieces_equivalency,
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
             uint board_size)const;

@@ -19,8 +19,9 @@ class parsed_game{
         std::map<token,goals_alternative> goals;
         std::set<token> known_pieces;
         void print_pieces(std::ostream& out,const options& o)const;
-        void print_base(std::ostream& out,const options& o)const;
-        void print_initial_state(std::ostream& out,const options& o)const;
+        void print_base(std::ostream& out,const options& o,int max_turn)const;
+        void print_initial_state(std::ostream& out,const options& o,int max_turn)const;
+        void print_turn_counter(std::ostream& out,const options& o,int max_turn, int max_equivalency)const;
     public:
         parsed_game(
             std::string&& name,

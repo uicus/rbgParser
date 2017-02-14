@@ -93,17 +93,19 @@ std::ostream& operator<<(std::ostream& out,const atomic_goal& g){
 
 void atomic_goal::gather_information(
     int& max_turn_number,
+    int& max_turns_pieces_equivalency,
     std::map<token,std::set<int>>& possible_comparisons,
     std::set<token>& should_count,
     uint board_size)const{
     if(first_value.get_type()==turn){
-        if(second_value.get_type()!=number){
+        if(second_value.get_type()!=number)
             max_turn_number = std::max(max_turn_number,int(kind_of_comparison==4||kind_of_comparison==1?board_size+1:board_size));
-        }
         else
             max_turn_number = std::max(max_turn_number,int(second_value.get_value()));
-        if(second_value.get_type()==identifier)
+        if(second_value.get_type()==identifier){
             should_count.insert(second_value);
+            max_turns_pieces_equivalency = int(kind_of_comparison==4||kind_of_comparison==1?board_size+1:board_size);
+        }
     }
     else if(first_value.get_type()==identifier){
         if(second_value.get_type()==identifier){
@@ -111,8 +113,9 @@ void atomic_goal::gather_information(
             should_count.insert(second_value);
         }
         else if(second_value.get_type()==turn){
-            max_turn_number = std::max(max_turn_number,int(kind_of_comparison==4||kind_of_comparison==1?board_size+1:board_size));
+            max_turn_number = std::max(max_turn_number,int(kind_of_comparison==3||kind_of_comparison==0?board_size+1:board_size));
             should_count.insert(first_value);
+            max_turns_pieces_equivalency = int(kind_of_comparison==3||kind_of_comparison==0?board_size+1:board_size);
         }
         else{
             if(possible_comparisons.count(first_value)==0)
@@ -537,15 +540,16 @@ negatable_goal negatable_goal::flatten(void){
 
 void negatable_goal::gather_information(
     int& max_turn_number,
+    int& max_turns_pieces_equivalency,
     std::map<token,std::set<int>>& possible_comparisons,
     std::set<token>& should_count,
     uint board_size)const{
     switch(tag){
         case 0:
-            alternative->gather_information(max_turn_number,possible_comparisons,should_count,board_size);
+            alternative->gather_information(max_turn_number,max_turns_pieces_equivalency,possible_comparisons,should_count,board_size);
             break;
         case 1:
-            atomic->gather_information(max_turn_number,possible_comparisons,should_count,board_size);
+            atomic->gather_information(max_turn_number,max_turns_pieces_equivalency,possible_comparisons,should_count,board_size);
             break;
         case 2:
         default:
@@ -689,11 +693,12 @@ goals_conjunction goals_conjunction::flatten(void){
 
 void goals_conjunction::gather_information(
     int& max_turn_number,
+    int& max_turns_pieces_equivalency,
     std::map<token,std::set<int>>& possible_comparisons,
     std::set<token>& should_count,
     uint board_size)const{
     for(uint i=0;i<content.size();++i)
-        content[i].gather_information(max_turn_number,possible_comparisons,should_count,board_size);
+        content[i].gather_information(max_turn_number,max_turns_pieces_equivalency,possible_comparisons,should_count,board_size);
 }
 
 goals_alternative::goals_alternative(std::vector<goals_conjunction>&& src)noexcept:
@@ -840,9 +845,10 @@ goals_alternative goals_alternative::flatten(void){
 
 void goals_alternative::gather_information(
     int& max_turn_number,
+    int& max_turns_pieces_equivalency,
     std::map<token,std::set<int>>& possible_comparisons,
     std::set<token>& should_count,
     uint board_size)const{
     for(uint i=0;i<content.size();++i)
-        content[i].gather_information(max_turn_number,possible_comparisons,should_count,board_size);
+        content[i].gather_information(max_turn_number,max_turns_pieces_equivalency,possible_comparisons,should_count,board_size);
 }

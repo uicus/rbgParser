@@ -1,6 +1,8 @@
 #include"parsed_game.hpp"
 #include"gdl_constants.hpp"
 
+#include<set>
+
 parsed_game::parsed_game(
     std::string&& n,
     game_board&& b,
@@ -49,26 +51,67 @@ void parsed_game::print_pieces(std::ostream& out,const options& o)const{
     // TODO
 }
 
-void parsed_game::print_base(std::ostream& out,const options& o)const{
+void parsed_game::print_base(std::ostream& out,const options& o,int max_turn)const{
     if(o.printing_comments())
         out<<section_title("Base")<<'\n';
     out<<"(<= (base (cell ?x ?y ?piece))\n    (file ?x)\n    (rank ?y)\n    (pieceType ?piece))\n";
+    if(max_turn>=0){
+        out<<"(base (step";
+        uint l = length_of(uint(max_turn));
+        for(uint i=0;i<l;++i)
+            out<<" 0";
+        out<<"))\n";
+        out<<"(<= (base (step";
+        for(uint i=0;i<l;++i)
+            out<<" ?next"<<i;
+        out<<"))\n    (stepSucc";
+        for(uint i=0;i<l;++i)
+            out<<" ?s"<<i;
+        for(uint i=0;i<l;++i)
+            out<<" ?next"<<i;
+        out<<"))\n";
+    }
     out<<'\n';
 }
 
-void parsed_game::print_initial_state(std::ostream& out,const options& o)const{
+void parsed_game::print_initial_state(std::ostream& out,const options& o,int max_turn)const{
     if(o.printing_comments())
         out<<section_title("Initial state")<<'\n';
     brd.print_initial_setting(out);
+    if(max_turn>=0){
+        out<<"(init (step";
+        uint l = length_of(uint(max_turn));
+        for(uint i=0;i<l;++i)
+            out<<" 0";
+        out<<"))\n";
+    }
+    out<<'\n';
+}
+
+void parsed_game::print_turn_counter(std::ostream& out,const options& o,int max_turn, int max_equivalency)const{
+    if(o.printing_comments())
+        out<<section_title("Turns counter")<<'\n';
+    out<<succ("stepSucc",max_turn,true)<<'\n';
+    if(max_equivalency>=0)
+        out<<unary_binary_equivalency("equivalent",max_turn,max_equivalency)<<'\n';
+    out<<'\n';
 }
 
 void parsed_game::to_gdl(std::ostream& out,const options& o)const{
+    int max_turn=-1;
+    int max_turn_pieces_equivalency=-1;
+    std::map<token,std::set<int>> possible_comparisons;
+    std::set<token> should_count;
+    for(const auto& el: goals)
+        el.second.gather_information(max_turn,max_turn_pieces_equivalency,possible_comparisons,should_count,brd.get_height()*brd.get_width());
     if(o.printing_comments())
         out<<section_title(std::string(name))<<'\n';
     players.print_roles(out,o);
     if(o.printing_base())
-        print_base(out,o);
-    print_initial_state(out,o);
+        print_base(out,o,max_turn);
+    print_initial_state(out,o,max_turn);
     brd.print_files_and_ranks(out,o);
     print_pieces(out,o);
+    if(max_turn>=0)
+        print_turn_counter(out,o,max_turn,max_turn_pieces_equivalency);
 }
