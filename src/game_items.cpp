@@ -286,6 +286,8 @@ std::string game_items::parse_name(messages_container& msg)const throw(message){
 
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     std::set<token> encountered_pieces;
+    if(order_segment==nullptr)
+        throw msg.build_message("No \'order\' directive");
     slice_iterator order_it(*order_segment,&macros);
     if(!order_it.next(msg))
         throw msg.build_message("Empty \'order\' directive");
