@@ -3,6 +3,22 @@
 
 #include"game_move.hpp"
 
+good_pieces_sets::good_pieces_sets(void)noexcept:
+pieces_sets_to_write(),
+next_free_id(0){
+}
+
+uint good_pieces_sets::add_set(std::set<token>&& pieces){
+    auto it = pieces_sets_to_write.find(pieces);
+    if(it!=pieces_sets_to_write.end())
+        return it->second;
+    else{
+        uint assigned_id = next_free_id++;
+        pieces_sets_to_write.insert(std::make_pair(std::move(pieces),assigned_id));
+        return assigned_id;
+    }
+}
+
 atomic_move::atomic_move(void)noexcept:
 x(0),
 y(0),
@@ -234,6 +250,45 @@ void atomic_move::to_semisteps(
         T = empty_expression();
     }
     BT = empty_expression();
+}
+
+void atomic_move::write_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& start_x_name,
+    const std::string& start_y_name,
+    const std::string& end_x_name,
+    const std::string& end_y_name,
+    const std::string& off_name)const{
+    if(x > 0)
+        out<<"\n    (sum ?"<<start_x_name<<' '<<x<<" ?"<<end_x_name<<")";
+    else if(x < 0)
+        out<<"\n    (sub ?"<<start_x_name<<' '<<(-x)<<" ?"<<end_x_name<<")";
+    else
+        out<<"\n    (equal ?"<<start_x_name<<" ?"<<end_x_name<<")";
+    if(y > 0)
+        out<<"\n    (sum ?"<<start_y_name<<' '<<y<<" ?"<<end_y_name<<")";
+    else if(y < 0)
+        out<<"\n    (sub ?"<<start_y_name<<' '<<(-y)<<" ?"<<end_y_name<<")";
+    else
+        out<<"\n    (equal ?"<<start_y_name<<" ?"<<end_y_name<<")";
+    if(!every_on_legal){
+        out<<"\n    (true (cell ?"<<end_x_name<<" ?"<<end_y_name<<" ?dest_piece))";
+        if(on.size()>1)
+            out<<"\n    (good_piece_"<<s.add_set(std::set<token>(on))<<" ?dest_piece)";
+        else{
+            assert(!on.empty()); // we should have cut this case earlier (TODO)
+            out<<"\n    (same_piece "<<on.begin()->to_string()<<" ?dest_piece)";
+        }
+    }
+    if(!no_off){
+        if(off.size()>1)
+            out<<"\n    (good_piece_"<<s.add_set(std::set<token>(off))<<' '<<off_name<<")";
+        else{
+            assert(!off.empty()); // we should have cut this case earlier (TODO)
+            out<<"\n    (same_piece "<<off.begin()->to_string()<<' '<<off_name<<")";
+        }
+    }
 }
 
 turn_change_indicator::turn_change_indicator(const token& name)noexcept:
@@ -828,6 +883,17 @@ void bracketed_move::to_semisteps(
     }
 }
 
+bool bracketed_move::just_turn_changers(void)const{
+    switch(tag){
+    case 0:
+        return sum->just_turn_changers();
+    case 1:
+        return false;
+    default:
+        return true;
+    }
+}
+
 moves_concatenation::moves_concatenation(void)noexcept:
 content(){}
 
@@ -1054,6 +1120,12 @@ void moves_concatenation::to_semisteps(
                 BT.add_move(std::move(temp));
             }
         }
+}
+
+bool moves_concatenation::just_turn_changers(void)const{
+    if(content.size()!=1)
+        return false;
+    return content[0].just_turn_changers();
 }
 
 moves_sum::moves_sum(void)noexcept:
@@ -1319,6 +1391,13 @@ void moves_sum::to_semisteps(
         T.add_move(std::move(tempT));
         BT.add_move(std::move(tempBT));
     }
+}
+
+bool moves_sum::just_turn_changers(void)const{
+    for(uint i=0;i<content.size();++i)
+        if(!content[i].just_turn_changers())
+            return false;
+    return true;
 }
 
 moves_sum epsilon(void){

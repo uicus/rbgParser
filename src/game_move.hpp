@@ -13,6 +13,15 @@
 #include"game_order.hpp"
 #include"options.hpp"
 
+class good_pieces_sets{
+        std::map<std::set<token>,uint> pieces_sets_to_write;
+        uint next_free_id;
+    public:
+        good_pieces_sets(void)noexcept;
+
+        uint add_set(std::set<token>&& pieces);
+};
+
 class moves_sum;
 
 class atomic_move{
@@ -53,6 +62,15 @@ class atomic_move{
             moves_sum& T,
             moves_sum& BT,
             const std::set<token>& splitters); // moves out value
+
+        void write_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& start_x_name,
+            const std::string& start_y_name,
+            const std::string& end_x_name,
+            const std::string& end_y_name,
+            const std::string& off_name)const;
 };
 
 parser_result<atomic_move> parse_atomic_move(slice_iterator& it, messages_container& msg)throw(message);
@@ -155,6 +173,8 @@ class bracketed_move{
             moves_sum& T,
             moves_sum& BT,
             const std::set<token>& splitters); // moves out value
+
+        bool just_turn_changers(void)const;
 };
 
 parser_result<bracketed_move> parse_bracketed_move(
@@ -209,6 +229,8 @@ class moves_concatenation{
             moves_sum& T,
             moves_sum& BT,
             const std::set<token>& splitters); // moves out value
+
+        bool just_turn_changers(void)const;
 };
 
 parser_result<moves_concatenation> parse_moves_concatenation(
@@ -266,6 +288,8 @@ class moves_sum{
             moves_sum& T,
             moves_sum& BT,
             const std::set<token>& splitters); // moves out value
+
+        bool just_turn_changers(void)const;
 };
 
 parser_result<moves_sum> parse_moves_sum(
