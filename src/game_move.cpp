@@ -19,6 +19,14 @@ uint good_pieces_sets::add_set(std::set<token>&& pieces){
     }
 }
 
+void good_pieces_sets::print_all_sets(std::ostream& out)const{
+    for(const auto& el: pieces_sets_to_write){
+        for(const auto& p: el.first)
+            out<<"(<= (goodPiece_"<<el.second<<' '<<p.to_string()<<")\n";
+        out<<'\n';
+    }
+}
+
 atomic_move::atomic_move(void)noexcept:
 x(0),
 y(0),
@@ -200,6 +208,10 @@ bool atomic_move::is_in_place(void)const{
     return x==0 && y==0;
 }
 
+bool atomic_move::is_illegal(void)const{
+    return (!every_on_legal && on.empty()) || (!no_off && off.empty());
+}
+
 std::string atomic_move::make_splitter_name(void)const{
     assert(!no_off);
     std::string result;
@@ -259,34 +271,35 @@ void atomic_move::write_as_gdl(
     const std::string& start_y_name,
     const std::string& end_x_name,
     const std::string& end_y_name,
-    const std::string& off_name)const{
+    const std::string& off_name,
+    const options& o)const{
     if(x > 0)
-        out<<"\n    (sum ?"<<start_x_name<<' '<<x<<" ?"<<end_x_name<<")";
+        out<<"    (sum ?"<<start_x_name<<' '<<x<<" ?"<<end_x_name<<")\n";
     else if(x < 0)
-        out<<"\n    (sub ?"<<start_x_name<<' '<<(-x)<<" ?"<<end_x_name<<")";
+        out<<"    (sub ?"<<start_x_name<<' '<<(-x)<<" ?"<<end_x_name<<")\n";
     else
-        out<<"\n    (equal ?"<<start_x_name<<" ?"<<end_x_name<<")";
+        out<<"    (equal ?"<<start_x_name<<" ?"<<end_x_name<<")\n";
     if(y > 0)
-        out<<"\n    (sum ?"<<start_y_name<<' '<<y<<" ?"<<end_y_name<<")";
+        out<<"    (sum ?"<<start_y_name<<' '<<y<<" ?"<<end_y_name<<")\n";
     else if(y < 0)
-        out<<"\n    (sub ?"<<start_y_name<<' '<<(-y)<<" ?"<<end_y_name<<")";
+        out<<"    (sub ?"<<start_y_name<<' '<<(-y)<<" ?"<<end_y_name<<")\n";
     else
-        out<<"\n    (equal ?"<<start_y_name<<" ?"<<end_y_name<<")";
+        out<<"    (equal ?"<<start_y_name<<" ?"<<end_y_name<<")\n";
     if(!every_on_legal){
-        out<<"\n    (true (cell ?"<<end_x_name<<" ?"<<end_y_name<<" ?dest_piece))";
+        out<<"    (true (cell ?"<<end_x_name<<" ?"<<end_y_name<<" ?destPiece))\n";
         if(on.size()>1)
-            out<<"\n    (good_piece_"<<s.add_set(std::set<token>(on))<<" ?dest_piece)";
+            out<<"    (goodPiece_"<<s.add_set(std::set<token>(on))<<" ?destPiece)\n";
         else{
-            assert(!on.empty()); // we should have cut this case earlier (TODO)
-            out<<"\n    (same_piece "<<on.begin()->to_string()<<" ?dest_piece)";
+            assert(!on.empty()); // we should have cut this case earlier (DONE)
+            out<<"    (samePiece "<<on.begin()->to_string()<<" ?destPiece)\n";
         }
     }
     if(!no_off){
         if(off.size()>1)
-            out<<"\n    (good_piece_"<<s.add_set(std::set<token>(off))<<' '<<off_name<<")";
+            out<<"    (goodPiece_"<<s.add_set(std::set<token>(off))<<' '<<off_name<<")\n";
         else{
-            assert(!off.empty()); // we should have cut this case earlier (TODO)
-            out<<"\n    (same_piece "<<off.begin()->to_string()<<' '<<off_name<<")";
+            assert(!off.empty()); // we should have cut this case earlier (DONE)
+            out<<"    (samePiece "<<off.begin()->to_string()<<' '<<off_name<<")\n";
         }
     }
 }
@@ -359,6 +372,13 @@ void turn_change_indicator::to_semisteps(
     B = empty_expression();
     T = empty_expression();
     BT = empty_expression();
+}
+
+void turn_change_indicator::write_player_check_as_gdl(
+    std::ostream& out,
+    const std::string& next_player_name,
+    const options& o)const{
+    out<<"    (samePlayer ?"<<next_player_name<<' '<<player.to_string()<<")\n";
 }
 
 bracketed_move::bracketed_move(void)noexcept:
@@ -749,6 +769,17 @@ void bracketed_move::be_absorbed(atomic_move&& left_hand_side){
     }
 }
 
+bool bracketed_move::is_illegal(void)const{
+    switch(tag){
+    case 0:
+        return sum->is_illegal();
+    case 1:
+        return atomic->is_illegal();
+    default:
+        return false;
+    }
+}
+
 std::vector<bracketed_move> bracketed_move::prepare_to_split(
     std::set<token>& known_pieces,
     std::set<token>& pieces_after_split,
@@ -894,6 +925,44 @@ bool bracketed_move::just_turn_changers(void)const{
     }
 }
 
+void bracketed_move::write_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& start_x_name,
+    const std::string& start_y_name,
+    const std::string& start_off_name,
+    const std::string& end_x_name,
+    const std::string& end_y_name,
+    const std::string& end_off_name,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    const options& o)const{
+}
+
+void bracketed_move::write_player_check_as_gdl(
+    std::ostream& out,
+    const std::string& next_player_name,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    switch(tag){
+    case 0:
+        player_cheks_to_write.push_back(std::make_pair(next_free_id,sum));
+        out<<"    (nextPlayer"<<next_free_id++<<" ?"<<next_player_name<<")\n";
+        break;
+    case 1:
+        assert(false); // why here?
+    default:
+        turn_changer->write_player_check_as_gdl(
+            out,
+            next_player_name,
+            o
+        );
+        break;
+    }
+}
+
 moves_concatenation::moves_concatenation(void)noexcept:
 content(){}
 
@@ -992,6 +1061,8 @@ moves_concatenation moves_concatenation::flatten(void){
         }
         else{
             bracketed_move next_to_insert = moves_stack.back().first->flatten();
+            if(next_to_insert.is_illegal())
+                return moves_concatenation(std::vector<bracketed_move>());
             if(result.empty())
                 result.push_back(std::move(next_to_insert));
             else{
@@ -1052,6 +1123,10 @@ std::vector<bracketed_move> moves_concatenation::move_out(void){
     auto result = std::move(content);
     content.clear();
     return result;
+}
+
+bool moves_concatenation::is_illegal(void)const{
+    return content.empty();
 }
 
 moves_concatenation moves_concatenation::prepare_to_split(
@@ -1126,6 +1201,50 @@ bool moves_concatenation::just_turn_changers(void)const{
     if(content.size()!=1)
         return false;
     return content[0].just_turn_changers();
+}
+
+void moves_concatenation::write_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& start_x_name,
+    const std::string& start_y_name,
+    const std::string& start_off_name,
+    const std::string& end_x_name,
+    const std::string& end_y_name,
+    const std::string& end_off_name,
+    const std::string& next_player,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    uint last_real_move = content.size()-1;
+    if(content.back().just_turn_changers()){
+        content.back().write_player_check_as_gdl(
+            out,
+            next_player,
+            player_cheks_to_write,
+            next_free_id,
+            o
+        );
+        --last_real_move;
+    }
+}
+
+void moves_concatenation::write_player_check_as_gdl(
+    std::ostream& out,
+    const std::string& next_player_name,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    assert(content.size()==1); // otherwise, why here?
+    content[0].write_player_check_as_gdl(
+        out,
+        next_player_name,
+        player_cheks_to_write,
+        next_free_id,
+        o
+    );
 }
 
 moves_sum::moves_sum(void)noexcept:
@@ -1212,6 +1331,10 @@ void moves_sum::print_rbg(std::ostream& out,uint recurrence_depth)const{
             out<<'\n';
         }
     }
+    else{
+        print_spaces(out,4*recurrence_depth-2);
+        out<<"({})\n";
+    }
 }
 
 moves_sum moves_sum::flatten(void){
@@ -1228,7 +1351,8 @@ moves_sum moves_sum::flatten(void){
             moves_concatenation mc = std::move(*it);
             ++moves_stack.back().first;
             mc = mc.flatten();
-            if(mc.is_single_sum()){
+            if(mc.is_illegal());
+            else if(mc.is_single_sum()){
                 moves_sum next_level = mc.give_single_sum();
                 moves_stack.push_back(make_pair(next_level.content.begin(),std::move(next_level.content)));
                 moves_stack.back().first = moves_stack.back().second.begin(); // inelegant way to avoid undefined behavior
@@ -1284,6 +1408,10 @@ bool moves_sum::can_be_absorbed(const atomic_move& left_hand_side)const{
 void moves_sum::be_absorbed(atomic_move&& left_hand_side){
     for(uint i=0;i<content.size();++i)
         content[i].be_absorbed((i==content.size()-1 ? std::move(left_hand_side) : atomic_move(left_hand_side)));
+}
+
+bool moves_sum::is_illegal(void)const{
+    return content.empty();
 }
 
 moves_sum moves_sum::prepare_to_split(
@@ -1400,11 +1528,105 @@ bool moves_sum::just_turn_changers(void)const{
     return true;
 }
 
+void moves_sum::write_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& start_x_name,
+    const std::string& start_y_name,
+    const std::string& start_off_name,
+    const std::string& end_x_name,
+    const std::string& end_y_name,
+    const std::string& end_off_name,
+    const std::string& next_player,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    if(content.size()==1)
+        content[0].write_as_gdl(
+            out,
+            s,
+            start_x_name,
+            start_y_name,
+            start_off_name,
+            end_x_name,
+            end_y_name,
+            end_off_name,
+            next_player,
+            sums_to_write,
+            bmoves_to_write,
+            player_cheks_to_write,
+            next_free_id,
+            o
+        );
+    else{
+        sums_to_write.push_back(std::make_pair(next_free_id,this));
+        out<<"    (legalSum"<<next_free_id++
+           <<" ?"<<start_x_name
+           <<" ?"<<start_y_name
+           <<" ?"<<start_off_name
+           <<" ?"<<end_x_name
+           <<" ?"<<end_y_name
+           <<" ?"<<end_off_name
+           <<" ?"<<next_player<<")\n";
+    }
+}
+
+void moves_sum::write_separate_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& name,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    for(uint i=0;i<content.size();++i){
+        out<<"(<= ("<<name<<" ?xFirst ?yFirst ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)\n";
+        content[i].write_as_gdl(
+            out,
+            s,
+            "xFirst",
+            "yFirst",
+            "offFirst",
+            "xLast",
+            "yLast",
+            "offLast",
+            "nextPlayer",
+            sums_to_write,
+            bmoves_to_write,
+            player_cheks_to_write,
+            next_free_id,
+            o
+        );
+    }
+}
+
+void moves_sum::write_player_check_as_gdl(
+    std::ostream& out,
+    const std::string& name,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    for(uint i=0;i<content.size();++i){
+        out<<"(<= ("<<name<<" ?nextPlayer)\n";
+        content[i].write_player_check_as_gdl(
+            out,
+            "nextPlayer",
+            player_cheks_to_write,
+            next_free_id,
+            o
+        );
+    }
+}
+
 moves_sum epsilon(void){
     std::vector<moves_concatenation> temp2;
     temp2.push_back(std::vector<bracketed_move>());
     return moves_sum(std::move(temp2));
 }
+
 moves_sum empty_expression(void){
     return moves_sum(std::vector<moves_concatenation>());
 }

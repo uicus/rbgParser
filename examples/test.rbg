@@ -1,7 +1,7 @@
 #game "test"
 #order p1 p2
 #board 4 4 a a a a a a a a a a a a a a a a
-#player p1 (9,9,/a)^7[p2]
-#player p2 ((2,2,/b)+(1,1,c))^*[p1]
+#player p1 ((9,9,a/a)(8,8,b/{})+(1,1,a))[p2]
+#player p2 ((9,9,a/a)(8,8,b/{})+(1,1,{}/c))[p1]
 #goal p1 $a<1 or move((1,1,a)) and (@a 1 1 or @b 0 1 or (((($b>+1 or $turn>5)))))
 #goal p2 not ($a<1 or ((($turn>=80000)))) and not($c>6 and not (@b 1 1 or @b 0 0) and $a=$turn)

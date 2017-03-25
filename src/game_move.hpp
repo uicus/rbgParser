@@ -20,6 +20,7 @@ class good_pieces_sets{
         good_pieces_sets(void)noexcept;
 
         uint add_set(std::set<token>&& pieces);
+        void print_all_sets(std::ostream& out)const;
 };
 
 class moves_sum;
@@ -55,6 +56,7 @@ class atomic_move{
         void be_absorbed(atomic_move&& left_hand_side);
         bool has_off(void)const;
         bool is_in_place(void)const;
+        bool is_illegal(void)const;
         std::pair<atomic_move,atomic_move> prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id); // moves out value
         void to_semisteps(
             moves_sum& N,
@@ -70,7 +72,8 @@ class atomic_move{
             const std::string& start_y_name,
             const std::string& end_x_name,
             const std::string& end_y_name,
-            const std::string& off_name)const;
+            const std::string& off_name,
+            const options& o)const;
 };
 
 parser_result<atomic_move> parse_atomic_move(slice_iterator& it, messages_container& msg)throw(message);
@@ -100,6 +103,10 @@ class turn_change_indicator{
             moves_sum& B,
             moves_sum& T,
             moves_sum& BT); // moves out value
+        void write_player_check_as_gdl(
+            std::ostream& out,
+            const std::string& next_player_name,
+            const options& o)const;
 };
 
 std::ostream& operator<<(std::ostream& out,const turn_change_indicator& m);
@@ -159,6 +166,8 @@ class bracketed_move{
         void absorb(atomic_move&& right_hand_side);
         bool can_be_absorbed(const atomic_move& left_hand_side)const;
         void be_absorbed(atomic_move&& left_hand_side);
+        bool is_illegal(void)const;
+        bool just_turn_changers(void)const;
         std::vector<bracketed_move> prepare_to_split(
             std::set<token>& known_pieces,
             std::set<token>& pieces_after_split,
@@ -173,8 +182,25 @@ class bracketed_move{
             moves_sum& T,
             moves_sum& BT,
             const std::set<token>& splitters); // moves out value
-
-        bool just_turn_changers(void)const;
+        void write_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& start_x_name,
+            const std::string& start_y_name,
+            const std::string& start_off_name,
+            const std::string& end_x_name,
+            const std::string& end_y_name,
+            const std::string& end_off_name,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            const options& o)const;
+        void write_player_check_as_gdl(
+            std::ostream& out,
+            const std::string& next_player_name,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
+            const options& o)const;
 };
 
 parser_result<bracketed_move> parse_bracketed_move(
@@ -214,6 +240,7 @@ class moves_concatenation{
         bool can_be_absorbed(const atomic_move& left_hand_side)const;
         void be_absorbed(atomic_move&& left_hand_side);
         std::vector<bracketed_move> move_out(void);
+        bool is_illegal(void)const;
         moves_concatenation prepare_to_split(
             std::set<token>& known_pieces,
             std::set<token>& pieces_after_split,
@@ -231,6 +258,27 @@ class moves_concatenation{
             const std::set<token>& splitters); // moves out value
 
         bool just_turn_changers(void)const;
+        void write_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& start_x_name,
+            const std::string& start_y_name,
+            const std::string& start_off_name,
+            const std::string& end_x_name,
+            const std::string& end_y_name,
+            const std::string& end_off_name,
+            const std::string& next_player,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
+            const options& o)const;
+        void write_player_check_as_gdl(
+            std::ostream& out,
+            const std::string& next_player_name,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
+            const options& o)const;
 };
 
 parser_result<moves_concatenation> parse_moves_concatenation(
@@ -269,6 +317,7 @@ class moves_sum{
         void absorb(atomic_move&& right_hand_side);
         bool can_be_absorbed(const atomic_move& left_hand_side)const;
         void be_absorbed(atomic_move&& left_hand_side);
+        bool is_illegal(void)const;
         moves_sum prepare_to_split(
             std::set<token>& known_pieces,
             std::set<token>& pieces_after_split,
@@ -290,6 +339,36 @@ class moves_sum{
             const std::set<token>& splitters); // moves out value
 
         bool just_turn_changers(void)const;
+        void write_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& start_x_name,
+            const std::string& start_y_name,
+            const std::string& start_off_name,
+            const std::string& end_x_name,
+            const std::string& end_y_name,
+            const std::string& end_off_name,
+            const std::string& next_player,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
+            const options& o)const;
+        void write_separate_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& name,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
+            const options& o)const;
+        void write_player_check_as_gdl(
+            std::ostream& out,
+            const std::string& name,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
+            const options& o)const;
 };
 
 parser_result<moves_sum> parse_moves_sum(
