@@ -191,9 +191,35 @@ class bracketed_move{
             const std::string& end_x_name,
             const std::string& end_y_name,
             const std::string& end_off_name,
+            const std::string& next_player,
             std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
-            std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
             std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
+            const options& o)const;
+        void write_one_repetition(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& start_x_name,
+            const std::string& start_y_name,
+            const std::string& start_off_name,
+            const std::string& end_x_name,
+            const std::string& end_y_name,
+            const std::string& end_off_name,
+            const std::string& next_player,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
+            const options& o)const;
+        void write_separate_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& name,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+            uint& next_free_id,
             const options& o)const;
         void write_player_check_as_gdl(
             std::ostream& out,
@@ -269,7 +295,7 @@ class moves_concatenation{
             const std::string& end_off_name,
             const std::string& next_player,
             std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
-            std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
             std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
             uint& next_free_id,
             const options& o)const;
@@ -350,7 +376,7 @@ class moves_sum{
             const std::string& end_off_name,
             const std::string& next_player,
             std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
-            std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
             std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
             uint& next_free_id,
             const options& o)const;
@@ -359,7 +385,7 @@ class moves_sum{
             good_pieces_sets& s,
             const std::string& name,
             std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
-            std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+            std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
             std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
             uint& next_free_id,
             const options& o)const;

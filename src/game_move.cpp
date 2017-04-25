@@ -934,10 +934,145 @@ void bracketed_move::write_as_gdl(
     const std::string& end_x_name,
     const std::string& end_y_name,
     const std::string& end_off_name,
+    const std::string& next_player,
     std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
-    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
     std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
     const options& o)const{
+    if(repetition_number==1)
+        write_one_repetition(
+            out,
+            s,
+            start_x_name,
+            start_y_name,
+            start_off_name,
+            end_x_name,
+            end_y_name,
+            end_off_name,
+            next_player,
+            sums_to_write,
+            bmoves_to_write,
+            player_cheks_to_write,
+            next_free_id,
+            o);
+    else{
+        bmoves_to_write.push_back(std::make_pair(next_free_id,this));
+        out<<"    (legalRep"<<next_free_id++
+           <<" ?"<<start_x_name
+           <<" ?"<<start_y_name
+           <<" ?"<<end_x_name
+           <<" ?"<<end_y_name<<")\n";
+    }
+}
+
+void bracketed_move::write_one_repetition(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& start_x_name,
+    const std::string& start_y_name,
+    const std::string& start_off_name,
+    const std::string& end_x_name,
+    const std::string& end_y_name,
+    const std::string& end_off_name,
+    const std::string& next_player,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    switch(tag){
+    case 0:
+        sum->write_as_gdl(
+            out,
+            s,
+            start_x_name,
+            start_y_name,
+            (start_off_name==""?"no_off":start_off_name),
+            end_x_name,
+            end_y_name,
+            (end_off_name==""?"no_off":end_off_name),
+            (next_player==""?"semi_step":next_player),
+            sums_to_write,
+            bmoves_to_write,
+            player_cheks_to_write,
+            next_free_id,
+            o);
+        break;
+    case 1:
+        atomic->write_as_gdl(
+            out,
+            s,
+            start_x_name,
+            start_y_name,
+            end_x_name,
+            end_y_name,
+            (end_off_name==""?"no_off":end_off_name),
+            o);
+        break;
+    default:
+        turn_changer->write_player_check_as_gdl(
+            out,
+            next_player, // no need to convert to "semit_step"
+            o);
+    }
+}
+
+void bracketed_move::write_separate_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& name,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    if(repetition_number==0){
+        out<<"(<= ("<<name<<" ?x ?y ?x ?y)\n    (file ?x)\n    (rank ?y))\n";
+        out<<"(<= ("<<name<<" ?x ?y ?xLast ?yLast)\n";
+        write_one_repetition(
+            out,
+            s,
+            "x",
+            "y",
+            "",
+            "xNext",
+            "yNext",
+            "",
+            "",
+            sums_to_write,
+            bmoves_to_write,
+            player_cheks_to_write,
+            next_free_id,
+            o
+        );
+        out<<"    ("<<name<<" ?xNext ?yNext ?xLast ?yLast))\n";
+    }
+    else{
+        assert(repetition_number>1); // otherwise no need to be here
+        out<<"(<= ("<<name<<" ?x ?y ?xLast ?yLast)\n";
+        out<<"    ("<<name<<"Helper ?x ?y ?xLast ?yLast "<<repetition_number<<"))\n";
+        out<<"(<= ("<<name<<" ?x ?y ?x ?y 0)\n    (file ?x)\n    (rank ?y))\n";
+        out<<"(<= ("<<name<<"Helper ?x ?y ?xLast ?yLast ?n)\n";
+        write_one_repetition(
+            out,
+            s,
+            "x",
+            "y",
+            "",
+            "xNext",
+            "yNext",
+            "",
+            "",
+            sums_to_write,
+            bmoves_to_write,
+            player_cheks_to_write,
+            next_free_id,
+            o
+        );
+        out<<"    (aritSucc ?nNext ?n)";
+        out<<"    ("<<name<<" ?xNext ?yNext ?xLast ?yLast ?nNext))\n";
+    }
 }
 
 void bracketed_move::write_player_check_as_gdl(
@@ -1214,11 +1349,11 @@ void moves_concatenation::write_as_gdl(
     const std::string& end_off_name,
     const std::string& next_player,
     std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
-    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
     std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
     uint& next_free_id,
     const options& o)const{
-    uint last_real_move = content.size()-1;
+    uint last_real_move = content.size();
     if(content.back().just_turn_changers()){
         content.back().write_player_check_as_gdl(
             out,
@@ -1229,6 +1364,22 @@ void moves_concatenation::write_as_gdl(
         );
         --last_real_move;
     }
+    for(uint i=0;i<last_real_move;++i)
+        content[i].write_as_gdl(
+            out,
+            s,
+            (i==0?start_x_name:start_x_name+std::to_string(i)),
+            (i==0?start_y_name:start_y_name+std::to_string(i)),
+            (i==0?start_off_name:""),
+            (i==last_real_move-1?end_x_name:start_x_name+std::to_string(i+1)),
+            (i==last_real_move-1?end_y_name:start_y_name+std::to_string(i+1)),
+            (i==last_real_move-1?end_off_name:""),
+            (i==content.size()-1?next_player:""),
+            sums_to_write,
+            bmoves_to_write,
+            player_cheks_to_write,
+            next_free_id,
+            o);
 }
 
 void moves_concatenation::write_player_check_as_gdl(
@@ -1539,7 +1690,7 @@ void moves_sum::write_as_gdl(
     const std::string& end_off_name,
     const std::string& next_player,
     std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
-    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
     std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
     uint& next_free_id,
     const options& o)const{
@@ -1578,17 +1729,17 @@ void moves_sum::write_separate_as_gdl(
     good_pieces_sets& s,
     const std::string& name,
     std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
-    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write,
+    std::vector<std::pair<uint,const bracketed_move*>>& bmoves_to_write,
     std::vector<std::pair<uint,const moves_sum*>>& player_cheks_to_write,
     uint& next_free_id,
     const options& o)const{
     for(uint i=0;i<content.size();++i){
-        out<<"(<= ("<<name<<" ?xFirst ?yFirst ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)\n";
+        out<<"(<= ("<<name<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)\n";
         content[i].write_as_gdl(
             out,
             s,
-            "xFirst",
-            "yFirst",
+            "x",
+            "y",
             "offFirst",
             "xLast",
             "yLast",
@@ -1600,6 +1751,7 @@ void moves_sum::write_separate_as_gdl(
             next_free_id,
             o
         );
+        out<<")\n";
     }
 }
 
@@ -1618,6 +1770,7 @@ void moves_sum::write_player_check_as_gdl(
             next_free_id,
             o
         );
+        out<<")\n";
     }
 }
 
