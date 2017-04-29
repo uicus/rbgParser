@@ -27,6 +27,13 @@ class moves_sequence{
         void flatten(void);
         void prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id,const options& o);
         void split_into_semisteps(const std::set<token>& splitters);
+
+        void write_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& name,
+            uint& next_free_id,
+            const options& o)const;
 };
 
 moves_sequence parse_moves_sequence(

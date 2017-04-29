@@ -76,3 +76,64 @@ void moves_sequence::split_into_semisteps(const std::set<token>& splitters){
     if(!highest_priority_move.is_empty())
         sequence.insert(sequence.begin(),std::move(highest_priority_move));
 }
+
+void moves_sequence::write_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& name,
+    uint& next_free_id,
+    const options& o)const{
+    std::vector<uint> relevant_ids;
+    std::vector<std::pair<uint,const moves_sum*>> sums_to_write;
+    std::vector<std::pair<uint,const bracketed_move*>> bmoves_to_write;
+    std::vector<std::pair<uint,const moves_sum*>> player_cheks_to_write;
+    for(uint i=0;i<sequence.size();++i){
+        out<<"(<= ("<<name<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)\n";
+        for(uint j=0;j<relevant_ids.size();++j)
+            out<<"    (not ("<<name<<'_'<<relevant_ids[j]<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n";
+        relevant_ids.push_back(next_free_id);
+        sums_to_write.push_back(std::make_pair(next_free_id,&sequence[i]));
+        out<<"    (legalSum"<<next_free_id++<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))";
+        while(!sums_to_write.empty()||!bmoves_to_write.empty()||!player_cheks_to_write.empty()){
+            while(!sums_to_write.empty()){
+                const moves_sum* temp = sums_to_write.back().second;
+                uint id = sums_to_write.back().first;
+                sums_to_write.pop_back();
+                temp->write_separate_as_gdl(
+                    out,
+                    s,
+                    "legalSum"+std::to_string(id),
+                    sums_to_write,
+                    bmoves_to_write,
+                    player_cheks_to_write,
+                    next_free_id,
+                    o);
+            }
+            while(!bmoves_to_write.empty()){
+                const bracketed_move* temp = bmoves_to_write.back().second;
+                uint id = bmoves_to_write.back().first;
+                bmoves_to_write.pop_back();
+                temp->write_separate_as_gdl(
+                    out,
+                    s,
+                    "legalRep"+std::to_string(id),
+                    sums_to_write,
+                    bmoves_to_write,
+                    player_cheks_to_write,
+                    next_free_id,
+                    o);
+            }
+            while(!player_cheks_to_write.empty()){
+                const moves_sum* temp = player_cheks_to_write.back().second;
+                uint id = player_cheks_to_write.back().first;
+                player_cheks_to_write.pop_back();
+                temp->write_player_check_as_gdl(
+                    out,
+                    "nextPlayer"+std::to_string(id),
+                    player_cheks_to_write,
+                    next_free_id,
+                    o);
+            }
+        }
+    }
+}

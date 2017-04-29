@@ -294,13 +294,17 @@ void atomic_move::write_as_gdl(
             out<<"    (samePiece "<<on.begin()->to_string()<<" ?destPiece)\n";
         }
     }
-    if(!no_off){
-        if(off.size()>1)
-            out<<"    (goodPiece_"<<s.add_set(std::set<token>(off))<<' '<<off_name<<")\n";
-        else{
-            assert(!off.empty()); // we should have cut this case earlier (DONE)
-            out<<"    (samePiece "<<off.begin()->to_string()<<' '<<off_name<<")\n";
+    if(off_name!=""){
+        if(!no_off){
+            if(off.size()>1)
+                out<<"    (goodPiece_"<<s.add_set(std::set<token>(off))<<' '<<off_name<<")\n";
+            else{
+                assert(!off.empty()); // we should have cut this case earlier (DONE)
+                out<<"    (samePiece "<<off.begin()->to_string()<<' '<<off_name<<")\n";
+            }
         }
+        else
+            out<<"    (noOff ?"<<off_name<<")\n";
     }
 }
 
@@ -1000,6 +1004,8 @@ void bracketed_move::write_one_repetition(
             o);
         break;
     case 1:
+        if(start_off_name!="")
+            out<<"    (noOff ?"<<start_off_name<<")\n";
         atomic->write_as_gdl(
             out,
             s,
@@ -1009,11 +1015,14 @@ void bracketed_move::write_one_repetition(
             end_y_name,
             (end_off_name==""?"no_off":end_off_name),
             o);
+        if(next_player!="")
+            out<<"    (semiStep ?"<<next_player<<")\n";
         break;
     default:
+        // in fact this shouldn't happen
         turn_changer->write_player_check_as_gdl(
             out,
-            next_player, // no need to convert to "semit_step"
+            next_player, // no need to convert to "semi_step"
             o);
     }
 }
@@ -1364,22 +1373,30 @@ void moves_concatenation::write_as_gdl(
         );
         --last_real_move;
     }
-    for(uint i=0;i<last_real_move;++i)
-        content[i].write_as_gdl(
-            out,
-            s,
-            (i==0?start_x_name:start_x_name+std::to_string(i)),
-            (i==0?start_y_name:start_y_name+std::to_string(i)),
-            (i==0?start_off_name:""),
-            (i==last_real_move-1?end_x_name:start_x_name+std::to_string(i+1)),
-            (i==last_real_move-1?end_y_name:start_y_name+std::to_string(i+1)),
-            (i==last_real_move-1?end_off_name:""),
-            (i==content.size()-1?next_player:""),
-            sums_to_write,
-            bmoves_to_write,
-            player_cheks_to_write,
-            next_free_id,
-            o);
+    if(last_real_move==0){ // special case; just turn changers in concatenation
+        out<<"    (equal ?"<<start_x_name<<" ?"<<end_x_name<<")\n";
+        out<<"    (equal ?"<<start_y_name<<" ?"<<end_y_name<<")\n";
+        out<<"    (noOff ?"<<start_off_name<<")\n";
+        out<<"    (noOff ?"<<end_off_name<<")\n";
+    }
+    else{
+        for(uint i=0;i<last_real_move;++i)
+            content[i].write_as_gdl(
+                out,
+                s,
+                (i==0?start_x_name:start_x_name+std::to_string(i)),
+                (i==0?start_y_name:start_y_name+std::to_string(i)),
+                (i==0?start_off_name:""),
+                (i==last_real_move-1?end_x_name:start_x_name+std::to_string(i+1)),
+                (i==last_real_move-1?end_y_name:start_y_name+std::to_string(i+1)),
+                (i==last_real_move-1?end_off_name:""),
+                (i==content.size()-1?next_player:""),
+                sums_to_write,
+                bmoves_to_write,
+                player_cheks_to_write,
+                next_free_id,
+                o);
+    }
 }
 
 void moves_concatenation::write_player_check_as_gdl(
