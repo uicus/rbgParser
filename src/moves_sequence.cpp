@@ -90,10 +90,10 @@ void moves_sequence::write_as_gdl(
     for(uint i=0;i<sequence.size();++i){
         out<<"(<= ("<<name<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)\n";
         for(uint j=0;j<relevant_ids.size();++j)
-            out<<"    (not ("<<name<<'_'<<relevant_ids[j]<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n";
+            out<<"    (not ("<<"legalSum"<<relevant_ids[j]<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n";
         relevant_ids.push_back(next_free_id);
         sums_to_write.push_back(std::make_pair(next_free_id,&sequence[i]));
-        out<<"    (legalSum"<<next_free_id++<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))";
+        out<<"    (legalSum"<<next_free_id++<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n\n";
         while(!sums_to_write.empty()||!bmoves_to_write.empty()||!player_cheks_to_write.empty()){
             while(!sums_to_write.empty()){
                 const moves_sum* temp = sums_to_write.back().second;

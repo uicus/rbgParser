@@ -22,7 +22,7 @@ uint good_pieces_sets::add_set(std::set<token>&& pieces){
 void good_pieces_sets::print_all_sets(std::ostream& out)const{
     for(const auto& el: pieces_sets_to_write){
         for(const auto& p: el.first)
-            out<<"(<= (goodPiece_"<<el.second<<' '<<p.to_string()<<")\n";
+            out<<"(goodPiece"<<el.second<<' '<<p.to_string()<<")\n";
         out<<'\n';
     }
 }
@@ -288,7 +288,7 @@ void atomic_move::write_as_gdl(
     if(!every_on_legal){
         out<<"    (true (cell ?"<<end_x_name<<" ?"<<end_y_name<<" ?destPiece))\n";
         if(on.size()>1)
-            out<<"    (goodPiece_"<<s.add_set(std::set<token>(on))<<" ?destPiece)\n";
+            out<<"    (goodPiece"<<s.add_set(std::set<token>(on))<<" ?destPiece)\n";
         else{
             assert(!on.empty()); // we should have cut this case earlier (DONE)
             out<<"    (samePiece "<<on.begin()->to_string()<<" ?destPiece)\n";
@@ -297,10 +297,10 @@ void atomic_move::write_as_gdl(
     if(off_name!=""){
         if(!no_off){
             if(off.size()>1)
-                out<<"    (goodPiece_"<<s.add_set(std::set<token>(off))<<' '<<off_name<<")\n";
+                out<<"    (goodPiece"<<s.add_set(std::set<token>(off))<<" ?"<<off_name<<")\n";
             else{
                 assert(!off.empty()); // we should have cut this case earlier (DONE)
-                out<<"    (samePiece "<<off.begin()->to_string()<<' '<<off_name<<")\n";
+                out<<"    (samePiece "<<off.begin()->to_string()<<" ?"<<off_name<<")\n";
             }
         }
         else
@@ -992,11 +992,11 @@ void bracketed_move::write_one_repetition(
             s,
             start_x_name,
             start_y_name,
-            (start_off_name==""?"no_off":start_off_name),
+            start_off_name,
             end_x_name,
             end_y_name,
-            (end_off_name==""?"no_off":end_off_name),
-            (next_player==""?"semi_step":next_player),
+            end_off_name,
+            next_player,
             sums_to_write,
             bmoves_to_write,
             player_cheks_to_write,
@@ -1013,7 +1013,7 @@ void bracketed_move::write_one_repetition(
             start_y_name,
             end_x_name,
             end_y_name,
-            (end_off_name==""?"no_off":end_off_name),
+            end_off_name,
             o);
         if(next_player!="")
             out<<"    (semiStep ?"<<next_player<<")\n";
@@ -1733,11 +1733,11 @@ void moves_sum::write_as_gdl(
         out<<"    (legalSum"<<next_free_id++
            <<" ?"<<start_x_name
            <<" ?"<<start_y_name
-           <<" ?"<<start_off_name
+           <<(start_off_name==""?" no_off":"?"+start_off_name)
            <<" ?"<<end_x_name
            <<" ?"<<end_y_name
-           <<" ?"<<end_off_name
-           <<" ?"<<next_player<<")\n";
+           <<(end_off_name==""?" no_off":"?"+end_off_name)
+           <<(next_player==""?" semi_step":"?"+next_player)<<")\n";
     }
 }
 

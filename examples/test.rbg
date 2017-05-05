@@ -1,7 +1,8 @@
 #game "test"
 #order p1 p2
-#board 4 4 a a a a a a a a a a a a a a a a
-#player p1 ((9,9,a/a)(8,8,b/{})+(1,1,a))[p2]
-#player p2 ((9,9,a/a)(8,8,b/{})+(1,1,{}/c))[p1]
+#def LINE(fig) = fig fig fig fig
+#board 4 5 LINE(a) LINE(b) LINE(c) LINE(d) LINE(e)
+#player p1 (0,0,/a)(1,1)((2,2)+(1,1,c))(2,2,b)(2,2)([p2]+(1,1,/b))
+#player p2 (0,0,/b)(1,1,{b,c,d})(1,1)([p1]+(2,2)(1,1,/{b,c,d})) +> (4,4,/c)[p2]
 #goal p1 $a<1 or move((1,1,a)) and (@a 1 1 or @b 0 1 or (((($b>+1 or $turn>5)))))
 #goal p2 not ($a<1 or ((($turn>=80000)))) and not($c>6 and not (@b 1 1 or @b 0 0) and $a=$turn)

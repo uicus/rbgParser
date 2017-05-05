@@ -48,7 +48,6 @@ void parsed_game::print_pieces(std::ostream& out,const options& o)const{
     for(const auto& el: known_pieces)
         out<<"(pieceType "+el.to_string()+")\n";
     out<<'\n';
-    // TODO
 }
 
 void parsed_game::print_base(std::ostream& out,const options& o,int max_turn)const{
@@ -71,6 +70,8 @@ void parsed_game::print_base(std::ostream& out,const options& o,int max_turn)con
             out<<" ?next"<<i;
         out<<"))\n";
     }
+    if(players.get_number_of_players()>1)
+        out<<"(<= (base (control ?p))\n    (role ?p))\n";
     out<<'\n';
 }
 
@@ -85,6 +86,8 @@ void parsed_game::print_initial_state(std::ostream& out,const options& o,int max
             out<<" 0";
         out<<"))\n";
     }
+    if(players.get_number_of_players()>1)
+        out<<"(init (control "<<players.get_player_name(0).to_string()<<")\n";
     out<<'\n';
 }
 
@@ -95,6 +98,32 @@ void parsed_game::print_turn_counter(std::ostream& out,const options& o,int max_
     if(max_equivalency>=0)
         out<<unary_binary_equivalency("equivalent",max_turn,max_equivalency)<<'\n';
     out<<'\n';
+}
+
+void parsed_game::print_moves(std::ostream& out,const options& o,uint& next_free_id)const{
+    if(o.printing_comments())
+        out<<section_title("Legal moves")<<'\n';
+    out<<'\n';
+    if(players.get_number_of_players()>1)
+        out<<"(<= (legal ?player noop)\n"
+           <<"    (role ?player)\n"
+           <<"    (not (true (control ?player))))\n\n";
+    good_pieces_sets s;
+    for(const auto& el: moves){
+        out<<"(<= (legal "<<el.first.to_string()<<" (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n";
+        if(players.get_number_of_players()>1)
+            out<<"    (true (control ?player))\n";
+        out<<"    (movesSeq_"<<el.first.to_string()<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n\n";
+        el.second.write_as_gdl(out,s,"movesSeq_"+el.first.to_string(),next_free_id,o);
+        out<<'\n';
+    }
+    s.print_all_sets(out);
+    out<<"(<= (samePiece ?p ?p)\n"
+       <<"    (pieceType ?p))\n\n";
+    out<<"(noOff no_off)\n\n";
+    out<<"(<= (samePlayer ?p ?p)\n"
+       <<"    (role ?p))\n\n";
+    out<<"(semiStep semi_step)\n\n";
 }
 
 void parsed_game::to_gdl(std::ostream& out,const options& o)const{
@@ -114,4 +143,6 @@ void parsed_game::to_gdl(std::ostream& out,const options& o)const{
     print_pieces(out,o);
     if(max_turn>=0)
         print_turn_counter(out,o,max_turn,max_turn_pieces_equivalency);
+    uint next_free_id = 0;
+    print_moves(out,o,next_free_id);
 }
