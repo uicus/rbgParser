@@ -541,17 +541,26 @@ negatable_goal negatable_goal::flatten(void){
 void negatable_goal::gather_information(
     int& max_turn_number,
     int& max_turns_pieces_equivalency,
+    int& max_repetition,
     std::map<token,std::set<int>>& possible_comparisons,
     std::set<token>& should_count,
-    uint board_size)const{
+    uint board_size,
+    const options& o)const{
     switch(tag){
         case 0:
-            alternative->gather_information(max_turn_number,max_turns_pieces_equivalency,possible_comparisons,should_count,board_size);
+            alternative->gather_information(max_turn_number,max_turns_pieces_equivalency,max_repetition,possible_comparisons,should_count,board_size,o);
             break;
         case 1:
             atomic->gather_information(max_turn_number,max_turns_pieces_equivalency,possible_comparisons,should_count,board_size);
             break;
         case 2:
+            {
+                int m = move_goal->max_repetition(o);
+                if(m==0)
+                    m = board_size;
+                if(m>max_repetition)
+                    max_repetition = m;
+            }
         default:
             break;
     }
@@ -694,11 +703,13 @@ goals_conjunction goals_conjunction::flatten(void){
 void goals_conjunction::gather_information(
     int& max_turn_number,
     int& max_turns_pieces_equivalency,
+    int& max_repetition,
     std::map<token,std::set<int>>& possible_comparisons,
     std::set<token>& should_count,
-    uint board_size)const{
+    uint board_size,
+    const options& o)const{
     for(uint i=0;i<content.size();++i)
-        content[i].gather_information(max_turn_number,max_turns_pieces_equivalency,possible_comparisons,should_count,board_size);
+        content[i].gather_information(max_turn_number,max_turns_pieces_equivalency,max_repetition,possible_comparisons,should_count,board_size,o);
 }
 
 goals_alternative::goals_alternative(std::vector<goals_conjunction>&& src)noexcept:
@@ -846,9 +857,11 @@ goals_alternative goals_alternative::flatten(void){
 void goals_alternative::gather_information(
     int& max_turn_number,
     int& max_turns_pieces_equivalency,
+    int& max_repetition,
     std::map<token,std::set<int>>& possible_comparisons,
     std::set<token>& should_count,
-    uint board_size)const{
+    uint board_size,
+    const options& o)const{
     for(uint i=0;i<content.size();++i)
-        content[i].gather_information(max_turn_number,max_turns_pieces_equivalency,possible_comparisons,should_count,board_size);
+        content[i].gather_information(max_turn_number,max_turns_pieces_equivalency,max_repetition,possible_comparisons,should_count,board_size,o);
 }

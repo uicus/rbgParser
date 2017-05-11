@@ -2,6 +2,7 @@
 #include<algorithm>
 
 #include"game_move.hpp"
+#include"gdl_constants.hpp"
 
 good_pieces_sets::good_pieces_sets(void)noexcept:
 pieces_sets_to_write(),
@@ -274,37 +275,37 @@ void atomic_move::write_as_gdl(
     const std::string& off_name,
     const options& o)const{
     if(x > 0)
-        out<<"    (sum ?"<<start_x_name<<' '<<x<<" ?"<<end_x_name<<")\n";
+        out<<"\n    (sum ?"<<start_x_name<<' '<<x<<" ?"<<end_x_name<<")";
     else if(x < 0)
-        out<<"    (sub ?"<<start_x_name<<' '<<(-x)<<" ?"<<end_x_name<<")\n";
+        out<<"\n    (sub ?"<<start_x_name<<' '<<(-x)<<" ?"<<end_x_name<<")";
     else
-        out<<"    (equal ?"<<start_x_name<<" ?"<<end_x_name<<")\n";
+        out<<"\n    (equal ?"<<start_x_name<<" ?"<<end_x_name<<")";
     if(y > 0)
-        out<<"    (sum ?"<<start_y_name<<' '<<y<<" ?"<<end_y_name<<")\n";
+        out<<"\n    (sum ?"<<start_y_name<<' '<<y<<" ?"<<end_y_name<<")";
     else if(y < 0)
-        out<<"    (sub ?"<<start_y_name<<' '<<(-y)<<" ?"<<end_y_name<<")\n";
+        out<<"\n    (sub ?"<<start_y_name<<' '<<(-y)<<" ?"<<end_y_name<<")";
     else
-        out<<"    (equal ?"<<start_y_name<<" ?"<<end_y_name<<")\n";
+        out<<"\n    (equal ?"<<start_y_name<<" ?"<<end_y_name<<")";
     if(!every_on_legal){
-        out<<"    (true (cell ?"<<end_x_name<<" ?"<<end_y_name<<" ?destPiece))\n";
+        out<<"\n    (true (cell ?"<<end_x_name<<" ?"<<end_y_name<<" ?destPiece))";
         if(on.size()>1)
-            out<<"    (goodPiece"<<s.add_set(std::set<token>(on))<<" ?destPiece)\n";
+            out<<"\n    (goodPiece"<<s.add_set(std::set<token>(on))<<" ?destPiece)";
         else{
             assert(!on.empty()); // we should have cut this case earlier (DONE)
-            out<<"    (samePiece "<<on.begin()->to_string()<<" ?destPiece)\n";
+            out<<"\n    (samePiece "<<on.begin()->to_string()<<" ?destPiece)";
         }
     }
     if(off_name!=""){
         if(!no_off){
             if(off.size()>1)
-                out<<"    (goodPiece"<<s.add_set(std::set<token>(off))<<" ?"<<off_name<<")\n";
+                out<<"\n    (goodPiece"<<s.add_set(std::set<token>(off))<<" ?"<<off_name<<")";
             else{
                 assert(!off.empty()); // we should have cut this case earlier (DONE)
-                out<<"    (samePiece "<<off.begin()->to_string()<<" ?"<<off_name<<")\n";
+                out<<"\n    (samePiece "<<off.begin()->to_string()<<" ?"<<off_name<<")";
             }
         }
         else
-            out<<"    (noOff ?"<<off_name<<")\n";
+            out<<"\n    (noOff ?"<<off_name<<")";
     }
 }
 
@@ -382,7 +383,7 @@ void turn_change_indicator::write_player_check_as_gdl(
     std::ostream& out,
     const std::string& next_player_name,
     const options& o)const{
-    out<<"    (samePlayer ?"<<next_player_name<<' '<<player.to_string()<<")\n";
+    out<<"\n    (samePlayer ?"<<next_player_name<<' '<<player.to_string()<<")";
 }
 
 bracketed_move::bracketed_move(void)noexcept:
@@ -918,6 +919,25 @@ void bracketed_move::to_semisteps(
     }
 }
 
+int bracketed_move::max_repetition(const options& o)const{
+    int current_max = -1;
+    switch(tag){
+    case 0:
+        {
+        int m = sum->max_repetition(o);
+        if((m>current_max&&current_max!=0)||(m==0&&o.is_prolog_safe()))
+            current_max = m;
+        }
+        break;
+    case 1:
+    default:
+        break;
+    }
+    if((int(repetition_number)>current_max&&current_max!=0)||(repetition_number==0&&o.is_prolog_safe()))
+        current_max = repetition_number;
+    return current_max;
+}
+
 bool bracketed_move::just_turn_changers(void)const{
     switch(tag){
     case 0:
@@ -962,11 +982,11 @@ void bracketed_move::write_as_gdl(
             o);
     else{
         bmoves_to_write.push_back(std::make_pair(next_free_id,this));
-        out<<"    (legalRep"<<next_free_id++
+        out<<"\n    (legalRep"<<next_free_id++
            <<" ?"<<start_x_name
            <<" ?"<<start_y_name
            <<" ?"<<end_x_name
-           <<" ?"<<end_y_name<<")\n";
+           <<" ?"<<end_y_name<<")";
     }
 }
 
@@ -1005,7 +1025,7 @@ void bracketed_move::write_one_repetition(
         break;
     case 1:
         if(start_off_name!="")
-            out<<"    (noOff ?"<<start_off_name<<")\n";
+            out<<"\n    (noOff ?"<<start_off_name<<")";
         atomic->write_as_gdl(
             out,
             s,
@@ -1016,7 +1036,7 @@ void bracketed_move::write_one_repetition(
             end_off_name,
             o);
         if(next_player!="")
-            out<<"    (semiStep ?"<<next_player<<")\n";
+            out<<"\n    (semiStep ?"<<next_player<<")";
         break;
     default:
         // in fact this shouldn't happen
@@ -1037,7 +1057,7 @@ void bracketed_move::write_separate_as_gdl(
     uint& next_free_id,
     const options& o)const{
     if(repetition_number==0){
-        out<<"(<= ("<<name<<" ?x ?y ?x ?y)\n    (file ?x)\n    (rank ?y))\n";
+        out<<"(<= ("<<name<<" ?x ?y ?x ?y)\n    (file ?x)\n    (rank ?y))\n\n";
         out<<"(<= ("<<name<<" ?x ?y ?xLast ?yLast)\n";
         write_one_repetition(
             out,
@@ -1055,14 +1075,14 @@ void bracketed_move::write_separate_as_gdl(
             next_free_id,
             o
         );
-        out<<"    ("<<name<<" ?xNext ?yNext ?xLast ?yLast))\n";
+        out<<"\n    ("<<name<<" ?xNext ?yNext ?xLast ?yLast))\n\n";
     }
     else{
         assert(repetition_number>1); // otherwise no need to be here
         out<<"(<= ("<<name<<" ?x ?y ?xLast ?yLast)\n";
-        out<<"    ("<<name<<"Helper ?x ?y ?xLast ?yLast "<<repetition_number<<"))\n";
-        out<<"(<= ("<<name<<" ?x ?y ?x ?y 0)\n    (file ?x)\n    (rank ?y))\n";
-        out<<"(<= ("<<name<<"Helper ?x ?y ?xLast ?yLast ?n)\n";
+        out<<"    ("<<name<<"Helper ?x ?y ?xLast ?yLast "<<repetition_number<<"))\n\n";
+        out<<"(<= ("<<name<<" ?x ?y ?x ?y 0)\n    (file ?x)\n    (rank ?y))\n\n";
+        out<<"(<= ("<<name<<"Helper ?x ?y ?xLast ?yLast ?n)";
         write_one_repetition(
             out,
             s,
@@ -1079,8 +1099,8 @@ void bracketed_move::write_separate_as_gdl(
             next_free_id,
             o
         );
-        out<<"    (aritSucc ?nNext ?n)";
-        out<<"    ("<<name<<" ?xNext ?yNext ?xLast ?yLast ?nNext))\n";
+        out<<"\n    (arithSucc ?nNext ?n)";
+        out<<"\n    ("<<name<<" ?xNext ?yNext ?xLast ?yLast ?nNext))\n\n";
     }
 }
 
@@ -1093,7 +1113,7 @@ void bracketed_move::write_player_check_as_gdl(
     switch(tag){
     case 0:
         player_cheks_to_write.push_back(std::make_pair(next_free_id,sum));
-        out<<"    (nextPlayer"<<next_free_id++<<" ?"<<next_player_name<<")\n";
+        out<<"\n    (nextPlayer"<<next_free_id++<<" ?"<<next_player_name<<")";
         break;
     case 1:
         assert(false); // why here?
@@ -1341,6 +1361,16 @@ void moves_concatenation::to_semisteps(
         }
 }
 
+int moves_concatenation::max_repetition(const options& o)const{
+    int current_max = -1;
+    for(const auto& el: content){
+        int m = el.max_repetition(o);
+        if((m>current_max&&current_max!=0)||(m==0&&o.is_prolog_safe()))
+            current_max = m;
+    }
+    return current_max;
+}
+
 bool moves_concatenation::just_turn_changers(void)const{
     if(content.size()!=1)
         return false;
@@ -1374,10 +1404,10 @@ void moves_concatenation::write_as_gdl(
         --last_real_move;
     }
     if(last_real_move==0){ // special case; just turn changers in concatenation
-        out<<"    (equal ?"<<start_x_name<<" ?"<<end_x_name<<")\n";
-        out<<"    (equal ?"<<start_y_name<<" ?"<<end_y_name<<")\n";
-        out<<"    (noOff ?"<<start_off_name<<")\n";
-        out<<"    (noOff ?"<<end_off_name<<")\n";
+        out<<"\n    (equal ?"<<start_x_name<<" ?"<<end_x_name<<")";
+        out<<"\n    (equal ?"<<start_y_name<<" ?"<<end_y_name<<")";
+        out<<"\n    (noOff ?"<<start_off_name<<")";
+        out<<"\n    (noOff ?"<<end_off_name<<")";
     }
     else{
         for(uint i=0;i<last_real_move;++i)
@@ -1689,6 +1719,16 @@ void moves_sum::to_semisteps(
     }
 }
 
+int moves_sum::max_repetition(const options& o)const{
+    int current_max = -1;
+    for(const auto& el: content){
+        int m = el.max_repetition(o);
+        if((m>current_max&&current_max!=0)||(m==0&&o.is_prolog_safe()))
+            current_max = m;
+    }
+    return current_max;
+}
+
 bool moves_sum::just_turn_changers(void)const{
     for(uint i=0;i<content.size();++i)
         if(!content[i].just_turn_changers())
@@ -1730,14 +1770,14 @@ void moves_sum::write_as_gdl(
         );
     else{
         sums_to_write.push_back(std::make_pair(next_free_id,this));
-        out<<"    (legalSum"<<next_free_id++
+        out<<"\n    (legalSum"<<next_free_id++
            <<" ?"<<start_x_name
            <<" ?"<<start_y_name
-           <<(start_off_name==""?" no_off":"?"+start_off_name)
+           <<(start_off_name==""?" "+no_off:"?"+start_off_name)
            <<" ?"<<end_x_name
            <<" ?"<<end_y_name
-           <<(end_off_name==""?" no_off":"?"+end_off_name)
-           <<(next_player==""?" semi_step":"?"+next_player)<<")\n";
+           <<(end_off_name==""?" "+no_off:"?"+end_off_name)
+           <<(next_player==""?" "+semi_turn:"?"+next_player)<<")";
     }
 }
 
@@ -1751,7 +1791,7 @@ void moves_sum::write_separate_as_gdl(
     uint& next_free_id,
     const options& o)const{
     for(uint i=0;i<content.size();++i){
-        out<<"(<= ("<<name<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)\n";
+        out<<"(<= ("<<name<<" ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)";
         content[i].write_as_gdl(
             out,
             s,
@@ -1768,7 +1808,7 @@ void moves_sum::write_separate_as_gdl(
             next_free_id,
             o
         );
-        out<<")\n";
+        out<<")\n\n";
     }
 }
 
@@ -1779,7 +1819,7 @@ void moves_sum::write_player_check_as_gdl(
     uint& next_free_id,
     const options& o)const{
     for(uint i=0;i<content.size();++i){
-        out<<"(<= ("<<name<<" ?nextPlayer)\n";
+        out<<"(<= ("<<name<<" ?nextPlayer)";
         content[i].write_player_check_as_gdl(
             out,
             "nextPlayer",
@@ -1787,7 +1827,7 @@ void moves_sum::write_player_check_as_gdl(
             next_free_id,
             o
         );
-        out<<")\n";
+        out<<")\n\n";
     }
 }
 

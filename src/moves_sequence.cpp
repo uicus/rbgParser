@@ -77,6 +77,16 @@ void moves_sequence::split_into_semisteps(const std::set<token>& splitters){
         sequence.insert(sequence.begin(),std::move(highest_priority_move));
 }
 
+int moves_sequence::max_repetition(const options& o)const{
+    int current_max = -1;
+    for(const auto& el: sequence){
+        int m = el.max_repetition(o);
+        if((m>current_max&&current_max!=0)||(m==0&&o.is_prolog_safe()))
+            current_max = m;
+    }
+    return current_max;
+}
+
 void moves_sequence::write_as_gdl(
     std::ostream& out,
     good_pieces_sets& s,

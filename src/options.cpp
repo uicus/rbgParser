@@ -27,6 +27,7 @@ unfold_simple_powers(false),
 no_comments(false),
 no_base(false),
 no_input(false),
+prolog_safe(false),
 to_stage(2),
 output_name("a.gdl"){
 }
@@ -39,6 +40,7 @@ unfold_simple_powers(false),
 no_comments(false),
 no_base(false),
 no_input(false),
+prolog_safe(false),
 to_stage(2),
 output_name("a.gdl"){
     for(uint i=0;i<number_of_args;++i){
@@ -66,6 +68,8 @@ output_name("a.gdl"){
                 no_base = true;
             else if(!std::strcmp(args[i], "-skip-input"))
                 no_input = true;
+            else if(!std::strcmp(args[i], "-prolog-safe"))
+                prolog_safe = true;
             else if(!std::strcmp(args[i], "-p"))
                 to_stage = 0;
             else if(!std::strcmp(args[i], "-s"))
@@ -103,6 +107,10 @@ bool options::printing_base(void)const{
 
 bool options::printing_input(void)const{
     return !no_input;
+}
+
+bool options::is_prolog_safe(void)const{
+    return prolog_safe;
 }
 
 bool options::just_preprocess(void)const{

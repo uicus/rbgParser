@@ -118,9 +118,11 @@ class negatable_goal{
         void gather_information(
             int& max_turn_number,
             int& max_turns_pieces_equivalency,
+            int& max_repetition,
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
-            uint board_size)const;
+            uint board_size,
+            const options& o)const;
 };
 
 parser_result<negatable_goal> parse_negatable_goal(
@@ -157,9 +159,11 @@ class goals_conjunction{
         void gather_information(
             int& max_turn_number,
             int& max_turns_pieces_equivalency,
+            int& max_repetition,
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
-            uint board_size)const;
+            uint board_size,
+            const options& o)const;
 };
 
 parser_result<goals_conjunction> parse_goals_conjunction(
@@ -198,9 +202,11 @@ class goals_alternative{
         void gather_information(
             int& max_turn_number,
             int& max_turns_pieces_equivalency,
+            int& max_repetition,
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
-            uint board_size)const;
+            uint board_size,
+            const options& o)const;
 };
 
 std::ostream& operator<<(std::ostream& out,const goals_alternative& g);

@@ -27,6 +27,7 @@ class moves_sequence{
         void flatten(void);
         void prepare_to_split(std::set<token>& known_pieces,std::set<token>& pieces_after_split,uint& current_id,const options& o);
         void split_into_semisteps(const std::set<token>& splitters);
+        int max_repetition(const options& o)const;
 
         void write_as_gdl(
             std::ostream& out,

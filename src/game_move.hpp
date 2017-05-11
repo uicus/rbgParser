@@ -182,6 +182,8 @@ class bracketed_move{
             moves_sum& T,
             moves_sum& BT,
             const std::set<token>& splitters); // moves out value
+        int max_repetition(const options& o)const;
+
         void write_as_gdl(
             std::ostream& out,
             good_pieces_sets& s,
@@ -282,6 +284,7 @@ class moves_concatenation{
             moves_sum& T,
             moves_sum& BT,
             const std::set<token>& splitters); // moves out value
+        int max_repetition(const options& o)const;
 
         bool just_turn_changers(void)const;
         void write_as_gdl(
@@ -363,6 +366,7 @@ class moves_sum{
             moves_sum& T,
             moves_sum& BT,
             const std::set<token>& splitters); // moves out value
+        int max_repetition(const options& o)const;
 
         bool just_turn_changers(void)const;
         void write_as_gdl(

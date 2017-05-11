@@ -120,10 +120,31 @@ void parsed_game::print_moves(std::ostream& out,const options& o,uint& next_free
     s.print_all_sets(out);
     out<<"(<= (samePiece ?p ?p)\n"
        <<"    (pieceType ?p))\n\n";
-    out<<"(noOff no_off)\n\n";
+    out<<"(noOff "<<no_off<<")\n\n";
     out<<"(<= (samePlayer ?p ?p)\n"
        <<"    (role ?p))\n\n";
-    out<<"(semiStep semi_step)\n\n";
+    out<<"(semiStep "<<semi_turn<<")\n\n";
+}
+
+void parsed_game::print_arithmetics(std::ostream& out,const options& o,int max_n)const{
+    if(o.printing_comments())
+        out<<section_title("Arithmetics")<<'\n';
+    out<<'\n';
+    for(int i=0;i<max_n;++i)
+        out<<"(arithSucc "<<i<<' '<<i+1<<")\n";
+    out<<'\n';
+    out<<"(<= (sum ?x 0 ?x)\n"
+	   <<"    (arithSucc ?x ?y))\n\n"
+	   <<"(<= (sum ?x 0 ?x)\n"
+	   <<"    (arithSucc ?y ?x))\n\n"
+       <<"(<= (sum ?x ?y ?z)\n"
+	   <<"    (arithSucc ?x ?succx)\n"
+	   <<"    (arithSucc ?prevy ?y)\n"
+	   <<"    (sum ?succx ?prevy ?z))\n\n"
+       <<"(<= (sub ?x ?y ?z)\n"
+       <<"    (sum ?z ?y ?x))\n\n"
+       <<"(<= (equal ?x ?x)\n"
+       <<"    (sum ?x 0 ?x))\n\n";
 }
 
 void parsed_game::to_gdl(std::ostream& out,const options& o)const{
@@ -131,8 +152,14 @@ void parsed_game::to_gdl(std::ostream& out,const options& o)const{
     int max_turn_pieces_equivalency=-1;
     std::map<token,std::set<int>> possible_comparisons;
     std::set<token> should_count;
+    int max_repetition = -1;
+    for(const auto& el: moves){
+        int m = el.second.max_repetition(o);
+        if((m>max_repetition&&max_repetition!=0)||(m==0&&o.is_prolog_safe()))
+            max_repetition = m;
+    }
     for(const auto& el: goals)
-        el.second.gather_information(max_turn,max_turn_pieces_equivalency,possible_comparisons,should_count,brd.get_height()*brd.get_width());
+        el.second.gather_information(max_turn,max_turn_pieces_equivalency,max_repetition,possible_comparisons,should_count,brd.get_height()*brd.get_width(),o);
     if(o.printing_comments())
         out<<section_title(std::string(name))<<'\n';
     players.print_roles(out,o);
@@ -141,6 +168,7 @@ void parsed_game::to_gdl(std::ostream& out,const options& o)const{
     print_initial_state(out,o,max_turn);
     brd.print_files_and_ranks(out,o);
     print_pieces(out,o);
+    print_arithmetics(out,o,std::max(max_repetition,int(std::max(brd.get_width(),brd.get_height()))));
     if(max_turn>=0)
         print_turn_counter(out,o,max_turn,max_turn_pieces_equivalency);
     uint next_free_id = 0;
