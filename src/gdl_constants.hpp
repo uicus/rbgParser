@@ -10,6 +10,7 @@ const std::string semi_turn = "semi_turn";
 inline std::string section_title(std::string&& name);
 inline uint length_of(uint v);
 inline std::string succ(const std::string& name, uint max_number, bool logarithmic=false);
+inline std::string any_number(const std::string& digits_name,uint max_number,bool logarithmic=false);
 inline std::string unary_binary_equivalency(const std::string& name, int max_binary_number, int max_equivalent_number);
 
 inline std::string section_title(std::string&& name){
@@ -53,6 +54,18 @@ inline std::string succ(const std::string& name, uint max_number, bool logarithm
     else
         for(uint i=1;i<=max_number;++i)
             result += "("+name+' '+std::to_string(i)+' '+std::to_string(i+1)+")\n";
+    return result;
+}
+
+inline std::string any_number(const std::string& digits_name,uint max_number,bool logarithmic){
+    std::string result = "";
+    if(logarithmic){
+        uint l = length_of(max_number);
+        for(uint i=0;i<l;++i)
+            result+=" ?"+digits_name+std::to_string(i);
+    }
+    else
+        result+=" ?"+digits_name;
     return result;
 }
 

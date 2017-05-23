@@ -75,6 +75,28 @@ void parsed_game::print_base(std::ostream& out,const options& o,int max_turn)con
     out<<'\n';
 }
 
+void parsed_game::print_input(std::ostream& out,const options& o)const{
+    if(o.printing_comments())
+        out<<section_title("Input")<<'\n';
+    out<<'\n';
+    out<<"(<= (viableOff ?p)\n"
+       <<"    (pieceType ?p))\n"
+       <<"(viableOff "<<no_off<<")\n"
+       <<"(<= (viableNextPlayer ?p)\n"
+       <<"    (role ?p))\n"
+       <<"(viableNextPlayer "<<semi_turn<<")\n\n"
+       <<"(<= (input ?player noop)\n"
+       <<"    (role ?player))\n"
+       <<"(<= (input ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n"
+       <<"    (file ?x)\n"
+       <<"    (file ?xLast)\n"
+       <<"    (rank ?y)\n"
+       <<"    (rank ?yLast)\n"
+       <<"    (viableOff ?offFirst)\n"
+       <<"    (viableOff ?offLast)\n"
+       <<"    (viableNextPlayer ?nextPlayer))\n";
+}
+
 void parsed_game::print_initial_state(std::ostream& out,const options& o,int max_turn)const{
     if(o.printing_comments())
         out<<section_title("Initial state")<<'\n';
@@ -95,6 +117,7 @@ void parsed_game::print_turn_counter(std::ostream& out,const options& o,int max_
     if(o.printing_comments())
         out<<section_title("Turns counter")<<'\n';
     out<<succ("stepSucc",max_turn,true)<<'\n';
+    out<<digit<<'\n';
     if(max_equivalency>=0)
         out<<unary_binary_equivalency("equivalent",max_turn,max_equivalency)<<'\n';
     out<<'\n';
@@ -144,7 +167,80 @@ void parsed_game::print_arithmetics(std::ostream& out,const options& o,int max_n
        <<"(<= (sub ?x ?y ?z)\n"
        <<"    (sum ?z ?y ?x))\n\n"
        <<"(<= (equal ?x ?x)\n"
-       <<"    (sum ?x 0 ?x))\n\n";
+       <<"    (sum ?x 0 ?x))\n\n"
+       <<"(<= (distinctCells ?x1 ?y1 ?x2 ?y2)\n"
+       <<"    (file ?x1)\n"
+       <<"    (file ?x2)\n"
+       <<"    (rank ?y1)\n"
+       <<"    (rank ?y2)\n"
+       <<"    (distinct ?x1 ?x2))\n"
+       <<"(<= (distinctCells ?x1 ?y1 ?x2 ?y2)\n"
+       <<"    (file ?x1)\n"
+       <<"    (file ?x2)\n"
+       <<"    (rank ?y1)\n"
+       <<"    (rank ?y2)\n"
+       <<"    (distinct ?y1 ?y2))\n\n";
+}
+void parsed_game::print_next_state(std::ostream& out,const options& o,int max_turn)const{
+    if(o.printing_comments())
+        out<<section_title("Next state logic")<<'\n';
+    out<<'\n';
+    if(players.get_number_of_players()>1){
+        out<<"(<= (next (control ?nextPlayer))\n"
+           <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n"
+           <<"    (role ?nextPlayer))\n"
+           <<"(<= (next (control ?nextPlayer))\n"
+           <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast "<<semi_turn<<"))\n"
+           <<"    (true (control ?nextPlayer)))\n\n";
+    }
+    if(max_turn>=0)
+        // normal move
+        out<<"(<= (next (step"<<any_number("x",max_turn,true)<<"))\n"
+           <<"    (true (step"<<any_number("y",max_turn,true)<<"))\n"
+           <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n"
+           <<"    (role ?nextPlayer)\n"
+           <<"    (stepSucc"<<any_number("y",max_turn,true)<<any_number("y",max_turn,true)<<"))\n\n"
+        // semi step
+           <<"(<= (next (step"<<any_number("x",max_turn,true)<<"))\n"
+           <<"    (true (step"<<any_number("x",max_turn,true)<<"))\n"
+           <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast "<<semi_turn<<")))\n\n";
+    // many cases :/ we'll get through them
+    out<<"(<= (affected ?x ?y)\n"
+       <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)))\n"
+       <<"(<= (affected ?xLast ?yLast)\n"
+       <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer)))\n"
+    // 1st case: not starting nor final cell
+       <<"(<= (next (cell ?x ?y ?piece))\n"
+       <<"    (true (cell ?x ?y ?piece))\n"
+       <<"    (not (affected ?x ?y)))\n\n"
+    // 2nd case: final cell of not cycling move is real piece
+       <<"(<= (next (cell ?xLast ?yLast ?offLast))\n"
+       <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n"
+       <<"    (distinctCells ?x ?y ?xLast ?yLast)\n"
+       <<"    (pieceType ?offLast))\n\n"
+    // 3rd case: final cell of not cycling move is no_off
+       <<"(<= (next (cell ?xLast ?yLast ?piece))\n"
+       <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast "<<no_off<<" ?nextPlayer))\n"
+       <<"    (distinctCells ?x ?y ?xLast ?yLast)\n"
+       <<"    (true (cell ?xLast ?yLast ?piece)))\n\n"
+    // 4th case: first cell of not cycling move is real piece
+       <<"(<= (next (cell ?x ?y ?offFirst))\n"
+       <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n"
+       <<"    (distinctCells ?x ?y ?xLast ?yLast)\n"
+       <<"    (pieceType ?offFirst))\n\n"
+    // 5th case: first cell of not cycling move is no_off
+       <<"(<= (next (cell ?x ?y ?piece))\n"
+       <<"    (does ?player (move ?x ?y "<<no_off<<" ?xLast ?yLast ?offLast ?nextPlayer))\n"
+       <<"    (distinctCells ?x ?y ?xLast ?yLast)\n"
+       <<"    (true (cell ?x ?y ?piece)))\n\n"
+    // 6th case: (only) cell of cycling move is real piece; (we ignore first off)
+       <<"(<= (next (cell ?x ?y ?offLast))\n"
+       <<"    (does ?player (move ?x ?y ?offFirst ?x ?y ?offLast ?nextPlayer))\n"
+       <<"    (pieceType ?offLast))\n\n"
+    // 7th case: (only) cell of cycling move is no_off; (we ignore first off, as well)
+       <<"(<= (next (cell ?x ?y ?piece))\n"
+       <<"    (does ?player (move ?x ?y ?offFirst ?x ?y "<<no_off<<" ?nextPlayer))\n"
+       <<"    (true (cell ?x ?y ?piece)))\n\n";
 }
 
 void parsed_game::to_gdl(std::ostream& out,const options& o)const{
@@ -165,10 +261,13 @@ void parsed_game::to_gdl(std::ostream& out,const options& o)const{
     players.print_roles(out,o);
     if(o.printing_base())
         print_base(out,o,max_turn);
+    if(o.printing_input())
+        print_input(out,o);
     print_initial_state(out,o,max_turn);
     brd.print_files_and_ranks(out,o);
     print_pieces(out,o);
     print_arithmetics(out,o,std::max(max_repetition,int(std::max(brd.get_width(),brd.get_height()))));
+    print_next_state(out,o,max_turn);
     if(max_turn>=0)
         print_turn_counter(out,o,max_turn,max_turn_pieces_equivalency);
     uint next_free_id = 0;
