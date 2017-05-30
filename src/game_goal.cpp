@@ -189,6 +189,16 @@ std::ostream& operator<<(std::ostream& out,const piece_placement_goal& g){
     return out<<'@'<<g.piece.to_string()<<' '<<g.x<<' '<<g.y;
 }
 
+void piece_placement_goal::write_as_gdl(
+    std::ostream& out,
+    const options& o,
+    bool negated)const{
+    if(!negated)
+        out<<"\n    (true (cell "<<x<<' '<<y<<' '<<piece.to_string()<<"))";
+    else
+        out<<"\n    (not (true (cell "<<x<<' '<<y<<' '<<piece.to_string()<<")))";
+}
+
 negatable_goal::negatable_goal(void)noexcept:
 negated(false),
 alternative(nullptr),
@@ -566,6 +576,34 @@ void negatable_goal::gather_information(
     }
 }
 
+void negatable_goal::write_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    switch(tag){
+        case 0:
+            alternative->write_as_gdl(
+                out,
+                s,
+                alts_to_write,
+                next_free_id,
+                o,
+                negated); // negated value should be irrelevant at this point anyway
+            break;
+        case 1:
+            break;
+        case 2:
+            break;
+        default:
+            piece_placement->write_as_gdl(
+                out,
+                o,
+                negated);
+    }
+}
+
 goals_conjunction::goals_conjunction(std::vector<negatable_goal>&& src)noexcept:
 content(std::move(src)){}
 
@@ -710,6 +748,21 @@ void goals_conjunction::gather_information(
     const options& o)const{
     for(uint i=0;i<content.size();++i)
         content[i].gather_information(max_turn_number,max_turns_pieces_equivalency,max_repetition,possible_comparisons,should_count,board_size,o);
+}
+
+void goals_conjunction::write_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    for(uint i=0;i<content.size();++i)
+        content[i].write_as_gdl(
+            out,
+            s,
+            alts_to_write,
+            next_free_id,
+            o);
 }
 
 goals_alternative::goals_alternative(std::vector<goals_conjunction>&& src)noexcept:
@@ -864,4 +917,46 @@ void goals_alternative::gather_information(
     const options& o)const{
     for(uint i=0;i<content.size();++i)
         content[i].gather_information(max_turn_number,max_turns_pieces_equivalency,max_repetition,possible_comparisons,should_count,board_size,o);
+}
+
+void goals_alternative::write_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+    uint& next_free_id,
+    const options& o,
+    bool negated)const{
+    if(content.size()==1&&!negated)
+        content[0].write_as_gdl(
+            out,
+            s,
+            alts_to_write,
+            next_free_id,
+            o);
+    else{
+        alts_to_write.push_back(std::make_pair(next_free_id,this));
+        if(!negated)
+            out<<"\n    goalsAlternative"<<next_free_id++;
+        else
+            out<<"\n    (not goalsAlternative"<<next_free_id++<<")";
+    }
+}
+
+void goals_alternative::write_separate_as_gdl(
+    std::ostream& out,
+    good_pieces_sets& s,
+    const std::string& name,
+    std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+    uint& next_free_id,
+    const options& o)const{
+    for(uint i=0;i<content.size();++i){
+        out<<"(<= "<<name;
+        content[i].write_as_gdl(
+            out,
+            s,
+            alts_to_write,
+            next_free_id,
+            o);
+        out<<")\n\n";
+    }
 }

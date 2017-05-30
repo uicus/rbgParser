@@ -1073,8 +1073,7 @@ void bracketed_move::write_separate_as_gdl(
             bmoves_to_write,
             player_cheks_to_write,
             next_free_id,
-            o
-        );
+            o);
         out<<"\n    ("<<name<<" ?xNext ?yNext ?xLast ?yLast))\n\n";
     }
     else{
@@ -1097,8 +1096,7 @@ void bracketed_move::write_separate_as_gdl(
             bmoves_to_write,
             player_cheks_to_write,
             next_free_id,
-            o
-        );
+            o);
         out<<"\n    (arithSucc ?nNext ?n)";
         out<<"\n    ("<<name<<" ?xNext ?yNext ?xLast ?yLast ?nNext))\n\n";
     }
@@ -1121,8 +1119,7 @@ void bracketed_move::write_player_check_as_gdl(
         turn_changer->write_player_check_as_gdl(
             out,
             next_player_name,
-            o
-        );
+            o);
         break;
     }
 }
@@ -1441,8 +1438,7 @@ void moves_concatenation::write_player_check_as_gdl(
         next_player_name,
         player_cheks_to_write,
         next_free_id,
-        o
-    );
+        o);
 }
 
 moves_sum::moves_sum(void)noexcept:
@@ -1766,8 +1762,7 @@ void moves_sum::write_as_gdl(
             bmoves_to_write,
             player_cheks_to_write,
             next_free_id,
-            o
-        );
+            o);
     else{
         sums_to_write.push_back(std::make_pair(next_free_id,this));
         out<<"\n    (legalSum"<<next_free_id++
@@ -1806,8 +1801,7 @@ void moves_sum::write_separate_as_gdl(
             bmoves_to_write,
             player_cheks_to_write,
             next_free_id,
-            o
-        );
+            o);
         out<<")\n\n";
     }
 }
@@ -1825,8 +1819,7 @@ void moves_sum::write_player_check_as_gdl(
             "nextPlayer",
             player_cheks_to_write,
             next_free_id,
-            o
-        );
+            o);
         out<<")\n\n";
     }
 }

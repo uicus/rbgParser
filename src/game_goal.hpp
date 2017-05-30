@@ -61,6 +61,11 @@ class piece_placement_goal{
         bool operator==(const piece_placement_goal& m)const;
         bool operator<(const piece_placement_goal& m)const;
         friend std::ostream& operator<<(std::ostream& out,const piece_placement_goal& g);
+
+        void write_as_gdl(
+            std::ostream& out,
+            const options& o,
+            bool negated=false)const;
 };
 
 std::ostream& operator<<(std::ostream& out,const piece_placement_goal& g);
@@ -123,6 +128,13 @@ class negatable_goal{
             std::set<token>& should_count,
             uint board_size,
             const options& o)const;
+
+        void write_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+            uint& next_free_id,
+            const options& o)const;
 };
 
 parser_result<negatable_goal> parse_negatable_goal(
@@ -163,6 +175,13 @@ class goals_conjunction{
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
             uint board_size,
+            const options& o)const;
+
+        void write_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+            uint& next_free_id,
             const options& o)const;
 };
 
@@ -206,6 +225,21 @@ class goals_alternative{
             std::map<token,std::set<int>>& possible_comparisons,
             std::set<token>& should_count,
             uint board_size,
+            const options& o)const;
+
+        void write_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+            uint& next_free_id,
+            const options& o,
+            bool negated=false)const;
+        void write_separate_as_gdl(
+            std::ostream& out,
+            good_pieces_sets& s,
+            const std::string& name,
+            std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+            uint& next_free_id,
             const options& o)const;
 };
 

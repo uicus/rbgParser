@@ -199,7 +199,7 @@ void parsed_game::print_next_state(std::ostream& out,const options& o,int max_tu
            <<"    (true (step"<<any_number("y",max_turn,true)<<"))\n"
            <<"    (does ?player (move ?x ?y ?offFirst ?xLast ?yLast ?offLast ?nextPlayer))\n"
            <<"    (role ?nextPlayer)\n"
-           <<"    (stepSucc"<<any_number("y",max_turn,true)<<any_number("y",max_turn,true)<<"))\n\n"
+           <<"    (stepSucc"<<any_number("y",max_turn,true)<<any_number("x",max_turn,true)<<"))\n\n"
         // semi step
            <<"(<= (next (step"<<any_number("x",max_turn,true)<<"))\n"
            <<"    (true (step"<<any_number("x",max_turn,true)<<"))\n"
