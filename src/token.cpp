@@ -95,6 +95,9 @@ std::string tokens_table[] = {
 "$",
 "@",
 "=",
+"!",
+"!=",
+"==",
 "<",
 "<=",
 ">",
@@ -132,6 +135,9 @@ std::string token::to_string(void)const{
         case dollar:
         case at_sign:
         case equal:
+        case exclamation:
+        case not_equal:
+        case double_equal:
         case less:
         case less_equal:
         case greater:
@@ -225,6 +231,10 @@ token& token::operator+=(const token& t)throw(std::string){
         type = less_equal;
     else if(type == greater && t.type == equal)
         type = greater_equal;
+    else if(type == equal && t.type == equal)
+        type = double_equal;
+    else if(type == exclamation && t.type == equal)
+        type = not_equal;
     else if(type == identifier && t.type >= logical_and){
         std::string result_string = (*contained_string) + t.to_string();
         for(uint i=logical_and;i<=goal;++i)

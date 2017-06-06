@@ -30,7 +30,7 @@ INITA(white) INITB(white) INITA(white) INITZ
   + (CAPTUREANYDIR(o,s~king))(CAPTUREANYDIR(o,s~king))^*[o]
 
 #player red CAPTURINGMOVES(red,white,-) +> MAN(red,white,-) + KING(red,white,-)
-#player white CAPTURINGMOVES(white,red,-) +> MAN(white,red,+) + KING(white,red,+)
+#player white CAPTURINGMOVES(white,red,+) +> MAN(white,red,+) + KING(white,red,+)
 #order red white
 
 

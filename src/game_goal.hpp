@@ -14,7 +14,7 @@
 class atomic_goal{
         token first_value;
         token second_value;
-        uint kind_of_comparison : 3; // 0 -> '<', 1 -> '<=', 2 -> '=', 3 -> '>=', 4 -> '>'
+        uint kind_of_comparison : 3; // 0 -> '<', 1 -> '<=', 2 -> '=', 3 -> '>=', 4 -> '>', 5 -> '!='
     public:
         atomic_goal(void)noexcept;
         atomic_goal(token&& first,token&& second,uint kind);
@@ -133,6 +133,7 @@ class negatable_goal{
             std::ostream& out,
             good_pieces_sets& s,
             std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
             uint& next_free_id,
             const options& o)const;
 };
@@ -181,6 +182,7 @@ class goals_conjunction{
             std::ostream& out,
             good_pieces_sets& s,
             std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
             uint& next_free_id,
             const options& o)const;
 };
@@ -231,6 +233,7 @@ class goals_alternative{
             std::ostream& out,
             good_pieces_sets& s,
             std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
             uint& next_free_id,
             const options& o,
             bool negated=false)const;
@@ -239,6 +242,7 @@ class goals_alternative{
             good_pieces_sets& s,
             const std::string& name,
             std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+            std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
             uint& next_free_id,
             const options& o)const;
 };

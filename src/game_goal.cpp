@@ -1,4 +1,5 @@
 #include"game_goal.hpp"
+#include"gdl_constants.hpp"
 
 #include<cassert>
 
@@ -37,14 +38,16 @@ parser_result<atomic_goal> parse_atomic_goal(
         kind = 0;
     else if(it.current().get_type()==less_equal)
         kind = 1;
-    else if(it.current().get_type()==equal)
+    else if(it.current().get_type()==double_equal)
         kind = 2;
     else if(it.current().get_type()==greater_equal)
         kind = 3;
     else if(it.current().get_type()==greater)
         kind = 4;
+    else if(it.current().get_type()==not_equal)
+        kind = 5;
     else
-        throw msg.build_message(it.create_call_stack("Expected \'<\', \'<=\', \'=\', \'>=\' or \'>\', encountered \'"+it.current().to_string()+"\'"));
+        throw msg.build_message(it.create_call_stack("Expected \'<\', \'<=\', \'==\', \'>=\', \'>\' or \'!=\', encountered \'"+it.current().to_string()+"\'"));
     if(!it.next(msg))
         throw msg.build_message("Unexpected end of goal");
     parser_result<token> second_variable = parse_variable(it,encountered_pieces,msg);
@@ -76,13 +79,16 @@ std::ostream& operator<<(std::ostream& out,const atomic_goal& g){
         out<<"<=";
         break;
     case 2:
-        out<<'=';
+        out<<"==";
         break;
     case 3:
         out<<">=";
         break;
-    default:
+    case 4:
         out<<'>';
+        break;
+    default:
+        out<<"!=";
     }
     if(g.second_value.get_type()==number)
         out<<g.second_value.get_value();
@@ -99,12 +105,12 @@ void atomic_goal::gather_information(
     uint board_size)const{
     if(first_value.get_type()==turn){
         if(second_value.get_type()!=number)
-            max_turn_number = std::max(max_turn_number,int(kind_of_comparison==4||kind_of_comparison==1?board_size+1:board_size));
+            max_turn_number = std::max(max_turn_number,int(kind_of_comparison==4||kind_of_comparison==1||kind_of_comparison==5?board_size+1:board_size));
         else
             max_turn_number = std::max(max_turn_number,int(second_value.get_value()));
         if(second_value.get_type()==identifier){
             should_count.insert(second_value);
-            max_turns_pieces_equivalency = int(kind_of_comparison==4||kind_of_comparison==1?board_size+1:board_size);
+            max_turns_pieces_equivalency = int(kind_of_comparison==4||kind_of_comparison==1||kind_of_comparison==5?board_size+1:board_size);
         }
     }
     else if(first_value.get_type()==identifier){
@@ -113,9 +119,9 @@ void atomic_goal::gather_information(
             should_count.insert(second_value);
         }
         else if(second_value.get_type()==turn){
-            max_turn_number = std::max(max_turn_number,int(kind_of_comparison==3||kind_of_comparison==0?board_size+1:board_size));
+            max_turn_number = std::max(max_turn_number,int(kind_of_comparison==3||kind_of_comparison==0||kind_of_comparison==5?board_size+1:board_size));
             should_count.insert(first_value);
-            max_turns_pieces_equivalency = int(kind_of_comparison==3||kind_of_comparison==0?board_size+1:board_size);
+            max_turns_pieces_equivalency = int(kind_of_comparison==3||kind_of_comparison==0||kind_of_comparison==5?board_size+1:board_size);
         }
         else{
             if(possible_comparisons.count(first_value)==0)
@@ -580,6 +586,7 @@ void negatable_goal::write_as_gdl(
     std::ostream& out,
     good_pieces_sets& s,
     std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
     uint& next_free_id,
     const options& o)const{
     switch(tag){
@@ -588,6 +595,7 @@ void negatable_goal::write_as_gdl(
                 out,
                 s,
                 alts_to_write,
+                sums_to_write,
                 next_free_id,
                 o,
                 negated); // negated value should be irrelevant at this point anyway
@@ -595,6 +603,11 @@ void negatable_goal::write_as_gdl(
         case 1:
             break;
         case 2:
+            sums_to_write.push_back(std::make_pair(next_free_id,move_goal));
+            if(negated)
+                out<<"\n    (not (legalSum"<<next_free_id++<<" ?x ?y "<<no_off<<" ?xLast ?yLast "<<no_off<<' '<<semi_turn<<"))";
+            else
+                out<<"\n    (legalSum"<<next_free_id++<<" ?x ?y "<<no_off<<" ?xLast ?yLast "<<no_off<<' '<<semi_turn<<')';
             break;
         default:
             piece_placement->write_as_gdl(
@@ -754,6 +767,7 @@ void goals_conjunction::write_as_gdl(
     std::ostream& out,
     good_pieces_sets& s,
     std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
     uint& next_free_id,
     const options& o)const{
     for(uint i=0;i<content.size();++i)
@@ -761,6 +775,7 @@ void goals_conjunction::write_as_gdl(
             out,
             s,
             alts_to_write,
+            sums_to_write,
             next_free_id,
             o);
 }
@@ -923,6 +938,7 @@ void goals_alternative::write_as_gdl(
     std::ostream& out,
     good_pieces_sets& s,
     std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
     uint& next_free_id,
     const options& o,
     bool negated)const{
@@ -931,6 +947,7 @@ void goals_alternative::write_as_gdl(
             out,
             s,
             alts_to_write,
+            sums_to_write,
             next_free_id,
             o);
     else{
@@ -947,6 +964,7 @@ void goals_alternative::write_separate_as_gdl(
     good_pieces_sets& s,
     const std::string& name,
     std::vector<std::pair<uint,const goals_alternative*>>& alts_to_write,
+    std::vector<std::pair<uint,const moves_sum*>>& sums_to_write,
     uint& next_free_id,
     const options& o)const{
     for(uint i=0;i<content.size();++i){
@@ -955,6 +973,7 @@ void goals_alternative::write_separate_as_gdl(
             out,
             s,
             alts_to_write,
+            sums_to_write,
             next_free_id,
             o);
         out<<")\n\n";

@@ -149,7 +149,7 @@ bool atomic_move::is_goal_eligible(void)const{
 }
 
 std::ostream& operator<<(std::ostream& out,const atomic_move& m){
-    if(m.x!=0||m.y!=0)out<<m.x<<','<<m.y;
+    if(m.x!=0||m.y!=0||(m.every_on_legal&&m.no_off))out<<m.x<<','<<m.y;
     if((!m.every_on_legal||!m.no_off)&&(m.x!=0||m.y!=0))
         out<<',';
     if(!m.every_on_legal)
