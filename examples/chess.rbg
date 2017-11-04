@@ -228,6 +228,12 @@
         )
     )^*
     gameEnds
-    ?[whiteWins][$white=1]
-    ?[blackWins][$black=1]
+    (
+        ?[whiteWins][$white=1]
+      + ?[not whiteWins]
+    )
+    (
+        ?[blackWins][$black=1]
+      + ?[not blackWins]
+    )
 
