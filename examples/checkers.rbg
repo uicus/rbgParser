@@ -1,0 +1,158 @@
+#game = "Checkers"
+// notes:
+// - 8x8
+// - only the first capture (with man or king) is mandatory
+// - only ending at the final row makes you a king
+// - pieces are removed from board immediately
+// - king can move forwards and backwards as many squares as he wants
+// - king can move as far away as he wants from captured piece
+// - man can capture backwards, but move only forwards
+// - game is limited to 180 turns
+
+
+#line(piece) =
+    [piece, empty, piece, empty, piece, empty, piece, empty]
+#offsetLine(piece) =
+    [empty, piece, empty, piece, empty, piece, empty, piece]
+
+#board =
+    // we'll manage to do promotions without dummy 'zone' squares
+    line(whiteMan)
+    offsetLine(whiteMan)
+    line(whiteMan)
+    offsetLine(empty)
+    line(empty)
+    offsetLine(blackMan)
+    line(blackMan)
+    offsetLine(blackMan)
+
+
+#begins = black
+
+
+#singleColorPieces(color) = color~Man, color~King
+#allPieces = singleColorPieces(white), singleColorPieces(black)
+
+#anySquare =
+    (
+        (1,0)
+      + (0,1)
+      + (-1,0)
+      + (0,-1)
+    )^*
+
+#pickUpPiece(piece) =
+    {piece}/empty/
+
+#placePiece(piece) =
+    {empty}/piece/
+
+#nonCapturingManMove(color, forwardDirection) =
+    pickUpPiece(color~Man)
+    ((1, forwardDirection 1)+(-1, forwardDirection 1))
+    placePiece(color~Man)
+
+potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColor) =
+    (xDirection 1, yDirection 1)
+    {singleColorPieces(opponentColor)}
+    middleAction
+    (xDirection 1, yDirection 1)
+    {empty}
+
+#potentialJump(opponentColor, middleAction) =
+    (
+        potentialJumpInGivenDirection(+,+, middleAction, opponentColor)
+      + potentialJumpInGivenDirection(+,-, middleAction, opponentColor)
+      + potentialJumpInGivenDirection(-,+, middleAction, opponentColor)
+      + potentialJumpInGivenDirection(-,-, middleAction, opponentColor)
+    )
+
+#capturingManJump(opponentColor) = potentialJump(opponentColor, /empty/)^*
+
+#checkForPromotion(color, forwardDirection) =
+    (
+        ?['(0,forwardDirection 1)']/color~Man/
+        ?[not '(0, forwardDirection 1)']/color~King/
+    )
+
+#capturingManMove(color, opponentColor) =
+    pickUpPiece(color~Man)
+    (capturingManJump(opponentColor))^*
+    placePiece(color~Man)
+
+#atLeastOne(xDirection, yDirection) =
+    ((xDirection 1, yDirection 1){empty})^*
+    (xDirection 1, yDirection 1)
+
+#nonCapturingKingMove(color) =
+    pickUpPiece(color~King)
+    (
+        atLeastOne(+,+)
+      + atLeastOne(+,-)
+      + atLeastOne(-,+)
+      + atLeastOne(-,-)
+    )
+    placePiece(color~King)
+
+#potentialLongJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColor) =
+    atLeastOne(xDirection,yDirection)
+    {singleColorPieces(opponentColor)}
+    middleAction
+    atLeastOne(yDirection,yDirection)
+    {empty}
+
+#potentialLongJump(opponentColor, middleAction) =
+    (
+        potentialLongJumpInGivenDirection(+,+, middleAction, opponentColor)
+      + potentialLongJumpInGivenDirection(+,-, middleAction, opponentColor)
+      + potentialLongJumpInGivenDirection(-,+, middleAction, opponentColor)
+      + potentialLongJumpInGivenDirection(-,-, middleAction, opponentColor)
+    )
+
+#capturingKingMove(color, opponentColor) =
+    pickUpPiece(color~King)
+    potentialJump(opponentColor, /empty/)^*
+    placePiece(color~King)
+
+#canCapture(color, opponentColor) =
+    '
+    anySquare
+    (
+        {color~King}potentialLongJump(opponentColor,)
+      + {color~Man}potentialJump(opponentColor,)
+    )
+    '
+
+#allMoves(forwardDirection, color, opponentColor) =
+    anySquare
+    (
+        ?[not canCapture(color, opponentColor)]
+        (
+            nonCapturingManMove(color, forwardDirection)
+            checkForPromotion(color, forwardDirection)
+          + nonCapturingKingMove(color)
+        )
+      + (
+            capturingManMove(color, opponentColor)
+            checkForPromotion(color, forwardDirection)
+          + capturingKingMove(color, opponentColor)
+        )
+    )->opponentColor
+
+#endingCondition = $turn>180
+#gameContinues = ?[not endingCondition]
+#gameEnds = ?[endingCondition]
+
+#rules =
+    (
+        gameContinues
+        allMoves(+,-,white,black)
+        (
+            // ugly way to end game after white move
+            gameEnds
+          + gameContinues
+            allMoves(-,+,black,white)
+        )
+    )^*
+    gameEnds
+    // if we reach this point, it's a tie; no points need to change
