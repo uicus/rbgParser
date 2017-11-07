@@ -11,11 +11,8 @@
     [color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn]
 #emptyLine =
     [empty, empty, empty, empty, empty, empty, empty, empty]
-#dummyLineBehind =
-    [zone, zone, zone, zone, zone, zone, zone, zone]
 
 #board =
-    dummyLineBehind
     backLine(white)
     pawnLine(white)
     emptyLine
@@ -24,7 +21,6 @@
     emptyLine
     pawnLine(black)
     backLine(black)
-    dummyLineBehind
 
 
 #anyRook(color) = color~RookMoved, color~RookUnmoved
@@ -35,7 +31,7 @@
 
 
 #players = white, black
-#pieces = allPieces, empty, zone
+#pieces = allPieces, empty
 #variables = pawnDoubleMove, whiteKingMoved, blackKingMoved
 
 
@@ -137,7 +133,7 @@
     ))
 
 #castlingKingMove(forwardDirection, color, opponentColor) =
-    ?($color~KingMoved==0)
+    ? $color~KingMoved==0
     pickUpPiece(color~King)
     (
         (-1,0)(empty)isNotAttackedBy(opponentColor, forwardDirection)
@@ -163,15 +159,15 @@
 
 #checkForPromotion(forwardDirection, color) =
     (
-        ?(!((0, forwardDirection 1)(allPieces, empty)))[color~Pawn]
-      + ?(!((0, forwardDirection 1)(zone)))[majorPieces(color)]
+        ?!(0, forwardDirection 1)[color~Pawn]
+      + ?(not !(0, forwardDirection 1))[majorPieces(color)]
     )
 
 #standardPawnMove(forwardDirection, backDirection, color, opponentColor) =
     pickUpPiece(color~Pawn)
     (
         // promotion cannot occur
-        ?(!((0, backDirection 2)(zone)))
+        ?!((0, backDirection 2)(zone))
         (0, forwardDirection 1)(empty)
         (0, forwardDirection 1)(empty)
         [color~Pawn]
@@ -184,7 +180,7 @@
     )
 
 #enPassantPawnMove(forwardDirection, color) =
-    ?($pawnDoubleMove==1)
+    ? $pawnDoubleMove==1
     (
         // we are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so don't check it
         (1,0)pickUpPiece(color~Pawn)
@@ -212,7 +208,7 @@
       + enPassantPawnMove(forwardDirection, color)
     )->opponentColor
     (
-        ?($opponentColor~King==0)[$color=1]()
+        ? $opponentColor~King==0 [$color=1]()
       + ?($turn<=180 and $opponentColor~King>0)
     )
 

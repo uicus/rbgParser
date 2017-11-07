@@ -131,7 +131,7 @@
 #wholeMove =
     singleJump
     (
-        ?(canMoveFurther)
+        ? canMoveFurther
         changeJustArrivedIntoVisited
         singleJump
     )^*

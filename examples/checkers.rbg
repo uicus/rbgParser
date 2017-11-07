@@ -72,8 +72,8 @@ potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColo
 
 #checkForPromotion(color, forwardDirection) =
     (
-        ?(!((0,forwardDirection 1)))[color~Man]
-        ?(not !((0, forwardDirection 1)))[color~King]
+        ?!(0,forwardDirection 1)[color~Man]
+      + ?(not !(0, forwardDirection 1))[color~King]
     )
 
 #capturingManMove(color, opponentColor) =
@@ -145,7 +145,7 @@ potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColo
 #gameContinues =
     [$white=0]
     [$black=0]
-    ?($turn<=180)
+    ? $turn<=180
 
 #rules =
     (
