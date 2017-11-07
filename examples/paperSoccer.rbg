@@ -69,52 +69,52 @@
     blackGoalLine
 
 
-#begins = white
+#players = white, black
+#pieces = ball, whiteGoal, blackGoal, empty, visited, notVisited, justArrived
+#variables = // no variables
 
 
-#findBall = ((1,0)+(1,0)+(-1,0)+(0,-1))^*{ball}/empty/
-
-#existsAround(square) =
+#findBall = ((1,0)+(1,0)+(-1,0)+(0,-1))^*(ball)[empty]
 
 #canMoveFurther =
     '
-        ( 1, 0){visited}
-      + ( 0, 1){visited}
-      + (-1, 0){visited}
-      + ( 0,-1){visited}
-      + ( 1, 1){visited}
-      + (-1, 1){visited}
-      + ( 1,-1){visited}
-      + (-1,-1){visited}
+        ( 1, 0)(visited)
+      + ( 0, 1)(visited)
+      + (-1, 0)(visited)
+      + ( 0,-1)(visited)
+      + ( 1, 1)(visited)
+      + (-1, 1)(visited)
+      + ( 1,-1)(visited)
+      + (-1,-1)(visited)
     '
 
 #changeNeighbor(from, to) =
     (
-        ( 1, 0){from}/to/(-1, 0)
-      + ( 0, 1){from}/to/( 0,-1)
-      + (-1, 0){from}/to/( 1, 0)
-      + ( 0,-1){from}/to/( 0, 1)
-      + ( 1, 1){from}/to/(-1,-1)
-      + (-1, 1){from}/to/( 1,-1)
-      + ( 1,-1){from}/to/(-1, 1)
-      + (-1,-1){from}/to/( 1, 1)
+        ( 1, 0)(from)[to](-1, 0)
+      + ( 0, 1)(from)[to]( 0,-1)
+      + (-1, 0)(from)[to]( 1, 0)
+      + ( 0,-1)(from)[to]( 0, 1)
+      + ( 1, 1)(from)[to](-1,-1)
+      + (-1, 1)(from)[to]( 1,-1)
+      + ( 1,-1)(from)[to](-1, 1)
+      + (-1,-1)(from)[to]( 1, 1)
     )
 
 #changeJustArrivedIntoVisited =
     changeNeighbor(justArrived, visited)
 
 #endMove =
-    ?[not canMoveFurther]
+    ?(not canMoveFurther)
     changeJustArrivedIntoVisited
 
 #visitAuxilialrySquare(x, y, how) =
-    (x, y){notVisited}/how/
+    (x, y)(notVisited)[how]
 
 #jumpInGivenDirection(x, y) =
-    {empty}
+    (empty)
     visitAuxilialrySquare(x, y, visited)
     visitAuxilialrySquare(x, y, justArrived)
-    (x, y){empty, whiteGoal, blackGoal}
+    (x, y)(empty, whiteGoal, blackGoal)
 
 #singleJump =
     (
@@ -131,19 +131,22 @@
 #wholeMove =
     singleJump
     (
-        ?[canMoveFurther]
+        ?(canMoveFurther)
         changeJustArrivedIntoVisited
         singleJump
     )^*
     endMove
+    (
+        (whiteGoal)[$black=1]()
+      + (blackGoal)[$white=1]()
+      + (empty)[$black=0][$white=0]
+    )
 
 #rules =
     findBall
     (
+        [$white=1]
         wholeMove->black
-        ({whiteGoal, blackGoal}+wholeMove->white)
+        [$black=1]
+        wholeMove->white
     )^*
-    (
-        {whiteGoal}[$black=1]
-      + {blackGoal}[$white=1]
-    )

@@ -27,11 +27,14 @@
     offsetLine(blackMan)
 
 
-#begins = black
-
-
 #singleColorPieces(color) = color~Man, color~King
 #allPieces = singleColorPieces(white), singleColorPieces(black)
+
+
+#players = black, white
+#pieces = allPieces, empty
+#variables = // no variables
+
 
 #anySquare =
     (
@@ -42,22 +45,22 @@
     )^*
 
 #pickUpPiece(piece) =
-    {piece}/empty/
+    (piece)[empty]
 
 #placePiece(piece) =
-    {empty}/piece/
+    (empty)[piece]
 
 #nonCapturingManMove(color, forwardDirection) =
     pickUpPiece(color~Man)
     ((1, forwardDirection 1)+(-1, forwardDirection 1))
-    placePiece(color~Man)
+    (empty)
 
 potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColor) =
     (xDirection 1, yDirection 1)
-    {singleColorPieces(opponentColor)}
+    (singleColorPieces(opponentColor))
     middleAction
     (xDirection 1, yDirection 1)
-    {empty}
+    (empty)
 
 #potentialJump(opponentColor, middleAction) =
     (
@@ -67,21 +70,19 @@ potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColo
       + potentialJumpInGivenDirection(-,-, middleAction, opponentColor)
     )
 
-#capturingManJump(opponentColor) = potentialJump(opponentColor, /empty/)^*
-
 #checkForPromotion(color, forwardDirection) =
     (
-        ?['(0,forwardDirection 1)']/color~Man/
-        ?[not '(0, forwardDirection 1)']/color~King/
+        ?(!((0,forwardDirection 1)))[color~Man]
+        ?(not !((0, forwardDirection 1)))[color~King]
     )
 
 #capturingManMove(color, opponentColor) =
     pickUpPiece(color~Man)
-    (capturingManJump(opponentColor))^*
-    placePiece(color~Man)
+    potentialJump(opponentColor, [empty])^*
+    (empty)
 
 #atLeastOne(xDirection, yDirection) =
-    ((xDirection 1, yDirection 1){empty})^*
+    ((xDirection 1, yDirection 1)(empty))^*
     (xDirection 1, yDirection 1)
 
 #nonCapturingKingMove(color) =
@@ -96,10 +97,10 @@ potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColo
 
 #potentialLongJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColor) =
     atLeastOne(xDirection,yDirection)
-    {singleColorPieces(opponentColor)}
+    (singleColorPieces(opponentColor))
     middleAction
     atLeastOne(yDirection,yDirection)
-    {empty}
+    (empty)
 
 #potentialLongJump(opponentColor, middleAction) =
     (
@@ -111,22 +112,24 @@ potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColo
 
 #capturingKingMove(color, opponentColor) =
     pickUpPiece(color~King)
-    potentialJump(opponentColor, /empty/)^*
+    potentialJump(opponentColor, [empty])^*
     placePiece(color~King)
 
 #canCapture(color, opponentColor) =
-    '
-    anySquare
-    (
-        {color~King}potentialLongJump(opponentColor,)
-      + {color~Man}potentialJump(opponentColor,)
+    !(
+        anySquare
+        (
+            {color~King}potentialLongJump(opponentColor,)
+          + {color~Man}potentialJump(opponentColor,)
+        )
     )
-    '
 
 #allMoves(forwardDirection, color, opponentColor) =
+    [$opponentColor=1]
+    [$color=0]
     anySquare
     (
-        ?[not canCapture(color, opponentColor)]
+        ?(not canCapture(color, opponentColor))
         (
             nonCapturingManMove(color, forwardDirection)
             checkForPromotion(color, forwardDirection)
@@ -139,20 +142,16 @@ potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColo
         )
     )->opponentColor
 
-#endingCondition = $turn>180
-#gameContinues = ?[not endingCondition]
-#gameEnds = ?[endingCondition]
+#gameContinues =
+    [$white=0]
+    [$black=0]
+    ?($turn<=180)
 
 #rules =
     (
         gameContinues
         allMoves(+,-,white,black)
-        (
-            // ugly way to end game after white move
-            gameEnds
-          + gameContinues
-            allMoves(-,+,black,white)
-        )
+        gameContinues
+        allMoves(-,+,black,white)
     )^*
-    gameEnds
-    // if we reach this point, it's a tie; no points need to change
+

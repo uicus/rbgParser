@@ -1,6 +1,5 @@
 #game = "Chess"
 // notes:
-// - being unable to move means a defeat, not a tie
 // - you have to actually capture opponent's king, not just check it
 // - no rules about repeating states or tie after given number of turns without pawn moves
 // - game is limited to 180 turns
@@ -28,14 +27,17 @@
     dummyLineBehind
 
 
-#begins = white
-
-
 #anyRook(color) = color~RookMoved, color~RookUnmoved
 #majorPieces(color) = anyRook(color), color~Knight, color~Bishop, color~Queen
 #singleColorPieces(color) = color~Pawn, color~King, majorPieces(color)
 #emptyOrColor(color) = singleColorPieces(color), empty
 #allPieces = singleColorPieces(white), singleColorPieces(black)
+
+
+#players = white, black
+#pieces = allPieces, empty, zone
+#variables = pawnDoubleMove, whiteKingMoved, blackKingMoved
+
 
 #anySquare =
     (
@@ -59,18 +61,18 @@
 
 #diagonalLine =
     (
-        (( 1, 1){empty})^*( 1, 1)
-      + (( 1,-1){empty})^*( 1,-1)
-      + ((-1, 1){empty})^*(-1, 1)
-      + ((-1,-1){empty})^*(-1,-1)
+        (( 1, 1)(empty))^*( 1, 1)
+      + (( 1,-1)(empty))^*( 1,-1)
+      + ((-1, 1)(empty))^*(-1, 1)
+      + ((-1,-1)(empty))^*(-1,-1)
     )
 
 #parallelLine =
     (
-        (( 1, 0){empty})^*( 1, 0)
-      + (( 0, 1){empty})^*( 0, 1)
-      + ((-1, 0){empty})^*(-1, 0)
-      + (( 0,-1){empty})^*( 0,-1)
+        (( 1, 0)(empty))^*( 1, 0)
+      + (( 0, 1)(empty))^*( 0, 1)
+      + ((-1, 0)(empty))^*(-1, 0)
+      + (( 0,-1)(empty))^*( 0,-1)
     )
 
 #anyDirectionLine =
@@ -92,11 +94,11 @@
     )
 
 #captureAnyBy(capturingPiece, opponentColor) =
-    {emptyOrColor(opponentColor)}
-    /capturingPiece/
+    (emptyOrColor(opponentColor))
+    [capturingPiece]
 
 #pickUpPiece(piece) =
-    {piece}/empty/
+    (piece)[empty]
 
 #standardMove(piece, opponentColor, movePattern) =
     pickUpPiece(piece)
@@ -122,31 +124,31 @@
 #isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
 #isAttackedByKing(opponentColor) = anyNeighborSquare(opponentColor~King}
 #isAttackedByPawn(opponentColor, forwardDirection) =
-    ((1, forwardDirection 1) + (-1, forwardDirection 1)){opponentColor~Pawn}
+    ((1, forwardDirection 1) + (-1, forwardDirection 1))(opponentColor~Pawn)
 
 #isNotAttackedBy(opponentColor, forwardDirection) =
-    ?[not'
+    ?(not !(
         isAttackedByBishop(opponentColor)
       + isAttackedByRook(opponentColor)
       + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
       + isAttackedByPawn(opponentColor, forwardDirection)
-    ']
+    ))
 
 #castlingKingMove(forwardDirection, color, opponentColor) =
-    ?[$color~KingMoved==0]
+    ?($color~KingMoved==0)
     pickUpPiece(color~King)
     (
-        (-1,0){empty}isNotAttackedBy(opponentColor, forwardDirection)
-        (-1,0){empty}isNotAttackedBy(opponentColor, forwardDirection)
-        /color~King/
+        (-1,0)(empty)isNotAttackedBy(opponentColor, forwardDirection)
+        (-1,0)(empty)isNotAttackedBy(opponentColor, forwardDirection)
+        [color~King]
         (-1,0)pickUpPiece(color~RookUnmoved)
         (2,0)
-      + (1,0){empty}isNotAttackedBy(opponentColor, forwardDirection)
-        (1,0){empty}isNotAttackedBy(opponentColor, forwardDirection)
-        /color~King/
-        (1,0){empty} // rook CAN pass through attacked square
+      + (1,0)(empty)isNotAttackedBy(opponentColor, forwardDirection)
+        (1,0)(empty)isNotAttackedBy(opponentColor, forwardDirection)
+        [color~King]
+        (1,0)(empty) // rook CAN pass through attacked square
         (1,0)pickUpPiece(color~RookUnmoved)
         (-3,0)
     )
@@ -156,40 +158,40 @@
 #kingMove(forwardDirection, color, opponentColor) =
     (
         castlingKingMove(forwardDirection, color, opponentColor)
-      + standardKingMove(color, opponentColor)
+      + standardKingMove(forwardDirection, color, opponentColor)
     )
 
 #checkForPromotion(forwardDirection, color) =
     (
-        ?['(0, forwardDirection 1){allPieces, empty}']/color~Pawn/
-      + ?['(0, forwardDirection 1){zone}']/majorPieces(color)/
+        ?(!((0, forwardDirection 1)(allPieces, empty)))[color~Pawn]
+      + ?(!((0, forwardDirection 1)(zone)))[majorPieces(color)]
     )
 
 #standardPawnMove(forwardDirection, backDirection, color, opponentColor) =
     pickUpPiece(color~Pawn)
     (
         // promotion cannot occur
-        ?['(0, backDirection 2){zone}']
-        (0, forwardDirection 1){empty}
-        (0, forwardDirection 1){empty}
-        /color~Pawn/
+        ?(!((0, backDirection 2)(zone)))
+        (0, forwardDirection 1)(empty)
+        (0, forwardDirection 1)(empty)
+        [color~Pawn]
         [$pawnDoubleMove=1]
       + (
-            (0, forwardDirection 1){empty}
-          + ((1, forwardDirection 1)+(-1, forwardDirection 1)){singleColorPieces(opponentColor)}
+            (0, forwardDirection 1)(empty)
+          + ((1, forwardDirection 1)+(-1, forwardDirection 1))(singleColorPieces(opponentColor))
         )
         checkForPromotion(forwardDirection, color)
     )
 
 #enPassantPawnMove(forwardDirection, color) =
-    ?[$pawnDoubleMove==1]
+    ?($pawnDoubleMove==1)
     (
         // we are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so don't check it
         (1,0)pickUpPiece(color~Pawn)
-        (-1,0)/empty/
+        (-1,0)[empty]
         (0, forwardDirection 1)
       + (-1,0)pickUpPiece(color~Pawn)
-        (1,0)/empty/
+        (1,0)[empty]
         (0, forwardDirection 1)
     )
     [$pawnDoubleMove=0]
@@ -204,36 +206,21 @@
           + rookMove(color, opponentColor)
           + knightMove(color, opponentColor)
           + queenMove(color, opponentColor)
-          + kingMove(color, opponentColor, forwardDirection)
+          + kingMove(color, opponentColor)
           + standardPawnMove(forwardDirection, backDirection, color, opponentColor)
         )
       + enPassantPawnMove(forwardDirection, color)
     )->opponentColor
-
-#whiteWins = $blackKing==0
-#blackWins = $whiteKing==0
-#endingCondition = whiteWins or blackWins or $turn>180
-#gameContinues = ?[not endingCondition]
-#gameEnds = ?[endingCondition]
+    (
+        ?($opponentColor~King==0)[$color=1]()
+      + ?($turn<=180 and $opponentColor~King>0)
+    )
 
 #rules =
     (
         gameContinues
         allMoves(+,-,white,black)
-        (
-            // ugly way to end game after white move
-            gameEnds
-          + gameContinues
-            allMoves(-,+,black,white)
-        )
+        gameContinues
+        allMoves(-,+,black,white)
     )^*
-    gameEnds
-    (
-        ?[whiteWins][$white=1]
-      + ?[not whiteWins]
-    )
-    (
-        ?[blackWins][$black=1]
-      + ?[not blackWins]
-    )
 
