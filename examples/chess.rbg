@@ -218,9 +218,7 @@
 
 #rules =
     (
-        gameContinues
         allMoves(+,-,white,black)
-        gameContinues
         allMoves(-,+,black,white)
     )^*
 
