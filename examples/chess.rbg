@@ -96,7 +96,7 @@
 #pickUpPiece(piece) =
     (piece)[empty]
 
-#standardMove(piece, opponentColor, movePattern) =
+#standardMove(piece, movePattern, opponentColor) =
     pickUpPiece(piece)
     movePattern
     captureAnyBy(piece, opponentColor)
@@ -114,11 +114,11 @@
     standardMove(color~King, anyNeighborSquare, opponentColor)
     [$color~KingMoved=1]
 
-#isAttackedByBishop(opponentColor) = diagonalLine{opponentColor~Bishop}
-#isAttackedByRook(opponentColor) = parallelLine{anyRook(opponentColor)}
-#isAttackedByQueen(opponentColor) = anyDirectionLine{opponentColor~Queen}
-#isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
-#isAttackedByKing(opponentColor) = anyNeighborSquare(opponentColor~King}
+#isAttackedByBishop(opponentColor) = diagonalLine(opponentColor~Bishop)
+#isAttackedByRook(opponentColor) = parallelLine(anyRook(opponentColor))
+#isAttackedByQueen(opponentColor) = anyDirectionLine(opponentColor~Queen)
+#isAttackedByKnight(opponentColor) = knightHop(opponentColor~Knight)
+#isAttackedByKing(opponentColor) = anyNeighborSquare(opponentColor~King)
 #isAttackedByPawn(opponentColor, forwardDirection) =
     ((1, forwardDirection 1) + (-1, forwardDirection 1))(opponentColor~Pawn)
 
@@ -148,13 +148,13 @@
         (1,0)pickUpPiece(color~RookUnmoved)
         (-3,0)
     )
-    /color~RookMoved/
+    [color~RookMoved]
     [$color~KingMoved=1]
 
 #kingMove(forwardDirection, color, opponentColor) =
     (
         castlingKingMove(forwardDirection, color, opponentColor)
-      + standardKingMove(forwardDirection, color, opponentColor)
+      + standardKingMove(color, opponentColor)
     )
 
 #checkForPromotion(forwardDirection, color) =
@@ -202,7 +202,7 @@
           + rookMove(color, opponentColor)
           + knightMove(color, opponentColor)
           + queenMove(color, opponentColor)
-          + kingMove(color, opponentColor)
+          + kingMove(forwardDirection, color, opponentColor)
           + standardPawnMove(forwardDirection, backDirection, color, opponentColor)
         )
       + enPassantPawnMove(forwardDirection, color)

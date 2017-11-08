@@ -41,7 +41,6 @@ parser_result<T> success(T&& result){
 }
 
 parser_result<int> parse_int(slice_iterator& it, messages_container& msg)throw(message);
-parser_result<std::set<token>> parse_tokens_set(slice_iterator& it, messages_container& msg)throw(message);
 parser_result<token> parse_variable(slice_iterator& it, const std::set<token>& encountered_pieces, messages_container& msg)throw(message);
 
 #endif

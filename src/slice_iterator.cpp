@@ -164,6 +164,7 @@ bool backtrace_info::has_value(uint current_end)const{
 
 slice_iterator::slice_iterator(const slice& s, const macro_bank* mcrs)noexcept:
 top(),
+error_if_end_of_input("Unexpected end of input"),
 c(),
 started(false),
 current_begin(0),
@@ -176,6 +177,7 @@ macros(mcrs){
 
 slice_iterator::slice_iterator(const slice_iterator& src)noexcept:
 top(src.top),
+error_if_end_of_input(src.error_if_end_of_input),
 c(src.c),
 started(src.started),
 current_begin(src.current_begin),
@@ -186,6 +188,7 @@ macros(src.macros){
 
 slice_iterator::slice_iterator(slice_iterator&& src)noexcept:
 top(src.top),
+error_if_end_of_input(std::move(src.error_if_end_of_input)),
 c(src.c),
 started(src.started),
 current_begin(src.current_begin),
@@ -225,7 +228,9 @@ bool slice_iterator::has_value(void)const{
     return top || c.contains_full_token();
 }
 
-const token& slice_iterator::current(void)const{
+const token& slice_iterator::current(messages_container& msg)const throw(message){
+    if(!has_value())
+        throw msg.build_message(error_if_end_of_input);
     if(c.contains_full_token())
         return c.get_current_token();
     else
@@ -316,4 +321,18 @@ bool slice_iterator::next(messages_container& msg)throw(message){
         else if(handle_standard_token(msg))
             return true;
     }
+}
+
+void slice_iterator::swap_parsing_context_string(std::string& context_string){
+    std::swap(error_if_end_of_input, context_string);
+}
+
+parsing_context_string_guard::parsing_context_string_guard(slice_iterator* iterator, std::string&& current_context_string):
+guarded_iterator(iterator){
+    guarded_iterator->swap_parsing_context_string(current_context_string);
+    previous_context_string = std::move(current_context_string);
+}
+
+parsing_context_string_guard::~parsing_context_string_guard(void){
+    guarded_iterator->swap_parsing_context_string(previous_context_string);
 }

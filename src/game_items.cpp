@@ -2,19 +2,16 @@
 
 #include"game_items.hpp"
 #include"types.hpp"
-#include"game_board.hpp"
 #include"parser_helpers.hpp"
-#include"game_order.hpp"
-#include"moves_sequence.hpp"
-#include"game_goal.hpp"
 
 game_items::game_items(void)noexcept:
 macros(),
 game_segment(nullptr),
 board_segment(nullptr),
-player_segments(),
-order_segment(nullptr),
-goal_segments(),
+players_segment(nullptr),
+variables_segment(nullptr),
+pieces_segment(nullptr),
+rules_segment(nullptr),
 next_item_context_order(0){
 }
 
@@ -22,11 +19,12 @@ game_items::game_items(game_items&& src)noexcept:
 macros(std::move(src.macros)),
 game_segment(src.game_segment),
 board_segment(src.board_segment),
-player_segments(std::move(src.player_segments)),
-order_segment(src.order_segment),
-goal_segments(std::move(src.goal_segments)),
+players_segment(src.players_segment),
+variables_segment(src.variables_segment),
+pieces_segment(src.pieces_segment),
+rules_segment(src.rules_segment),
 next_item_context_order(src.next_item_context_order){
-    src.game_segment = src.board_segment = src.order_segment = nullptr;
+    src.game_segment = src.board_segment = src.players_segment = src.variables_segment = src.pieces_segment = src.rules_segment = nullptr;
 }
 
 game_items& game_items::operator=(game_items&& src)noexcept{
@@ -36,9 +34,10 @@ game_items& game_items::operator=(game_items&& src)noexcept{
         macros = std::move(temp);
         std::swap(game_segment,src.game_segment);
         std::swap(board_segment,src.board_segment);
-        std::swap(player_segments,src.player_segments);
-        std::swap(order_segment,src.order_segment);
-        std::swap(goal_segments,src.goal_segments);
+        std::swap(players_segment,src.players_segment);
+        std::swap(variables_segment,src.variables_segment);
+        std::swap(pieces_segment,src.pieces_segment);
+        std::swap(rules_segment,src.rules_segment);
         next_item_context_order = src.next_item_context_order;
     }
     return *this;
@@ -47,12 +46,15 @@ game_items& game_items::operator=(game_items&& src)noexcept{
 game_items::~game_items(void)noexcept{
     delete game_segment;
     delete board_segment;
-    delete order_segment;
+    delete players_segment;
+    delete variables_segment;
+    delete pieces_segment;
+    delete rules_segment;
 }
 
 uint game_items::input_macro(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
     if(current_token >= input.size() || input[current_token].get_type() == hash)
-        throw msg.build_message(input[current_token-1].get_position(),"Empty \'def\' directive");
+        throw msg.build_message(input[current_token-1].get_position(),"Empty macro directive");
     if(input[current_token].get_type() != identifier)
         throw msg.build_message(input[current_token].get_position(),"Expected identifier, encountered \'"+input[current_token].to_string()+"\'");
     token name = input[current_token];
@@ -70,261 +72,54 @@ uint game_items::input_macro(const std::vector<token>& input,uint current_token,
     uint end = current_token = reach_end_of_directive(input,begin);
     macro m = macro(std::move(args),&input,begin,end,next_item_context_order++);
     if(m.is_empty())
-        msg.add_message(name.get_position(),"This macro doesn't have body");
+        msg.add_message(name.get_position(),"Macro \'"+name.to_string()+"\' doesn't have body");
     macros.add_macro(std::move(name),std::move(m));
     return current_token;
 }
 
-uint game_items::input_game(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+uint game_items::input_slice(
+const std::vector<token>& input,
+uint current_token,
+const std::string& segment_name,
+slice* game_items::*segment_position,
+bool should_be_nonempty,
+messages_container& msg)throw(message){
+    if(current_token >= input.size())
+        throw msg.build_message(input[current_token-1].get_position(),"Unexpected end of \'"+segment_name+"\' segment");
+    if(input[current_token].get_type() != equal)
+        throw msg.build_message(input[current_token].get_position(),"Expected \'=\' after \'"+segment_name+"\' segment name, encountered \'"+input[current_token].to_string()+"\'");
+    ++current_token;
     uint begin = current_token;
     uint end = current_token = reach_end_of_directive(input,current_token);
     slice* s = new slice(&input,begin,end,next_item_context_order++);
-    if(s->is_empty())
-        msg.add_message(input[begin-1].get_position(),"Empty \'game\' directive");
-    game_segment = s;
+    if(s->is_empty() && should_be_nonempty)
+        msg.add_message(input[begin-1].get_position(),"Empty \'"+segment_name+"\' directive");
+    this->*segment_position = s;
     return end;
+}
+
+uint game_items::input_game(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+    return input_slice(input, current_token, "game", &game_items::game_segment,true,msg);
 }
 
 uint game_items::input_board(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
-    uint begin = current_token;
-    uint end = current_token = reach_end_of_directive(input,current_token);
-    slice* s = new slice(&input,begin,end,next_item_context_order++);
-    if(s->is_empty())
-        msg.add_message(input[begin-1].get_position(),"Empty \'board\' directive");
-    board_segment = s;
-    return end;
+    return input_slice(input, current_token, "board", &game_items::board_segment,true,msg);
 }
 
-uint game_items::input_player(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
-    if(current_token >= input.size() || input[current_token].get_type() == hash)
-        throw msg.build_message(input[current_token-1].get_position(),"Empty \'player\' directive");
-    if(input[current_token].get_type() != identifier)
-        throw msg.build_message(input[current_token].get_position(),"Expected identifier, encountered \'"+input[current_token].to_string()+"\'");
-    if(player_segments.count(input[current_token]))
-        msg.add_message(input[current_token].get_position(),"Player +\'"+input[current_token].to_string()+"\' already defined, overwriting previous definition");
-    token name = input[current_token];
-    uint begin = current_token+1;
-    uint end = current_token = reach_end_of_directive(input,begin);
-    slice s = slice(&input,begin,end,next_item_context_order++);
-    if(s.is_empty())
-        msg.add_message(input[begin-1].get_position(),"Empty \'player\' body");
-    player_segments.insert(std::make_pair(std::move(name),std::move(s)));
-    return end;
+uint game_items::input_players(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+    return input_slice(input, current_token, "players", &game_items::players_segment,true,msg);
 }
 
-uint game_items::input_order(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
-    uint begin = current_token;
-    uint end = current_token = reach_end_of_directive(input,current_token);
-    slice* s = new slice(&input,begin,end,next_item_context_order++);
-    if(s->is_empty())
-        msg.add_message(input[begin-1].get_position(),"Empty \'order\' directive");
-    order_segment = s;
-    return end;
+uint game_items::input_variables(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+    return input_slice(input, current_token, "variables", &game_items::variables_segment,false,msg);
 }
 
-uint game_items::input_goal(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
-    if(current_token >= input.size() || input[current_token].get_type() == hash)
-        throw msg.build_message(input[current_token-1].get_position(),"Empty \'goal\' directive");
-    if(input[current_token].get_type() != identifier)
-        throw msg.build_message(input[current_token].get_position(),"Expected identifier, encountered \'"+input[current_token].to_string()+"\'");
-    if(goal_segments.count(input[current_token]))
-        msg.add_message(input[current_token].get_position(),"Goal +\'"+input[current_token].to_string()+"\' already defined, overwriting previous definition");
-    token name = input[current_token];
-    uint begin = current_token+1;
-    uint end = current_token = reach_end_of_directive(input,begin);
-    slice s = slice(&input,begin,end,next_item_context_order++);
-    if(s.is_empty())
-        msg.add_message(input[begin-1].get_position(),"Empty \'goal\' body");
-    goal_segments.insert(std::make_pair(std::move(name),std::move(s)));
-    return end;
+uint game_items::input_pieces(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+    return input_slice(input, current_token, "pieces", &game_items::pieces_segment,true,msg);
 }
 
-void game_items::print_rbg_slice(const slice& s, std::ostream& out, messages_container& msg)const throw(message){
-    slice_iterator it(s,&macros);
-    while(it.next(msg))
-        out<<it.current().to_string()<<' ';
-}
-
-void game_items::print_rbg_game(std::ostream& out, messages_container& msg)const throw(message){
-    if(game_segment != nullptr){
-        out<<"#game ";
-        print_rbg_slice(*game_segment,out,msg);
-        out<<std::endl<<std::endl;
-    }
-}
-
-void game_items::print_rbg_board(std::ostream& out, messages_container& msg)const throw(message){
-    if(board_segment != nullptr){
-        out<<"#board";
-        slice_iterator it(*board_segment,&macros);
-        if(it.next(msg)){
-            if(it.current().get_type() != number || it.current().get_value() == 0){
-                msg.add_message(it.create_call_stack("Directive \'board\' should begin with width (positive integer); printing it in a single line"));
-                while(it.next(msg))
-                    out<<' '<<it.current().to_string();
-            }
-            else{
-                uint width = it.current().get_value();
-                out<<' '<<it.current().to_string();
-                int current_token_number = 0;
-                while(it.next(msg)){
-                    if((current_token_number-1)%width == 0)
-                        print_tabs(out,1);
-                    out<<' '<<it.current().to_string();
-                    ++current_token_number;
-                }
-            }
-        }
-        out<<std::endl<<std::endl;
-    }
-}
-
-void game_items::print_rbg_order(std::ostream& out, messages_container& msg)const throw(message){
-    if(order_segment != nullptr){
-        out<<"#order ";
-        print_rbg_slice(*order_segment,out,msg);
-        out<<std::endl<<std::endl;
-    }
-}
-
-void game_items::print_rbg_players(std::ostream& out,messages_container& msg)const throw(message){
-    for(const auto& el: player_segments){
-        out<<"#player "<<el.first.to_string()<<std::endl;
-        slice_iterator it(el.second,&macros);
-        if(it.next(msg))
-            out<<"       "<<it.current().to_string();
-        std::vector<bool> first_item_encountered;
-        bool last_was_bracket = true;
-        while(it.next(msg)){
-            if(it.current().get_type() == double_plus){
-                print_tabs(out,1);
-                first_item_encountered.clear();
-                first_item_encountered.push_back(false);
-                last_was_bracket = true;
-            }
-            if(it.current().get_type() == left_round_bracket){
-                if(first_item_encountered.empty())
-                    first_item_encountered.push_back(false);
-                if(!first_item_encountered.back()){
-                    print_tabs(out,first_item_encountered.size()+1);
-                    out<<"  ";
-                    first_item_encountered.back() = true;
-                }
-                first_item_encountered.push_back(false);
-            }
-            if(it.current().get_type() == plus && last_was_bracket)
-                print_tabs(out,first_item_encountered.size()+1);
-            if(it.current().get_type() == right_round_bracket){
-                if(!first_item_encountered.empty())
-                    first_item_encountered.pop_back();
-                last_was_bracket = true;
-            }
-            else
-                last_was_bracket = false;
-            out<<' '<<it.current().to_string();
-        }
-        out<<std::endl<<std::endl;
-    }
-}
-
-void game_items::print_rbg_goals(std::ostream& out,messages_container& msg)const throw(message){
-    for(const auto& el: goal_segments){
-        out<<"#goal "<<el.first.to_string()<<' ';
-        print_rbg_slice(el.second,out,msg);
-        out<<std::endl<<std::endl;
-    }
-}
-
-void game_items::print_rbg(std::ostream& out, messages_container& msg)const throw(message){
-    print_rbg_game(out,msg);
-    print_rbg_board(out,msg);
-    print_rbg_players(out,msg);
-    print_rbg_order(out,msg);
-    print_rbg_goals(out,msg);
-}
-
-game_board game_items::parse_board(messages_container& msg, std::set<token>& encountered_pieces)const throw(message){
-    if(board_segment == nullptr)
-        throw msg.build_message("No \'board\' directive");
-    slice_iterator it(*board_segment,&macros);
-    if(!it.next(msg))
-        throw msg.build_message("Unexpected end of \'board\' directive (expected two integers more)");
-    parser_result<int> result = parse_int(it,msg);
-    if(!result.is_success())
-        throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
-    if(result.get_value() <= 0)
-        throw msg.build_message("Board width must be positive");
-    uint width = result.get_value();
-    if(!it.has_value())
-        throw msg.build_message("Unexpected end of \'board\' directive (expected one integer more)");
-    result = parse_int(it,msg);
-    if(!result.is_success())
-        throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current().to_string()+"\'"));
-    if(result.get_value() <= 0)
-        throw msg.build_message("Board height must be positive");
-    uint height = result.get_value();
-    game_board brd(width,height);
-    brd.fill_with_slice(it,encountered_pieces,msg);
-    if(it.has_value())
-        throw msg.build_message(it.create_call_stack("Unexpected tokens at the end of \'board\' directive"));
-    return brd;
-}
-
-std::string game_items::parse_name(messages_container& msg)const throw(message){
-    if(game_segment==nullptr)
-        throw msg.build_message("No \'game\' directive");
-    slice_iterator it(*game_segment,&macros);
-    if(!it.next(msg))
-        throw msg.build_message("Unexpected end of \'game\' directive");
-    if(it.current().get_type()!=quotation)
-        throw msg.build_message(it.create_call_stack("Expected string, encountered \'"+it.current().to_string()+"\'"));
-    std::string result = it.current().get_string_content();
-    if(it.next(msg))
-        throw msg.build_message(it.create_call_stack("Unexpected characters at the end of \'game\' directive"));
-    return result;
-}
-
-parsed_game game_items::parse_game(messages_container& msg)const throw(message){
-    std::set<token> encountered_pieces;
-    if(order_segment==nullptr)
-        throw msg.build_message("No \'order\' directive");
-    slice_iterator order_it(*order_segment,&macros);
-    if(!order_it.next(msg))
-        throw msg.build_message("Empty \'order\' directive");
-    game_order players = parse_game_order(order_it,msg,player_segments);
-    std::map<token,moves_sequence> players_moves;
-    for(uint i=0;i<players.get_number_of_players();++i){
-        const token& name = players.get_player_name(i,0);
-        slice_iterator moves_it(player_segments.at(name),&macros);
-        if(!moves_it.next(msg))
-            throw msg.build_message("Empty "+name.to_string()+" \'player\' directive");
-        players_moves[name] = parse_moves_sequence(moves_it,encountered_pieces,players,i,msg);
-    }
-    game_board b = parse_board(msg,encountered_pieces);
-    std::map<token,goals_alternative> players_goals;
-    for(uint i=0;i<players.get_number_of_players();++i){
-        const token& name = players.get_player_name(i,0);
-        slice_iterator goals_it(goal_segments.at(name),&macros);
-        goals_it.next(msg);
-        parser_result<goals_alternative> result = parse_goals_alternative(goals_it,encountered_pieces,b.get_height(),b.get_width(),msg,true);
-        assert(result.is_success());
-        if(goals_it.has_value())
-            throw msg.build_message(goals_it.create_call_stack("Unexpected tokens at the end of \'"+name.to_string()+"\' \'goals\' segment"));
-        players_goals[name] = result.move_value();
-    }
-    return parsed_game(
-        parse_name(msg),
-        std::move(b),
-        std::move(players_moves),
-        std::move(players_goals),
-        std::move(players),
-        std::move(encountered_pieces));
-}
-
-void print_tabs(std::ostream& out,uint n){
-    out<<std::endl;
-    for(uint i=0;i<4*n-1;++i)
-        out<<' ';
+uint game_items::input_rules(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+    return input_slice(input, current_token, "rules", &game_items::rules_segment,true,msg);
 }
 
 uint reach_end_of_directive(const std::vector<token>& input,uint current_token){
@@ -362,43 +157,103 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
     while(current_token < input.size()){
         ++current_token;
         if(current_token < input.size()){
-            if(input[current_token].get_type() == def)
-                current_token = result.input_macro(input,current_token+1,msg);
-            else if(input[current_token].get_type() == game)
+            switch(input[current_token].get_type()){
+            case game:
                 current_token = result.input_game(input,current_token+1,msg);
-            else if(input[current_token].get_type() == board)
+                break;
+            case board:
                 current_token = result.input_board(input,current_token+1,msg);
-            else if(input[current_token].get_type() == player)
-                current_token = result.input_player(input,current_token+1,msg);
-            else if(input[current_token].get_type() == order)
-                current_token = result.input_order(input,current_token+1,msg);
-            else if(input[current_token].get_type() == goal)
-                current_token = result.input_goal(input,current_token+1,msg);
-            else
-                throw msg.build_message(input[current_token].get_position(),"Expected \'def\', \'game\', \'board\', \'player\', \'order\' or \'goal\' token, encountered \'"+input[current_token].to_string()+"\'");
+                break;
+            case players:
+                current_token = result.input_players(input,current_token+1,msg);
+                break;
+            case variables:
+                current_token = result.input_variables(input,current_token+1,msg);
+                break;
+            case pieces:
+                current_token = result.input_pieces(input,current_token+1,msg);
+                break;
+            case rules:
+                current_token = result.input_rules(input,current_token+1,msg);
+                break;
+            case identifier:
+                current_token = result.input_macro(input,current_token,msg);
+                break;
+            default:
+                throw msg.build_message(input[current_token].get_position(),"Expected \'game\', \'board\', \'players\', \'variables\', \'pieces\', \'rules\' token or identifier, encountered \'"+input[current_token].to_string()+"\'");
+            }
         }
     }
     if(result.game_segment == nullptr)
         msg.add_message("No \'game\' directive");
     if(result.board_segment == nullptr)
         msg.add_message("No \'board\' directive");
-    if(result.order_segment == nullptr)
-        msg.add_message("No \'order\' directive");
-    std::map<token,slice> temp;
-    for(const auto& el: result.player_segments){
-        if(result.goal_segments.count(el.first))
-            temp.insert(std::move(el));
-        else
-            msg.add_message(el.first.get_position(),"Found \'player\' directive for \'"+el.first.to_string()+"\' but did not found corresponding \'goal\' directive, ignoring this player");
-    }
-    result.player_segments = std::move(temp);
-    temp.clear();
-    for(const auto& el: result.goal_segments){
-        if(result.player_segments.count(el.first))
-            temp.insert(std::move(el));
-        else
-            msg.add_message(el.first.get_position(),"Found \'goal\' directive for \'"+el.first.to_string()+"\' but did not found corresponding \'player\' directive, ignoring this player");
-    }
-    result.goal_segments = std::move(temp);
+    if(result.players_segment == nullptr)
+        msg.add_message("No \'players\' directive");
+    if(result.variables_segment == nullptr)
+        msg.add_message("No \'variables\' directive");
+    if(result.pieces_segment == nullptr)
+        msg.add_message("No \'pieces\' directive");
+    if(result.rules_segment == nullptr)
+        msg.add_message("No \'rules\' directive");
     return result;
+}
+
+void game_items::print_slice(std::ostream& out,slice* segment,messages_container& msg)const throw(message){
+    uint spaces_of_indent = 4;
+    bool should_be_in_new_line = true;
+    slice_iterator it(*segment,&macros);
+    while(it.next(msg)){
+        if(it.current(msg).get_type() == left_round_bracket || it.current(msg).get_type() == left_square_bracket){
+            out<<'\n';
+            print_spaces(out, spaces_of_indent);
+            out<<it.current(msg).to_string();
+            spaces_of_indent+=4;
+            should_be_in_new_line = true;
+        }
+        else if(it.current(msg).get_type() == right_round_bracket || it.current(msg).get_type() == right_square_bracket){
+            out<<'\n';
+            if(spaces_of_indent>4)
+                spaces_of_indent-=4;
+            print_spaces(out, spaces_of_indent);
+            out<<it.current(msg).to_string();
+            should_be_in_new_line = true;
+        }
+        else if(it.current(msg).get_type() == plus){
+            out<<'\n';
+            print_spaces(out, spaces_of_indent-2);
+            out<<it.current(msg).to_string()<<' ';
+            should_be_in_new_line = false;
+        }
+        else{
+            if(should_be_in_new_line){
+                out<<'\n';
+                print_spaces(out, spaces_of_indent);
+                should_be_in_new_line = false;
+            }
+            out<<it.current(msg).to_string()<<' ';
+        }
+    }
+    out<<'\n';
+}
+
+void game_items::print_segment(std::ostream& out,slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message){
+    if(this->*segment_position){
+        out<<"#"<<name<<" =";
+        print_slice(out,this->*segment_position,msg);
+    }
+}
+
+void game_items::print_rbg(std::ostream& out,messages_container& msg)const throw(message){
+    print_segment(out,&game_items::game_segment,"game",msg);
+    print_segment(out,&game_items::board_segment,"board",msg);
+    print_segment(out,&game_items::players_segment,"players",msg);
+    print_segment(out,&game_items::pieces_segment,"pieces",msg);
+    print_segment(out,&game_items::variables_segment,"variables",msg);
+    print_segment(out,&game_items::rules_segment,"rules",msg);
+}
+
+void print_spaces(std::ostream& out, uint n){
+    for(uint i=0;i<n;++i)
+        out<<' ';
 }

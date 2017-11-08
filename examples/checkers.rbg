@@ -119,8 +119,8 @@ potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColo
     !(
         anySquare
         (
-            {color~King}potentialLongJump(opponentColor,)
-          + {color~Man}potentialJump(opponentColor,)
+            (color~King)potentialLongJump(opponentColor,)
+          + (color~Man)potentialJump(opponentColor,)
         )
     )
 
@@ -150,8 +150,8 @@ potentialJumpInGivenDirection(xDirection, yDirection, middleAction, opponentColo
 #rules =
     (
         gameContinues
-        allMoves(+,-,white,black)
+        allMoves(+,white,black)
         gameContinues
-        allMoves(-,+,black,white)
+        allMoves(-,black,white)
     )^*
 

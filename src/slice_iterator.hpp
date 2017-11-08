@@ -60,6 +60,7 @@ class backtrace_info{
 
 class slice_iterator{
         std::shared_ptr<backtrace_info> top;
+        std::string error_if_end_of_input;
         clipboard c;
         bool started;
         uint current_begin;
@@ -79,8 +80,17 @@ class slice_iterator{
 
         std::vector<std::pair<uint,std::string>> create_call_stack(const std::string& details)const;
         bool has_value(void)const;
-        const token& current(void)const;
+        const token& current(messages_container& msg)const throw(message);
         bool next(messages_container& msg)throw(message); // true -> moved forward, false -> end of iterator
+        void swap_parsing_context_string(std::string& context_string);
+};
+
+class parsing_context_string_guard{
+        slice_iterator* guarded_iterator;
+        std::string previous_context_string;
+    public:
+        parsing_context_string_guard(slice_iterator* iterator, std::string&& current_context_string);
+        ~parsing_context_string_guard(void);
 };
 
 #endif

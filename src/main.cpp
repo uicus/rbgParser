@@ -42,14 +42,14 @@ int main(int argc, const char** argv){
             game_items g = input_tokens(result,msg);
             if(o.just_preprocess())
                 g.print_rbg(out,msg);
-            else{
+            /*else{
                 parsed_game pg = g.parse_game(msg);
                 pg.to_simple(o);
                 if(o.just_semisteps())
                     out<<pg;
                 else
                     pg.to_gdl(out,o);
-            }
+            }*/
         }
         catch(message& m){
             std::cout<<m.as_error()<<std::endl;
