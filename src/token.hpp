@@ -19,6 +19,7 @@ enum token_type{
     caret,
     star,
     comma,
+    semicolon,
     dollar,
     at_sign,
     equal,

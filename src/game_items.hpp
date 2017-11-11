@@ -10,6 +10,10 @@
 #include"token.hpp"
 #include"message.hpp"
 #include"slice_iterator.hpp"
+#include"declarations.hpp"
+#include"parsed_game.hpp"
+#include"game_board.hpp"
+#include"parser_helpers.hpp"
 
 class game_items{
         macro_bank macros;
@@ -38,6 +42,11 @@ class game_items{
             messages_container& msg)throw(message);
         void print_slice(std::ostream& out,slice* segment,messages_container& msg)const throw(message);
         void print_segment(std::ostream& out,slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message);
+        std::string parse_name(messages_container& msg)const throw(message);
+        std::set<token> parse_declaration_set(slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message);
+        declarations parse_declarations(messages_container& msg)const throw(message);
+        parser_result<std::vector<token>> parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message);
+        game_board parse_board(const declarations& decl, messages_container& msg)const throw(message);
     public:
         game_items(const game_items&)=delete;
         game_items(game_items&& src)noexcept;
@@ -47,6 +56,7 @@ class game_items{
 
         friend game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message);
         void print_rbg(std::ostream& out,messages_container& msg)const throw(message);
+        parsed_game parse_game(messages_container& msg)const throw(message);
 };
 
 uint reach_end_of_directive(const std::vector<token>& input,uint current_token);

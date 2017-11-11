@@ -32,6 +32,7 @@ class messages_container{
         message build_message(const std::vector<std::pair<uint,std::string>>& call_stack)const;
         void report_new_line(uint character);
         void write_as_warnings(std::ostream& out)const;
+        bool is_empty(void)const;
 };
 
 #endif

@@ -7,51 +7,51 @@
 // - empty squares are always empty, their purpose is to place ball (i.e. current square) at them
 
 
-#leftMarkedTriplet(mark, between) = mark, between, between
-#rightMarkedTriplet(mark,between) = between, between, mark
+#leftMarkedTriplet(mark; between) = mark, between, between
+#rightMarkedTriplet(mark; between) = between, between, mark
 
-#lineTemplate(edgeColumns, nonGoalBetween, nonGoalColumns, goalEdgeColumns, goalBetween, goalColumn) =
+#lineTemplate(edgeColumns; nonGoalBetween; nonGoalColumns; goalEdgeColumns; goalBetween; goalColumn) =
     [
-        leftMarkedTriplet(edgeColumns, nonGoalBetween),
-        leftMarkedTriplet(nonGoalColumns, nonGoalBetween),
-        leftMarkedTriplet(nonGoalColumns, nonGoalBetween),
-        leftMarkedTriplet(goalEdgeColumns, goalBetween),
+        leftMarkedTriplet(edgeColumns; nonGoalBetween),
+        leftMarkedTriplet(nonGoalColumns; nonGoalBetween),
+        leftMarkedTriplet(nonGoalColumns; nonGoalBetween),
+        leftMarkedTriplet(goalEdgeColumns; goalBetween),
         goalColumn,
-        rightMarkedTriplet(goalEdgeColumns, goalBetween),
-        rightMarkedTriplet(nonGoalColumns, nonGoalBetween),
-        rightMarkedTriplet(nonGoalColumns, nonGoalBetween),
-        rightMarkedTriplet(edgeColumns, nonGoalBetween)
+        rightMarkedTriplet(goalEdgeColumns; goalBetween),
+        rightMarkedTriplet(nonGoalColumns; nonGoalBetween),
+        rightMarkedTriplet(nonGoalColumns; nonGoalBetween),
+        rightMarkedTriplet(edgeColumns; nonGoalBetween)
     ]
 
 #whiteGoalLine =
-    lineTemplate(visited, visited, visited,   empty,    visited,  whiteGoal)
-    lineTemplate(visited, visited, visited, visited, notVisited, notVisited)
-    lineTemplate(visited, visited, visited, visited, notVisited, notVisited)
+    lineTemplate(visited; visited; visited;   empty;    visited;  whiteGoal)
+    lineTemplate(visited; visited; visited; visited; notVisited; notVisited)
+    lineTemplate(visited; visited; visited; visited; notVisited; notVisited)
 
 #blackGoalLine =
-    lineTemplate(visited, visited, visited, visited, notVisited, notVisited)
-    lineTemplate(visited, visited, visited, visited, notVisited, notVisited)
-    lineTemplate(visited, visited, visited,   empty,    visited,  blackGoal)
+    lineTemplate(visited; visited; visited; visited; notVisited; notVisited)
+    lineTemplate(visited; visited; visited; visited; notVisited; notVisited)
+    lineTemplate(visited; visited; visited;   empty;    visited;  blackGoal)
 
 #whiteFirstNonGoalLine =
-    lineTemplate(  empty,    visited,      empty,      empty, notVisited,      empty)
-    lineTemplate(visited, notVisited, notVisited, notVisited, notVisited, notVisited)
-    lineTemplate(visited, notVisited, notVisited, notVisited, notVisited, notVisited)
+    lineTemplate(  empty;    visited;      empty;      empty; notVisited;      empty)
+    lineTemplate(visited; notVisited; notVisited; notVisited; notVisited; notVisited)
+    lineTemplate(visited; notVisited; notVisited; notVisited; notVisited; notVisited)
 
 #blackFirstNonGoalLine =
-    lineTemplate(visited, notVisited, notVisited, notVisited, notVisited, notVisited)
-    lineTemplate(visited, notVisited, notVisited, notVisited, notVisited, notVisited)
-    lineTemplate(  empty,    visited,      empty,      empty, notVisited,      empty)
+    lineTemplate(visited; notVisited; notVisited; notVisited; notVisited; notVisited)
+    lineTemplate(visited; notVisited; notVisited; notVisited; notVisited; notVisited)
+    lineTemplate(  empty;    visited;      empty;      empty; notVisited;      empty)
 
 #whiteRegularLine =
-    lineTemplate(  empty, notVisited,      empty,      empty, notVisited,      empty)
-    lineTemplate(visited, notVisited, notVisited, notVisited, notVisited, notVisited)
-    lineTemplate(visited, notVisited, notVisited, notVisited, notVisited, notVisited)
+    lineTemplate(  empty; notVisited;      empty;      empty; notVisited;      empty)
+    lineTemplate(visited; notVisited; notVisited; notVisited; notVisited; notVisited)
+    lineTemplate(visited; notVisited; notVisited; notVisited; notVisited; notVisited)
 
 #blackRegularLine =
-    lineTemplate(visited, notVisited, notVisited, notVisited, notVisited, notVisited)
-    lineTemplate(visited, notVisited, notVisited, notVisited, notVisited, notVisited)
-    lineTemplate(  empty, notVisited,      empty,      empty, notVisited,      empty)
+    lineTemplate(visited; notVisited; notVisited; notVisited; notVisited; notVisited)
+    lineTemplate(visited; notVisited; notVisited; notVisited; notVisited; notVisited)
+    lineTemplate(  empty; notVisited;      empty;      empty; notVisited;      empty)
 
 #board =
     whiteGoalLine
@@ -60,7 +60,7 @@
     whiteRegularLine
     whiteRegularLine
     whiteRegularLine
-    lineTemplate(empty, notVisited, empty, empty, notVisited, ball)
+    lineTemplate(empty; notVisited; empty; empty; notVisited; ball)
     blackRegularLine
     blackRegularLine
     blackRegularLine
@@ -88,7 +88,7 @@
       + (-1,-1)(visited)
     )
 
-#changeNeighbor(from, to) =
+#changeNeighbor(from; to) =
     (
         ( 1, 0)(from)[to](-1, 0)
       + ( 0, 1)(from)[to]( 0,-1)
@@ -101,31 +101,31 @@
     )
 
 #changeJustArrivedIntoVisited =
-    changeNeighbor(justArrived, visited)
+    changeNeighbor(justArrived; visited)
 
 #endMove =
     ?(not canMoveFurther)
     changeJustArrivedIntoVisited
 
-#visitAuxilialrySquare(x, y, how) =
+#visitAuxilialrySquare(x; y; how) =
     (x, y)(notVisited)[how]
 
-#jumpInGivenDirection(x, y) =
+#jumpInGivenDirection(x; y) =
     (empty)
-    visitAuxilialrySquare(x, y, visited)
-    visitAuxilialrySquare(x, y, justArrived)
+    visitAuxilialrySquare(x; y; visited)
+    visitAuxilialrySquare(x; y; justArrived)
     (x, y)(empty, whiteGoal, blackGoal)
 
 #singleJump =
     (
-        jumpInGivenDirection( 1, 0)
-      + jumpInGivenDirection( 0, 1)
-      + jumpInGivenDirection(-1, 0)
-      + jumpInGivenDirection( 0,-1)
-      + jumpInGivenDirection( 1, 1)
-      + jumpInGivenDirection(-1, 1)
-      + jumpInGivenDirection( 1,-1)
-      + jumpInGivenDirection(-1,-1)
+        jumpInGivenDirection( 1; 0)
+      + jumpInGivenDirection( 0; 1)
+      + jumpInGivenDirection(-1; 0)
+      + jumpInGivenDirection( 0;-1)
+      + jumpInGivenDirection( 1; 1)
+      + jumpInGivenDirection(-1; 1)
+      + jumpInGivenDirection( 1;-1)
+      + jumpInGivenDirection(-1;-1)
     )
 
 #wholeMove =
@@ -139,14 +139,16 @@
     (
         (whiteGoal)[$black=1]()
       + (blackGoal)[$white=1]()
-      + (empty)[$black=0][$white=0]
+      + (empty)[$black=0, $white=0]
     )
 
 #rules =
     findBall
     (
         [$white=1]
-        wholeMove->black
+        wholeMove
+        [$player=black]
         [$black=1]
-        wholeMove->white
+        wholeMove
+        [$player=white]
     )^*

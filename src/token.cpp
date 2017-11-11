@@ -1,5 +1,6 @@
 #include<cassert>
 #include<climits>
+#include<algorithm>
 
 #include"token.hpp"
 
@@ -88,6 +89,7 @@ std::string tokens_table[] = {
 "^",
 "*",
 ",",
+";",
 "$",
 "@",
 "=",
@@ -125,6 +127,7 @@ std::string token::to_string(void)const{
         case caret:
         case star:
         case comma:
+        case semicolon:
         case dollar:
         case at_sign:
         case equal:
@@ -266,13 +269,19 @@ token& token::operator+=(const token& t)throw(std::string){
     return *this;
 }
 
+std::string to_lower(const std::string& s){
+    std::string result = s;
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    return result;
+}
+
 bool token::operator==(const token& t)const{
     if(type != t.type)
         return false;
     else if(type == number)
         return number_value == t.number_value;
     else if(type == identifier || type == quotation)
-        return *contained_string == *t.contained_string;
+        return to_lower(*contained_string) == to_lower(*t.contained_string);
     else
         return true;
 }
@@ -283,7 +292,7 @@ bool token::operator<(const token& t)const{
     else if(type == number)
         return number_value < t.number_value;
     else if(type == identifier || type == quotation)
-        return *contained_string < *t.contained_string;
+        return to_lower(*contained_string) < to_lower(*t.contained_string);
     else
         return false;
 }

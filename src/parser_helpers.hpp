@@ -1,7 +1,7 @@
 #ifndef PARSER_HELPERS
 #define PARSER_HELPERS
 
-#include<set>
+#include<vector>
 
 #include"slice_iterator.hpp"
 #include"token.hpp"
@@ -42,5 +42,12 @@ parser_result<T> success(T&& result){
 
 parser_result<int> parse_int(slice_iterator& it, messages_container& msg)throw(message);
 parser_result<token> parse_variable(slice_iterator& it, const std::set<token>& encountered_pieces, messages_container& msg)throw(message);
+parser_result<std::vector<token>> parse_sequence(
+    slice_iterator& it,
+    const std::string& purpose_name,
+    const std::set<token>& verification_set,
+    bool should_verify,
+    messages_container& msg
+    )throw(message);
 
 #endif

@@ -73,10 +73,6 @@ class slice_iterator{
         void move_cursor(void);
     public:
         slice_iterator(const slice& s, const macro_bank* macros)noexcept;
-        slice_iterator& operator=(const slice_iterator&)=delete;
-        slice_iterator& operator=(slice_iterator&&)=delete;
-        slice_iterator(const slice_iterator& src)noexcept;
-        slice_iterator(slice_iterator&& src)noexcept;
 
         std::vector<std::pair<uint,std::string>> create_call_stack(const std::string& details)const;
         bool has_value(void)const;

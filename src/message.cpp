@@ -92,3 +92,7 @@ void messages_container::write_as_warnings(std::ostream& out)const{
     for(const auto& el: warnings_list)
         out<<el.as_warning()<<std::endl;
 }
+
+bool messages_container::is_empty(void)const{
+    return warnings_list.empty();
+}

@@ -93,7 +93,10 @@ messages_container& msg)throw(message){
     uint end = current_token = reach_end_of_directive(input,current_token);
     slice* s = new slice(&input,begin,end,next_item_context_order++);
     if(s->is_empty() && should_be_nonempty)
-        msg.add_message(input[begin-1].get_position(),"Empty \'"+segment_name+"\' directive");
+        msg.add_message(input[begin-2].get_position(),"Empty \'"+segment_name+"\' directive");
+    if(this->*segment_position)
+        msg.add_message(input[begin-2].get_position(),"Another \'"+segment_name+"\' declared; discarding previous");
+    delete (this->*segment_position);
     this->*segment_position = s;
     return end;
 }
@@ -142,8 +145,8 @@ uint parse_arguments(const std::vector<token>& input,uint current_token,std::vec
             throw msg.build_message(input[current_token-1].get_position(),"Unexpected end of macro arguments list");
         if(input[current_token].get_type() == right_round_bracket)
             return current_token+1;
-        if(input[current_token].get_type() != comma)
-            throw msg.build_message(input[current_token].get_position(),"Expected \',\' or \'(\' token, encounered \'"+input[current_token].to_string()+"\'");
+        if(input[current_token].get_type() != semicolon)
+            throw msg.build_message(input[current_token].get_position(),"Expected \';\' or \'(\' token, encounered \'"+input[current_token].to_string()+"\'");
     }
 }
 
@@ -185,17 +188,17 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
         }
     }
     if(result.game_segment == nullptr)
-        msg.add_message("No \'game\' directive");
+        throw msg.build_message("No \'game\' directive");
     if(result.board_segment == nullptr)
-        msg.add_message("No \'board\' directive");
+        throw msg.build_message("No \'board\' directive");
     if(result.players_segment == nullptr)
-        msg.add_message("No \'players\' directive");
+        throw msg.build_message("No \'players\' directive");
     if(result.variables_segment == nullptr)
-        msg.add_message("No \'variables\' directive");
+        throw msg.build_message("No \'variables\' directive");
     if(result.pieces_segment == nullptr)
-        msg.add_message("No \'pieces\' directive");
+        throw msg.build_message("No \'pieces\' directive");
     if(result.rules_segment == nullptr)
-        msg.add_message("No \'rules\' directive");
+        throw msg.build_message("No \'rules\' directive");
     return result;
 }
 
@@ -251,6 +254,84 @@ void game_items::print_rbg(std::ostream& out,messages_container& msg)const throw
     print_segment(out,&game_items::pieces_segment,"pieces",msg);
     print_segment(out,&game_items::variables_segment,"variables",msg);
     print_segment(out,&game_items::rules_segment,"rules",msg);
+}
+
+std::string game_items::parse_name(messages_container& msg)const throw(message){
+    slice_iterator it(*game_segment,&macros);
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'game\' segment");
+    it.next(msg);
+    if(it.current(msg).get_type() != quotation)
+        throw msg.build_message(it.create_call_stack("Expected quotes surrounded game name, encountered \'"+it.current(msg).to_string()+"\'"));
+    std::string result = it.current(msg).to_string();
+    if(it.next(msg))
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'game\' segment"));
+    return result;
+}
+
+std::set<token> game_items::parse_declaration_set(slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message){
+    slice_iterator it(*(this->*segment_position),&macros);
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'"+name+"\' segment");
+    it.next(msg);
+    auto parsing_result = parse_sequence(it,name+" list",std::set<token>(),false,msg);
+    if(!parsing_result.is_success())
+        throw msg.build_message("Expected comma-separated list of identifiers in \'"+name+"\' segment");
+    auto sequence = parsing_result.move_value();
+    std::set<token> result(sequence.begin(),sequence.end());
+    if(it.has_value())
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'"+name+"\' segment"));
+    return result;
+}
+
+declarations game_items::parse_declarations(messages_container& msg)const throw(message){
+    return declarations(
+        parse_declaration_set(&game_items::players_segment,"players",msg),
+        parse_declaration_set(&game_items::pieces_segment,"pieces",msg),
+        parse_declaration_set(&game_items::variables_segment,"variables",msg)
+    );
+}
+
+parser_result<std::vector<token>> game_items::parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message){
+    if(!it.has_value() || it.current(msg).get_type() != left_square_bracket)
+        return failure<std::vector<token>>();
+    if(!it.next(msg))
+        throw msg.build_message("Unexpected end of input while parsing board line");
+    auto result = parse_sequence(it,"board line",decl.get_legal_pieces(),true,msg);
+    if(!result.is_success())
+        throw msg.build_message(it.create_call_stack("Expected board line (comma separated pieces), encountered \'"+it.current(msg).to_string()+"\'"));
+    if(it.current(msg).get_type() != right_square_bracket)
+        throw msg.build_message(it.create_call_stack("Expected \']\', encountered \'"+it.current(msg).to_string()+"\'"));
+    it.next(msg);
+    return result;
+}
+
+game_board game_items::parse_board(const declarations& decl, messages_container& msg)const throw(message){
+    slice_iterator it(*board_segment,&macros);
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'board\' segment");
+    it.next(msg);
+    game_board result;
+    auto previous_position = it;
+    auto next_line = parse_boardline(it,decl,msg);
+    while(next_line.is_success()){
+        if(!result.is_initialized() || result.get_width() == next_line.get_value().size())
+            result.add_row(next_line.move_value());
+        else
+            throw msg.build_message(previous_position.create_call_stack("This line has "+std::to_string(next_line.get_value().size())+" cells while previous has "+std::to_string(result.get_width())));
+        previous_position = it;
+        next_line = parse_boardline(it,decl,msg);
+    }
+    if(it.has_value())
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'board\' segment"));
+    return result;
+}
+
+parsed_game game_items::parse_game(messages_container& msg)const throw(message){
+    declarations decl = parse_declarations(msg);
+    game_board brd = parse_board(decl,msg);
+    return parsed_game(
+        parse_name(msg),
+        std::move(decl),
+        std::move(brd)
+    );
 }
 
 void print_spaces(std::ostream& out, uint n){

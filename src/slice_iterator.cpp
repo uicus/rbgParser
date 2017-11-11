@@ -92,7 +92,7 @@ std::vector<slice> backtrace_info::parse_arguments(messages_container& msg,uint 
         uint bracket_balance = 0;
         uint slice_begin = current_end;
         while(!current_slice.is_end(current_end)
-            && ((current_slice.get_token(current_end).get_type() != comma && current_slice.get_token(current_end).get_type() != right_round_bracket)
+            && ((current_slice.get_token(current_end).get_type() != semicolon && current_slice.get_token(current_end).get_type() != right_round_bracket)
                 || bracket_balance > 0)){
             if(current_slice.get_token(current_end).get_type() == left_round_bracket)
                 ++bracket_balance;
@@ -173,28 +173,6 @@ base_context_order(s.get_context_order()),
 macros(mcrs){
     std::shared_ptr<backtrace_info> null(nullptr);
     top = std::shared_ptr<backtrace_info>(new backtrace_info(s,null,0,0));
-}
-
-slice_iterator::slice_iterator(const slice_iterator& src)noexcept:
-top(src.top),
-error_if_end_of_input(src.error_if_end_of_input),
-c(src.c),
-started(src.started),
-current_begin(src.current_begin),
-current_end(src.current_end),
-base_context_order(src.base_context_order),
-macros(src.macros){
-}
-
-slice_iterator::slice_iterator(slice_iterator&& src)noexcept:
-top(src.top),
-error_if_end_of_input(std::move(src.error_if_end_of_input)),
-c(src.c),
-started(src.started),
-current_begin(src.current_begin),
-current_end(src.current_end),
-base_context_order(src.base_context_order),
-macros(src.macros){
 }
 
 void slice_iterator::move_cursor(void){
