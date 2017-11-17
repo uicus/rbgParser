@@ -9,3 +9,11 @@ variables_names(std::move(variables_names)){
 const std::set<token>& declarations::get_legal_pieces(void)const{
     return pieces_names;
 }
+
+const std::set<token>& declarations::get_legal_players(void)const{
+    return players_names;
+}
+
+const std::set<token>& declarations::get_legal_variables(void)const{
+    return variables_names;
+}

@@ -8,9 +8,9 @@ ons::ons(void):
 legal_ons(){
 }
 
-parser_result<ons> parse_ons(slice_iterator& it, const std::set<token>& declared_pieces, messages_container& msg)throw(message){
+parser_result<ons> parse_ons(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'ons\' move");
-    auto set_result = parse_sequence(it,"legal ons",declared_pieces,true,msg);
+    auto set_result = parse_sequence(it,"legal ons",decls.get_legal_pieces(),true,msg);
     if(!set_result.is_success())
         return failure<ons>();
     else

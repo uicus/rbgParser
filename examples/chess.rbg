@@ -167,7 +167,7 @@
     pickUpPiece(color~Pawn)
     (
         // promotion cannot occur
-        ?!((0, backDirection 2)(zone))
+        ?(not !(0, backDirection 2))
         (0, forwardDirection 1)(empty)
         (0, forwardDirection 1)(empty)
         [color~Pawn]
@@ -191,7 +191,7 @@
         (0, forwardDirection 1)
     )
     [$pawnDoubleMove=0]
-    checkForPromotion(forwardDirection; color)
+    [color~Pawn]
 
 #allMoves(forwardDirection; backDirection; color; opponentColor) =
     (
