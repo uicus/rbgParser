@@ -61,6 +61,7 @@ class backtrace_info{
 class slice_iterator{
         std::shared_ptr<backtrace_info> top;
         std::string error_if_end_of_input;
+        uint last_position;
         clipboard c;
         bool started;
         uint current_begin;

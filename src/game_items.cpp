@@ -293,8 +293,7 @@ declarations game_items::parse_declarations(messages_container& msg)const throw(
 parser_result<std::vector<token>> game_items::parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message){
     if(!it.has_value() || it.current(msg).get_type() != left_square_bracket)
         return failure<std::vector<token>>();
-    if(!it.next(msg))
-        throw msg.build_message("Unexpected end of input while parsing board line");
+    it.next(msg);
     auto result = parse_sequence(it,"board line",decl.get_legal_pieces(),true,msg);
     if(!result.is_success())
         throw msg.build_message(it.create_call_stack("Expected board line (comma separated pieces), encountered \'"+it.current(msg).to_string()+"\'"));
@@ -324,13 +323,28 @@ game_board game_items::parse_board(const declarations& decl, messages_container&
     return result;
 }
 
+std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, messages_container& msg)const throw(message){
+    slice_iterator it(*rules_segment,&macros);
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'rules\' segment");
+    it.next(msg);
+    auto sum_result = parse_sum(it,decl,msg);
+    if(!sum_result.is_success())
+        throw msg.build_message("No rules given"); // We shouldn't reach this point anyway
+    auto result = std::unique_ptr<game_move>(new sum(sum_result.move_value()));
+    if(it.has_value())
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'rules\' segment"));
+    return result;
+}
+
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     declarations decl = parse_declarations(msg);
     game_board brd = parse_board(decl,msg);
+    std::unique_ptr<game_move> moves = parse_moves(decl,msg);
     return parsed_game(
         parse_name(msg),
         std::move(decl),
-        std::move(brd)
+        std::move(brd),
+        std::move(moves)
     );
 }
 

@@ -75,6 +75,17 @@ const token& slice::get_token(uint index)const{
     return (*data)[begin+index];
 }
 
+uint slice::get_beginning(void)const{
+    if(begin<end)
+        return (*data)[begin].get_position();
+    else if(end<data->size())
+        return (*data)[end].get_position();
+    else if(begin>=1)
+        return (*data)[begin-1].get_position();
+    else
+        return 0;
+}
+
 bool slice::is_end(uint index)const{
     return begin+index >= end;
 }

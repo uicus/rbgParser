@@ -165,6 +165,7 @@ bool backtrace_info::has_value(uint current_end)const{
 slice_iterator::slice_iterator(const slice& s, const macro_bank* mcrs)noexcept:
 top(),
 error_if_end_of_input("Unexpected end of input"),
+last_position(s.get_beginning()),
 c(),
 started(false),
 current_begin(0),
@@ -183,8 +184,11 @@ void slice_iterator::move_cursor(void){
 }
 
 std::vector<std::pair<uint,std::string>> slice_iterator::create_call_stack(const std::string& details)const{
-    assert(top);
     std::vector<std::pair<uint,std::string>> result;
+    if(!top){
+        result.push_back(std::make_pair(last_position,error_if_end_of_input));
+        return result;
+    }
     result.push_back(std::make_pair(top->current(current_end).get_position(),details));
     backtrace_info* current_element = top->get_pointer();
     uint last_context_order = top->get_context_order();
@@ -208,7 +212,7 @@ bool slice_iterator::has_value(void)const{
 
 const token& slice_iterator::current(messages_container& msg)const throw(message){
     if(!has_value())
-        throw msg.build_message(error_if_end_of_input);
+        throw msg.build_message(create_call_stack(error_if_end_of_input));
     if(c.contains_full_token())
         return c.get_current_token();
     else
@@ -266,6 +270,8 @@ bool slice_iterator::handle_standard_token(messages_container& msg)throw(message
 }
 
 bool slice_iterator::next(messages_container& msg)throw(message){
+    if(has_value() && started)
+        last_position = current(msg).get_position();
     c.report_next_token();
     while(true){
         while(top){

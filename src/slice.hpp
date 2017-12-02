@@ -31,6 +31,7 @@ class slice{
 
         uint get_context_order(void)const;
         const token& get_token(uint index)const;
+        uint get_beginning(void)const;
         bool is_end(uint index)const;
 };
 

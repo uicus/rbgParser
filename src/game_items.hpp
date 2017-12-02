@@ -14,6 +14,7 @@
 #include"parsed_game.hpp"
 #include"game_board.hpp"
 #include"parser_helpers.hpp"
+#include"sum.hpp"
 
 class game_items{
         macro_bank macros;
@@ -47,6 +48,7 @@ class game_items{
         declarations parse_declarations(messages_container& msg)const throw(message);
         parser_result<std::vector<token>> parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message);
         game_board parse_board(const declarations& decl, messages_container& msg)const throw(message);
+        std::unique_ptr<game_move> parse_moves(const declarations& decl, messages_container& msg)const throw(message);
     public:
         game_items(const game_items&)=delete;
         game_items(game_items&& src)noexcept;

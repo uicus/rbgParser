@@ -18,8 +18,9 @@ parser_result<shift> parse_shift(slice_iterator& it, messages_container& msg)thr
     int x = x_result.get_value();
     if(it.current(msg).get_type() != comma)
         throw msg.build_message(it.create_call_stack("Expected \',\', encountered \'"+it.current(msg).to_string()+"\'"));
-    if(!it.next(msg))
-        throw msg.build_message("Unexpected end of input after \',\' while parsing shift move");
+    it.next(msg);
+    //if(!it.next(msg))
+    //    throw msg.build_message("Unexpected end of input after \',\' while parsing shift move");
     auto y_result = parse_int(it,msg);
     if(!y_result.is_success())
         throw msg.build_message(it.create_call_stack("Expected integer, encountered \'"+it.current(msg).to_string()+"\'"));

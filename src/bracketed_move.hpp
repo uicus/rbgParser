@@ -18,6 +18,9 @@ class bracketed_move : public game_move{
     public:
         ~bracketed_move(void)override=default;
         bracketed_move(bracketed_move&&)=default;
+        bracketed_move(const bracketed_move&)=default;
+        bracketed_move& operator=(const bracketed_move&)=default;
+        bracketed_move& operator=(bracketed_move&&)=default;
         bool modifies(void)override;
         friend parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<bracketed_move>;
