@@ -123,7 +123,7 @@
     ((1, forwardDirection 1) + (-1, forwardDirection 1))(opponentColor~Pawn)
 
 #isNotAttackedBy(opponentColor; forwardDirection) =
-    ?(not !(
+    (? not (!
         isAttackedByBishop(opponentColor)
       + isAttackedByRook(opponentColor)
       + isAttackedByQueen(opponentColor)
@@ -133,7 +133,7 @@
     ))
 
 #castlingKingMove(forwardDirection; color; opponentColor) =
-    ? $color~KingMoved==0
+    (? $color~KingMoved==0)
     pickUpPiece(color~King)
     (
         (1,0)(empty)isNotAttackedBy(opponentColor; forwardDirection)
@@ -159,15 +159,15 @@
 
 #checkForPromotion(forwardDirection; color) =
     (
-        ?!(0, forwardDirection 1)[color~Pawn]
-      + ?(not !(0, forwardDirection 1))[majorPieces(color)]
+        (?(!(0, forwardDirection 1)[color~Pawn]))
+      + (? not (!(0, forwardDirection 1)))[majorPieces(color)]
     )
 
 #standardPawnMove(forwardDirection; backDirection; color; opponentColor) =
     pickUpPiece(color~Pawn)
     (
         // promotion cannot occur
-        ?(not !(0, backDirection 2))
+        (? not (!(0, backDirection 2)))
         (0, forwardDirection 1)(empty)
         (0, forwardDirection 1)(empty)
         [color~Pawn]
@@ -180,7 +180,7 @@
     )
 
 #enPassantPawnMove(forwardDirection; color) =
-    ? $pawnDoubleMove==1
+    (? $pawnDoubleMove==1)
     (
         // we are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so don't check it
         (1,0)pickUpPiece(color~Pawn)
@@ -209,8 +209,8 @@
     )
     [$player=opponentColor]
     (
-        ? $opponentColor~King==0 [$color=1]()
-      + ?($turn<=180 and $opponentColor~King>0)
+        (? $opponentColor~King==0)[$color=1]()
+      + (? $turn<=180 and $opponentColor~King>0)
     )
 
 #rules =

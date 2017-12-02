@@ -77,7 +77,7 @@
 #findBall = ((1,0)+(1,0)+(-1,0)+(0,-1))^*(ball)[empty]
 
 #canMoveFurther =
-    !(
+    (!
         ( 1, 0)(visited)
       + ( 0, 1)(visited)
       + (-1, 0)(visited)
@@ -104,7 +104,7 @@
     changeNeighbor(justArrived; visited)
 
 #endMove =
-    ?(not canMoveFurther)
+    (?not canMoveFurther)
     changeJustArrivedIntoVisited
 
 #visitAuxilialrySquare(x; y; how) =
@@ -131,7 +131,7 @@
 #wholeMove =
     singleJump
     (
-        ? canMoveFurther
+        (? canMoveFurther)
         changeJustArrivedIntoVisited
         singleJump
     )^*

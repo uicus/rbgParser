@@ -26,7 +26,7 @@
     )
 
 #winLine(piece) = 
-    (
+    (!
       anySquare
       (piece)
       (
@@ -41,9 +41,9 @@
     (
       move(piece)
       (
-          ? !winLine(piece) [$piece=10] [$oppPiece=0]()
-        + ? (not !(anySquare (empty)) and not !winLine(piece)) [$xplayer=5] [$oplayer=5]()
-        + ? (not !winLine(piece) and (anySquare (empty)))
+          (? winLine(piece)) [$piece=10] [$oppPiece=0]()
+        + (? not (!anySquare (empty)) and not winLine(piece)) [$xplayer=5] [$oplayer=5]()
+        + (? not winLine(piece) and (anySquare (empty)))
       )
       [$player=oppPiece]
     )
