@@ -5,7 +5,6 @@
 #include<memory>
 
 #include"game_move.hpp"
-#include"types.hpp"
 #include"message.hpp"
 #include"slice_iterator.hpp"
 #include"parser_helpers.hpp"
@@ -22,6 +21,7 @@ class sum : public game_move{
         sum& operator=(const sum&)=default;
         sum& operator=(sum&&)=default;
         bool modifies(void)override;
+        std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         friend parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<sum>;
 };

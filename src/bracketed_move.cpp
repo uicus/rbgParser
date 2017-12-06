@@ -4,6 +4,8 @@
 #include"shift.hpp"
 #include"ons.hpp"
 #include"sum.hpp"
+#include"pure_bracketed_move.hpp"
+#include"condition_check.hpp"
 
 bracketed_move::bracketed_move(void):
 contained_move(),
@@ -22,9 +24,13 @@ bool bracketed_move::modifies(void){
         return false;
 }
 
+std::unique_ptr<pure_game_move> bracketed_move::transform_into_pure(void){
+    return std::unique_ptr<pure_game_move>(new pure_bracketed_move(contained_move->transform_into_pure(),number_of_repetitions));
+}
+
 parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing brackets around the move");
-    if(it.current(msg).get_type() != left_round_bracket)
+    if(!it.has_value() || it.current(msg).get_type() != left_round_bracket)
         return failure<bracketed_move>();
     it.next(msg);
     std::unique_ptr<game_move> contained_move;
@@ -32,6 +38,10 @@ parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const dec
     if(shift_result.is_success())
         contained_move = std::unique_ptr<game_move>(new shift(shift_result.move_value()));
     // due to specific syntax interpretation another options should go here and ons should be last
+    else{
+    auto condition_result = parse_condition_check(it,decls,msg);
+    if(condition_result.is_success())
+        contained_move = std::unique_ptr<game_move>(new condition_check(condition_result.move_value()));
     else{
     auto sum_result = parse_sum(it,decls,msg);
     if(sum_result.is_success())
@@ -42,6 +52,7 @@ parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const dec
         contained_move = std::unique_ptr<game_move>(new ons(ons_result.move_value()));
     else{
         assert(false); // I'm sure we cannot reach this point
+    }
     }
     }
     }

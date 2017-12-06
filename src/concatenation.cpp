@@ -1,5 +1,6 @@
 #include"concatenation.hpp"
 #include"bracketed_move.hpp"
+#include"pure_concatenation.hpp"
 
 concatenation::concatenation(std::vector<std::unique_ptr<game_move>>&& content):
 content(std::move(content)){
@@ -10,6 +11,13 @@ bool concatenation::modifies(void){
         if(el->modifies())
             return true;
     return false;
+}
+
+std::unique_ptr<pure_game_move> concatenation::transform_into_pure(void){
+    std::vector<std::unique_ptr<pure_game_move>> result;
+    for(uint i=0;i<content.size();++i)
+        result.push_back(content[i]->transform_into_pure());
+    return std::unique_ptr<pure_game_move>(new pure_concatenation(std::move(result)));
 }
 
 parser_result<concatenation> parse_concatenation(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){

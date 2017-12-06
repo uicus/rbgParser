@@ -7,7 +7,7 @@
 
 
 #players = xplayer, oplayer
-#pieces = empty, xplayer, oplayer
+#pieces = empty, xpiece, opiece
 #variables = 
 
 #anySquare =
@@ -33,7 +33,7 @@
           (1,0)(piece)(1,0)(piece)
         + (0,1)(piece)(0,1)(piece)
         + (1,1)(piece)(1,1)(piece)
-        + (-1,-1)(piece)(-1,-1)(piece)
+        + (1,-1)(piece)(1,-1)(piece)
       )
     )
 
@@ -50,6 +50,6 @@
 
 #rules =
     (
-      moveAndWinCheck(xplayer; oplayer)
-      moveAndWinCheck(oplayer; xplayer)
+      moveAndWinCheck(xpiece; opiece)
+      moveAndWinCheck(opiece; xpiece)
     )^*

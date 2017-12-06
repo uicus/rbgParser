@@ -13,9 +13,14 @@
 class ons : public pure_game_move{
         std::set<token> legal_ons;
         ons(std::vector<token>&& legal_ons);
-        ons(void);
+        ons(void)=default;
     public:
         ~ons(void)override=default;
+        ons(ons&&)=default;
+        ons(const ons&)=default;
+        ons& operator=(const ons&)=default;
+        ons& operator=(ons&&)=default;
+        std::unique_ptr<pure_game_move> transform_into_pure(void)override{return std::unique_ptr<pure_game_move>(new ons(std::move(*this)));};
         friend parser_result<ons> parse_ons(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<ons>;
 };
