@@ -6,6 +6,7 @@
 #include"sum.hpp"
 #include"pure_bracketed_move.hpp"
 #include"condition_check.hpp"
+#include"offs.hpp"
 
 bracketed_move::bracketed_move(void):
 contained_move(),
@@ -28,11 +29,7 @@ std::unique_ptr<pure_game_move> bracketed_move::transform_into_pure(void){
     return std::unique_ptr<pure_game_move>(new pure_bracketed_move(contained_move->transform_into_pure(),number_of_repetitions));
 }
 
-parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
-    parsing_context_string_guard g(&it, "Unexpected end of input while parsing brackets around the move");
-    if(!it.has_value() || it.current(msg).get_type() != left_round_bracket)
-        return failure<bracketed_move>();
-    it.next(msg);
+parser_result<bracketed_move> parse_non_modifier(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     std::unique_ptr<game_move> contained_move;
     auto shift_result = parse_shift(it,msg);
     if(shift_result.is_success())
@@ -72,4 +69,34 @@ parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const dec
     if(number_result.get_value()<1)
         throw msg.build_message(before_int_it.create_call_stack("Number after \'^\' should be positive"));
     return success(bracketed_move(std::move(contained_move),number_result.get_value()));
+}
+
+parser_result<bracketed_move> parse_modifier(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
+    std::unique_ptr<game_move> contained_move;
+    auto offs_result = parse_offs(it,decls,msg);
+    // TODO: przypisania
+    if(offs_result.is_success())
+        contained_move = std::unique_ptr<game_move>(new sum(offs_result.move_value()));
+    else
+        assert(false);
+    if(it.current(msg).get_type() != right_square_bracket)
+        throw msg.build_message(it.create_call_stack("Expected \']\', encountered \'"+it.current(msg).to_string()+"\'"));
+    it.next(msg);
+    return success(bracketed_move(std::move(contained_move)));
+}
+
+parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing brackets around the move");
+    if(!it.has_value())
+        return failure<bracketed_move>();
+    if(it.current(msg).get_type() == left_round_bracket){
+        it.next(msg);
+        return parse_non_modifier(it,decls,msg);
+    }
+    else if(it.current(msg).get_type() == left_square_bracket){
+        it.next(msg);
+        return parse_modifier(it,decls,msg);
+    }
+    else
+        return failure<bracketed_move>();
 }

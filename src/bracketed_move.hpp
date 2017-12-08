@@ -24,6 +24,8 @@ class bracketed_move : public game_move{
         bool modifies(void)override;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         friend parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+        friend parser_result<bracketed_move> parse_non_modifier(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+        friend parser_result<bracketed_move> parse_modifier(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<bracketed_move>;
 };
 

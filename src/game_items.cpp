@@ -282,12 +282,26 @@ std::set<token> game_items::parse_declaration_set(slice* game_items::*segment_po
     return result;
 }
 
+void game_items::check_if_sets_disjoint(
+const std::set<token>& s1,
+const std::set<token>& s2,
+const std::string sets_names,
+messages_container& msg)const throw(message){
+    for(const auto& el: s1)
+        if(s2.find(el) != s2.end())
+            throw msg.build_message("Identifier \'"+el.to_string()+"\' is found in both "+sets_names+" declarations");
+}
+
 declarations game_items::parse_declarations(messages_container& msg)const throw(message){
-    return declarations(
+    declarations result(
         parse_declaration_set(&game_items::players_segment,"players",msg),
         parse_declaration_set(&game_items::pieces_segment,"pieces",msg),
         parse_declaration_set(&game_items::variables_segment,"variables",msg)
     );
+    check_if_sets_disjoint(result.get_legal_pieces(),result.get_legal_players(),"\'pieces\' and \'players\'",msg);
+    check_if_sets_disjoint(result.get_legal_pieces(),result.get_legal_variables(),"\'pieces\' and \'variables\'",msg);
+    check_if_sets_disjoint(result.get_legal_players(),result.get_legal_variables(),"\'players\' and \'variables\'",msg);
+    return result;
 }
 
 parser_result<std::vector<token>> game_items::parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message){

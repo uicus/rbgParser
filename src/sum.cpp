@@ -20,6 +20,10 @@ std::unique_ptr<pure_game_move> sum::transform_into_pure(void){
     return std::unique_ptr<pure_game_move>(new pure_sum(std::move(result)));
 }
 
+void sum::add_move(std::unique_ptr<game_move> m){
+    content.push_back(std::move(m));
+}
+
 parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing moves sum");
     std::vector<std::unique_ptr<game_move>> result;
