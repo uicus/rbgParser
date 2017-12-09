@@ -12,16 +12,17 @@
 
 class concatenation : public game_move{
         std::vector<std::unique_ptr<game_move>> content;
-        concatenation(void)=default;
         concatenation(std::vector<std::unique_ptr<game_move>>&& content);
     public:
         ~concatenation(void)override=default;
+        concatenation(void)=default;
         concatenation(concatenation&&)=default;
         concatenation(const concatenation&)=default;
         concatenation& operator=(const concatenation&)=default;
         concatenation& operator=(concatenation&&)=default;
         bool modifies(void)override;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
+        void add_move(std::unique_ptr<game_move> m);
         friend parser_result<concatenation> parse_concatenation(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<concatenation>;
 };

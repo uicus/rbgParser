@@ -7,6 +7,7 @@
 #include"pure_bracketed_move.hpp"
 #include"condition_check.hpp"
 #include"offs.hpp"
+#include"assignments.hpp"
 
 bracketed_move::bracketed_move(void):
 contained_move(),
@@ -48,7 +49,7 @@ parser_result<bracketed_move> parse_non_modifier(slice_iterator& it, const decla
     if(ons_result.is_success())
         contained_move = std::unique_ptr<game_move>(new ons(ons_result.move_value()));
     else{
-        assert(false); // I'm sure we cannot reach this point
+        assert(false);
     }
     }
     }
@@ -73,12 +74,16 @@ parser_result<bracketed_move> parse_non_modifier(slice_iterator& it, const decla
 
 parser_result<bracketed_move> parse_modifier(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     std::unique_ptr<game_move> contained_move;
+    auto assignments_result = parse_assignments(it,decls,msg);
+    if(assignments_result.is_success())
+        contained_move = std::unique_ptr<game_move>(new concatenation(assignments_result.move_value()));
+    else{
     auto offs_result = parse_offs(it,decls,msg);
-    // TODO: przypisania
     if(offs_result.is_success())
         contained_move = std::unique_ptr<game_move>(new sum(offs_result.move_value()));
     else
         assert(false);
+    }
     if(it.current(msg).get_type() != right_square_bracket)
         throw msg.build_message(it.create_call_stack("Expected \']\', encountered \'"+it.current(msg).to_string()+"\'"));
     it.next(msg);

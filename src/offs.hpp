@@ -23,7 +23,6 @@ class off : public game_move{
         off& operator=(off&&)=default;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
         friend parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
-        friend parser_result<sum>;
 };
 
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

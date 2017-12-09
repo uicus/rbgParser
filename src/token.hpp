@@ -36,6 +36,7 @@ enum token_type{
     logical_or,
     logical_not,
     turn,
+    player,
     game,
     players,
     pieces,

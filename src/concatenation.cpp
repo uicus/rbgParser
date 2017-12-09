@@ -20,6 +20,10 @@ std::unique_ptr<pure_game_move> concatenation::transform_into_pure(void){
     return std::unique_ptr<pure_game_move>(new pure_concatenation(std::move(result)));
 }
 
+void concatenation::add_move(std::unique_ptr<game_move> m){
+    content.push_back(std::move(m));
+}
+
 parser_result<concatenation> parse_concatenation(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing moves concatenation");
     std::vector<std::unique_ptr<game_move>> result;
