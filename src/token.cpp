@@ -223,6 +223,28 @@ uint token::get_position(void)const{
     return position_in_file;
 }
 
+void token::reverse_comparison(void){
+    switch(type){
+        case less:
+            type = greater;
+            break;
+        case less_equal:
+            type = greater_equal;
+            break;
+        case greater:
+            type = less;
+            break;
+        case greater_equal:
+            type = less_equal;
+            break;
+        case not_equal:
+        case double_equal:
+            break;
+        default:
+            assert(false);
+    }
+}
+
 token& token::operator+=(const token& t)throw(std::string){
     if(type == minus && t.type == greater)
         type = arrow;

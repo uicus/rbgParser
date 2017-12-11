@@ -159,7 +159,7 @@
 
 #checkForPromotion(forwardDirection; color) =
     (
-        (?(!(0, forwardDirection 1)[color~Pawn]))
+        (?(!(0, forwardDirection 1)))[color~Pawn]
       + (? not (!(0, forwardDirection 1)))[majorPieces(color)]
     )
 

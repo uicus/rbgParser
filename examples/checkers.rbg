@@ -55,7 +55,7 @@
     ((1, forwardDirection 1)+(-1, forwardDirection 1))
     (empty)
 
-potentialJumpInGivenDirection(xDirection; yDirection; middleAction; opponentColor) =
+#potentialJumpInGivenDirection(xDirection; yDirection; middleAction; opponentColor) =
     (xDirection 1, yDirection 1)
     (singleColorPieces(opponentColor))
     middleAction

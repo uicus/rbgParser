@@ -77,6 +77,7 @@ class token{
         bool contains_exactly_n_chars(uint n)const;
         void take_next_character(char next_character, messages_container& msg)throw(message);
         uint get_position(void)const;
+        void reverse_comparison(void);
         token& operator+=(const token& t)throw(std::string);
 
         bool operator==(const token& t)const;

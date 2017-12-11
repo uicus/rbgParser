@@ -1,6 +1,7 @@
 #include"negatable_condition.hpp"
 #include"move_condition.hpp"
 #include"alternative.hpp"
+#include"comparison.hpp"
 
 negatable_condition::negatable_condition(std::unique_ptr<condition> content, bool modifier=false):
 content(std::move(content)),
@@ -37,8 +38,15 @@ parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it,
         return success(negatable_condition(std::move(result),modifier));
     }
     else{
-        throw msg.build_message(it.create_call_stack("Not implemented yet"));
-        // TODO: porownania
+        auto comparison_result = parse_comparison(it,decls,msg);
+        if(comparison_result.is_success())
+            result = std::unique_ptr<comparison>(new comparison(comparison_result.move_value()));
+        else{
+            if(started)
+                throw msg.build_message(it.create_call_stack("Expected comparison, encountered \'"+it.current(msg).to_string()+"\'"));
+            else
+                return failure<negatable_condition>();
+        }
         return success(negatable_condition(std::move(result),modifier));
     }
 }
