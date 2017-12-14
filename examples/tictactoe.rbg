@@ -22,7 +22,7 @@
     (
       anySquare
       (empty)
-      [piece]
+      [@piece]
     )
 
 #winLine(piece) = 
@@ -41,11 +41,10 @@
     (
       move(me~piece)
       (
-          (? winLine(me~piece)) [$me~player=10] [$opp~player=0]()
-        + (? not (!anySquare (empty)) and not winLine(me~piece)) [$me~player=5] [$opp~player=5]()
+          (? winLine(me~piece)) [@$me~player=10] [@$opp~player=0]->()
+        + (? not (!anySquare (empty)) and not winLine(me~piece)) [@$me~player=5] [@$opp~player=5]->()
         + (? not winLine(me~piece) and (! anySquare (empty)))
-      )
-      [$player=opp~player]
+      )->opp~player
     )
 
 #rules =

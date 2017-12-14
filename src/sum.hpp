@@ -21,6 +21,7 @@ class sum : public game_move{
         sum& operator=(const sum&)=default;
         sum& operator=(sum&&)=default;
         bool modifies(void)override;
+        void set_lazy(void)override;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         void add_move(std::unique_ptr<game_move> m);
         friend parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

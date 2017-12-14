@@ -8,6 +8,7 @@
 #include"condition_check.hpp"
 #include"offs.hpp"
 #include"assignments.hpp"
+#include"switch.hpp"
 
 bracketed_move::bracketed_move(void):
 contained_move(),
@@ -74,6 +75,13 @@ parser_result<bracketed_move> parse_non_modifier(slice_iterator& it, const decla
 
 parser_result<bracketed_move> parse_modifier(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     std::unique_ptr<game_move> contained_move;
+    bool lazy = false;
+    if(it.current(msg).get_type() == at_sign){
+        lazy = true;
+        it.next(msg);
+        if(!it.has_value())
+            throw msg.build_message(it.create_call_stack("Unexpected end of input after \'@\'"));
+    }
     auto assignments_result = parse_assignments(it,decls,msg);
     if(assignments_result.is_success())
         contained_move = std::unique_ptr<game_move>(new concatenation(assignments_result.move_value()));
@@ -86,6 +94,8 @@ parser_result<bracketed_move> parse_modifier(slice_iterator& it, const declarati
     }
     if(it.current(msg).get_type() != right_square_bracket)
         throw msg.build_message(it.create_call_stack("Expected \']\', encountered \'"+it.current(msg).to_string()+"\'"));
+    if(lazy)
+        contained_move->set_lazy();
     it.next(msg);
     return success(bracketed_move(std::move(contained_move)));
 }
@@ -101,6 +111,11 @@ parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const dec
     else if(it.current(msg).get_type() == left_square_bracket){
         it.next(msg);
         return parse_modifier(it,decls,msg);
+    }
+    else if(it.current(msg).get_type() == arrow){
+        auto switch_result = parse_player_switch(it,decls,msg);
+        assert(switch_result.is_success());
+        return success(bracketed_move(std::unique_ptr<game_move>(new player_switch(switch_result.move_value()))));
     }
     else
         return failure<bracketed_move>();

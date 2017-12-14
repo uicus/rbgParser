@@ -74,7 +74,7 @@
 #variables = // no variables
 
 
-#findBall = ((1,0)+(1,0)+(-1,0)+(0,-1))^*(ball)[empty]
+#findBall = ((1,0)+(1,0)+(-1,0)+(0,-1))^*(ball)[@empty]
 
 #canMoveFurther =
     (!
@@ -90,14 +90,14 @@
 
 #changeNeighbor(from; to) =
     (
-        ( 1, 0)(from)[to](-1, 0)
-      + ( 0, 1)(from)[to]( 0,-1)
-      + (-1, 0)(from)[to]( 1, 0)
-      + ( 0,-1)(from)[to]( 0, 1)
-      + ( 1, 1)(from)[to](-1,-1)
-      + (-1, 1)(from)[to]( 1,-1)
-      + ( 1,-1)(from)[to](-1, 1)
-      + (-1,-1)(from)[to]( 1, 1)
+        ( 1, 0)(from)[@to](-1, 0)
+      + ( 0, 1)(from)[@to]( 0,-1)
+      + (-1, 0)(from)[@to]( 1, 0)
+      + ( 0,-1)(from)[@to]( 0, 1)
+      + ( 1, 1)(from)[@to](-1,-1)
+      + (-1, 1)(from)[@to]( 1,-1)
+      + ( 1,-1)(from)[@to](-1, 1)
+      + (-1,-1)(from)[@to]( 1, 1)
     )
 
 #changeJustArrivedIntoVisited =
@@ -108,7 +108,7 @@
     changeJustArrivedIntoVisited
 
 #visitAuxilialrySquare(x; y; how) =
-    (x, y)(notVisited)[how]
+    (x, y)(notVisited)[@how]
 
 #jumpInGivenDirection(x; y) =
     (empty)
@@ -133,22 +133,20 @@
     (
         (? canMoveFurther)
         changeJustArrivedIntoVisited
-        singleJump
+        singleJump->
     )^*
     endMove
     (
-        (whiteGoal)[$black=1]()
-      + (blackGoal)[$white=1]()
-      + (empty)[$black=0, $white=0]
+        (whiteGoal)[@$black=1]->()
+      + (blackGoal)[@$white=1]->()
+      + (empty)[@$black=0, $white=0]
     )
 
 #rules =
     findBall
     (
-        [$white=1]
-        wholeMove
-        [$player=black]
-        [$black=1]
-        wholeMove
-        [$player=white]
+        [@$white=1]
+        wholeMove->black
+        [@$black=1]
+        wholeMove->white
     )^*

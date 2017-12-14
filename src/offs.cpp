@@ -1,7 +1,8 @@
 #include"offs.hpp"
 
-off::off(token&& off_piece):
-off_piece(std::move(off_piece)){
+off::off(token&& off_piece, bool lazy):
+off_piece(std::move(off_piece)),
+lazy(lazy){
 }
 
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){

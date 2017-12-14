@@ -14,7 +14,8 @@
 class assignment : public game_move{
         token left_side;
         token right_side;
-        assignment(token&& left_side, token&& right_side);
+        bool lazy;
+        assignment(token&& left_side, token&& right_side, bool lazy=false);
         assignment(void)=default;
     public:
         ~assignment(void)override=default;
@@ -22,6 +23,7 @@ class assignment : public game_move{
         assignment(const assignment&)=default;
         assignment& operator=(const assignment&)=default;
         assignment& operator=(assignment&&)=default;
+        void set_lazy(void)override{lazy=true;};
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
         friend parser_result<assignment> parse_single_assignment(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<assignment>;

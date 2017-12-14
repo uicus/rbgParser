@@ -21,6 +21,7 @@ class concatenation : public game_move{
         concatenation& operator=(const concatenation&)=default;
         concatenation& operator=(concatenation&&)=default;
         bool modifies(void)override;
+        void set_lazy(void)override;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         void add_move(std::unique_ptr<game_move> m);
         friend parser_result<concatenation> parse_concatenation(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

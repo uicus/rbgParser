@@ -22,6 +22,7 @@ class bracketed_move : public game_move{
         bracketed_move& operator=(const bracketed_move&)=default;
         bracketed_move& operator=(bracketed_move&&)=default;
         bool modifies(void)override;
+        void set_lazy(void)override{contained_move->set_lazy();};
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         friend parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<bracketed_move> parse_non_modifier(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
