@@ -5,6 +5,7 @@
 
 #include"pure_game_move.hpp"
 #include"types.hpp"
+#include"abstract_dispatcher.hpp"
 
 class bracketed_move;
 
@@ -19,6 +20,10 @@ class pure_bracketed_move : public pure_game_move{
         pure_bracketed_move(const pure_bracketed_move&)=default;
         pure_bracketed_move& operator=(const pure_bracketed_move&)=default;
         pure_bracketed_move& operator=(pure_bracketed_move&&)=default;
+        void accept(abstract_dispatcher& dispatcher)override;
+        const pure_game_move* get_content(void)const;
+        uint get_number_of_repetitions(void)const;
+        bool is_star(void)const;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         friend class bracketed_move;
 };

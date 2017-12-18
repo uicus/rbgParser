@@ -8,6 +8,7 @@
 #include"slice_iterator.hpp"
 #include"parser_helpers.hpp"
 #include"declarations.hpp"
+#include"abstract_dispatcher.hpp"
 
 class negatable_condition : public condition{
         std::unique_ptr<condition> content;
@@ -20,6 +21,9 @@ class negatable_condition : public condition{
         negatable_condition(const negatable_condition&)=default;
         negatable_condition& operator=(const negatable_condition&)=default;
         negatable_condition& operator=(negatable_condition&&)=default;
+        void accept(abstract_dispatcher& dispatcher)override;
+        const condition* get_content(void)const;
+        bool is_negated(void)const;
         friend parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<negatable_condition>;
 };

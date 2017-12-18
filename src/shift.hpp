@@ -7,6 +7,7 @@
 #include"message.hpp"
 #include"slice_iterator.hpp"
 #include"parser_helpers.hpp"
+#include"abstract_dispatcher.hpp"
 
 class shift : public pure_game_move{
         int x;
@@ -20,6 +21,9 @@ class shift : public pure_game_move{
         shift& operator=(const shift&)=default;
         shift& operator=(shift&&)=default;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{return std::unique_ptr<pure_game_move>(new shift(*this));};
+        void accept(abstract_dispatcher& dispatcher)override;
+        int get_x(void)const;
+        int get_y(void)const;
         friend parser_result<shift> parse_shift(slice_iterator& it, messages_container& msg)throw(message);
         friend parser_result<shift>;
 };

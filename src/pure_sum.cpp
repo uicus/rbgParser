@@ -7,3 +7,11 @@ content(std::move(content)){
 std::unique_ptr<pure_game_move> pure_sum::transform_into_pure(void){
     return std::unique_ptr<pure_game_move>(new pure_sum(std::move(content)));
 }
+
+void pure_sum::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const std::vector<std::unique_ptr<pure_game_move>>& pure_sum::get_content(void)const{
+    return content;
+}

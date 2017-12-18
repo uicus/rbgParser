@@ -25,6 +25,14 @@ std::unique_ptr<pure_game_move> concatenation::transform_into_pure(void){
     return std::unique_ptr<pure_game_move>(new pure_concatenation(std::move(result)));
 }
 
+void concatenation::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const std::vector<std::unique_ptr<game_move>>& concatenation::get_content(void)const{
+    return content;
+}
+
 void concatenation::add_move(std::unique_ptr<game_move> m){
     content.push_back(std::move(m));
 }

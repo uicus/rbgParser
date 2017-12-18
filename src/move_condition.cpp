@@ -5,6 +5,14 @@ move_condition::move_condition(std::unique_ptr<pure_game_move> content):
 content(std::move(content)){
 }
 
+void move_condition::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const pure_game_move* move_condition::get_content(void)const{
+    return content.get();
+}
+
 parser_result<move_condition> parse_move_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing move pattern inside condition");
     if(!it.has_value() || it.current(msg).get_type() != exclamation)

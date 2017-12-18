@@ -18,6 +18,22 @@ void comparison::reverse(void){
     kind_of_comparison.reverse_comparison();
 }
 
+void comparison::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const token& comparison::get_left_side(void)const{
+    return left_side;
+}
+
+const token& comparison::get_kind_of_comparison(void)const{
+    return kind_of_comparison;
+}
+
+const token& comparison::get_right_side(void)const{
+    return right_side;
+}
+
 // true if variable was naked (e.g. white in $player == white)
 parser_result<std::pair<token,bool>> parse_side(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     if(!it.has_value())

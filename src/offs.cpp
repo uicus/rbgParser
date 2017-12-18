@@ -5,6 +5,18 @@ off_piece(std::move(off_piece)),
 lazy(lazy){
 }
 
+void off::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const token& off::get_piece(void)const{
+    return off_piece;
+}
+
+bool off::is_lazy(void)const{
+    return lazy;
+}
+
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing offs");
     auto set_result = parse_sequence(it,"legal offs",decls.get_legal_pieces(),true,msg);

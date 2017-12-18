@@ -5,6 +5,14 @@ alternative::alternative(std::vector<std::unique_ptr<condition>> content):
 content(std::move(content)){
 }
 
+void alternative::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const std::vector<std::unique_ptr<condition>>& alternative::get_content(void)const{
+    return content;
+}
+
 parser_result<alternative> parse_alternative(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition alternative");
     std::vector<std::unique_ptr<condition>> result;

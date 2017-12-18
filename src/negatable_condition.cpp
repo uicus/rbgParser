@@ -8,6 +8,18 @@ content(std::move(content)),
 modifier(modifier){
 }
 
+void negatable_condition::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const condition* negatable_condition::get_content(void)const{
+    return content.get();
+}
+
+bool negatable_condition::is_negated(void)const{
+    return not modifier;
+}
+
 parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition");
     if(!it.has_value())

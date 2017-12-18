@@ -6,6 +6,21 @@ right_side(std::move(right_side)),
 lazy(lazy){
 }
 
+void assignment::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const token& assignment::get_left_side(void)const{
+    return left_side;
+}
+
+const token& assignment::get_right_side(void)const{
+    return right_side;
+}
+bool assignment::is_lazy(void)const{
+    return lazy;
+}
+
 parser_result<token> parse_left_side_variable(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing variable");
     if(!it.has_value() || it.current(msg).get_type()!=dollar)

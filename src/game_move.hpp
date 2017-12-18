@@ -4,6 +4,7 @@
 #include<memory>
 
 class pure_game_move;
+class abstract_dispatcher;
 // interface
 class game_move{
     public:
@@ -11,6 +12,7 @@ class game_move{
         virtual bool modifies(void){return true;}
         virtual void set_lazy(void){};
         virtual std::unique_ptr<pure_game_move> transform_into_pure(void)=0;
+        virtual void accept(abstract_dispatcher &dispatcher)=0;
 };
 
 #endif

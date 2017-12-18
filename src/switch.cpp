@@ -5,6 +5,18 @@ to_player(std::move(to_player)),
 turn_changer(true){
 }
 
+void player_switch::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const token& player_switch::get_player(void)const{
+    return to_player;
+}
+
+bool player_switch::changes_player(void)const{
+    return turn_changer;
+}
+
 parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing switch");
     if(!it.has_value() || it.current(msg).get_type() != arrow)

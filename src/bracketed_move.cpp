@@ -31,6 +31,22 @@ std::unique_ptr<pure_game_move> bracketed_move::transform_into_pure(void){
     return std::unique_ptr<pure_game_move>(new pure_bracketed_move(contained_move->transform_into_pure(),number_of_repetitions));
 }
 
+void bracketed_move::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const game_move* bracketed_move::get_content(void)const{
+    return contained_move.get();
+}
+
+uint bracketed_move::get_number_of_repetitions(void)const{
+    return number_of_repetitions;
+}
+
+bool bracketed_move::is_star(void)const{
+    return number_of_repetitions == 0;
+}
+
 parser_result<bracketed_move> parse_non_modifier(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     std::unique_ptr<game_move> contained_move;
     auto shift_result = parse_shift(it,msg);

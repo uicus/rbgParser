@@ -8,6 +8,7 @@
 #include"slice_iterator.hpp"
 #include"parser_helpers.hpp"
 #include"declarations.hpp"
+#include"abstract_dispatcher.hpp"
 
 class player_switch : public game_move{
         token to_player;
@@ -21,6 +22,9 @@ class player_switch : public game_move{
         player_switch& operator=(const player_switch&)=default;
         player_switch& operator=(player_switch&&)=default;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
+        void accept(abstract_dispatcher& dispatcher)override;
+        const token& get_player(void)const;
+        bool changes_player(void)const;
         friend parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<player_switch>;
 };

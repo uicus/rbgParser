@@ -5,6 +5,7 @@
 #include<memory>
 
 #include"pure_game_move.hpp"
+#include"abstract_dispatcher.hpp"
 
 class sum;
 
@@ -19,6 +20,8 @@ class pure_sum : public pure_game_move{
         pure_sum& operator=(const pure_sum&)=default;
         pure_sum& operator=(pure_sum&&)=default;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
+        void accept(abstract_dispatcher& dispatcher)override;
+        const std::vector<std::unique_ptr<pure_game_move>>& get_content(void)const;
         friend class sum;
 };
 #endif

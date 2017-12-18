@@ -10,6 +10,7 @@
 #include"slice_iterator.hpp"
 #include"parser_helpers.hpp"
 #include"declarations.hpp"
+#include"abstract_dispatcher.hpp"
 
 class off : public game_move{
         token off_piece;
@@ -24,6 +25,9 @@ class off : public game_move{
         off& operator=(off&&)=default;
         void set_lazy(void)override{lazy=true;};
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
+        void accept(abstract_dispatcher& dispatcher)override;
+        const token& get_piece(void)const;
+        bool is_lazy(void)const;
         friend parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
 };
 

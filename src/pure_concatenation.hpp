@@ -5,6 +5,7 @@
 #include<memory>
 
 #include"pure_game_move.hpp"
+#include"abstract_dispatcher.hpp"
 
 class concatenation;
 
@@ -19,6 +20,8 @@ class pure_concatenation : public pure_game_move{
         pure_concatenation& operator=(const pure_concatenation&)=default;
         pure_concatenation& operator=(pure_concatenation&&)=default;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
+        void accept(abstract_dispatcher& dispatcher)override;
+        const std::vector<std::unique_ptr<pure_game_move>>& get_content(void)const;
         friend class concatenation;
 };
 

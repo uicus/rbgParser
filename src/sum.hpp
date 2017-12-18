@@ -9,6 +9,7 @@
 #include"slice_iterator.hpp"
 #include"parser_helpers.hpp"
 #include"declarations.hpp"
+#include"abstract_dispatcher.hpp"
 
 class sum : public game_move{
         std::vector<std::unique_ptr<game_move>> content;
@@ -23,6 +24,8 @@ class sum : public game_move{
         bool modifies(void)override;
         void set_lazy(void)override;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
+        void accept(abstract_dispatcher& dispatcher)override;
+        const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
         void add_move(std::unique_ptr<game_move> m);
         friend parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<sum>;

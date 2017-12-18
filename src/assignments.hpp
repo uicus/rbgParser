@@ -10,6 +10,7 @@
 #include"slice_iterator.hpp"
 #include"parser_helpers.hpp"
 #include"declarations.hpp"
+#include"abstract_dispatcher.hpp"
 
 class assignment : public game_move{
         token left_side;
@@ -25,6 +26,10 @@ class assignment : public game_move{
         assignment& operator=(assignment&&)=default;
         void set_lazy(void)override{lazy=true;};
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
+        void accept(abstract_dispatcher& dispatcher)override;
+        const token& get_left_side(void)const;
+        const token& get_right_side(void)const;
+        bool is_lazy(void)const;
         friend parser_result<assignment> parse_single_assignment(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<assignment>;
         friend parser_result<concatenation> parse_assignments(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

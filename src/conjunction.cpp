@@ -5,6 +5,14 @@ conjunction::conjunction(std::vector<std::unique_ptr<condition>> content):
 content(std::move(content)){
 }
 
+void conjunction::accept(abstract_dispatcher& dispatcher){
+    dispatcher.dispatch(*this);
+}
+
+const std::vector<std::unique_ptr<condition>>& conjunction::get_content(void)const{
+    return content;
+}
+
 parser_result<conjunction> parse_conjunction(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition conjunction");
     std::vector<std::unique_ptr<condition>> result;
