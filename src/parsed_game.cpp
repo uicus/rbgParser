@@ -10,3 +10,11 @@ decl(std::move(decl)),
 brd(std::move(brd)),
 moves(std::move(moves)){
 }
+
+const game_board& parsed_game::get_board(void)const{
+    return brd;
+}
+
+const game_move* parsed_game::get_moves(void)const{
+    return moves.get();
+}

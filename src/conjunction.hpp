@@ -23,6 +23,7 @@ class conjunction : public condition{
         conjunction& operator=(conjunction&&)=default;
         void accept(abstract_dispatcher& dispatcher)override;
         const std::vector<std::unique_ptr<condition>>& get_content(void)const;
+        std::unique_ptr<condition> simplify(void)override;
         friend parser_result<conjunction> parse_conjunction(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<conjunction>;
 };

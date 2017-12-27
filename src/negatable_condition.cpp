@@ -20,6 +20,14 @@ bool negatable_condition::is_negated(void)const{
     return not modifier;
 }
 
+std::unique_ptr<condition> negatable_condition::simplify(void){
+    std::unique_ptr<condition> c = content->simplify();
+    if(modifier)
+        return c;
+    else
+        return std::unique_ptr<condition>(new negatable_condition(std::move(c),modifier));
+}
+
 parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition");
     if(!it.has_value())

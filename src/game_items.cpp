@@ -347,7 +347,7 @@ std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, mes
     auto result = std::unique_ptr<game_move>(new sum(sum_result.move_value()));
     if(it.has_value())
         msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'rules\' segment"));
-    return result;
+    return result->simplify();
 }
 
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){

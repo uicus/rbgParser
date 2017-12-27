@@ -24,6 +24,7 @@ class negatable_condition : public condition{
         void accept(abstract_dispatcher& dispatcher)override;
         const condition* get_content(void)const;
         bool is_negated(void)const;
+        std::unique_ptr<condition> simplify(void)override;
         friend parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<negatable_condition>;
 };

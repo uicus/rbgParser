@@ -13,6 +13,16 @@ const std::vector<std::unique_ptr<condition>>& conjunction::get_content(void)con
     return content;
 }
 
+std::unique_ptr<condition> conjunction::simplify(void){
+    std::vector<std::unique_ptr<condition>> result;
+    for(uint i=0;i<content.size();++i)
+        result.push_back(content[i]->simplify());
+    if(result.size()==1)
+        return std::move(result[0]);
+    else
+        return std::unique_ptr<condition>(new conjunction(std::move(result)));
+}
+
 parser_result<conjunction> parse_conjunction(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition conjunction");
     std::vector<std::unique_ptr<condition>> result;

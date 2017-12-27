@@ -17,6 +17,7 @@ const token& assignment::get_left_side(void)const{
 const token& assignment::get_right_side(void)const{
     return right_side;
 }
+
 bool assignment::is_lazy(void)const{
     return lazy;
 }

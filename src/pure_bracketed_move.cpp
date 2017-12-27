@@ -14,6 +14,14 @@ std::unique_ptr<pure_game_move> pure_bracketed_move::transform_into_pure(void){
     return std::unique_ptr<pure_game_move>(new pure_bracketed_move(std::move(contained_move),number_of_repetitions));
 }
 
+std::unique_ptr<pure_game_move> pure_bracketed_move::pure_simplify(void){
+    std::unique_ptr<pure_game_move> content = contained_move->pure_simplify();
+    if(number_of_repetitions==1)
+        return content;
+    else
+        return std::unique_ptr<pure_game_move>(new pure_bracketed_move(std::move(content), number_of_repetitions));
+}
+
 void pure_bracketed_move::accept(abstract_dispatcher& dispatcher){
     dispatcher.dispatch(*this);
 }

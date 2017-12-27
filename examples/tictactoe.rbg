@@ -41,13 +41,13 @@
     (
       move(me~piece)->
       (
-          (? winLine(me~piece)) [@$me~player=10] [@$opp~player=0]->()
+          (? winLine(me~piece)) [@ $me~player=10] [@ $opp~player=0]->()
         + (? not winLine(me~piece) and (! anySquare (empty)))
       )->opp~player
     )
 
 #rules =
-    [@$me~player=5,@$opp~player=5]
+    [@ $xplayer=5,$oplayer=5]
     (
       moveAndWinCheck(x; o)
       moveAndWinCheck(o; x)

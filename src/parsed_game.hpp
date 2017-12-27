@@ -19,6 +19,8 @@ class parsed_game{
             declarations&& decl,
             game_board&& brd,
             std::unique_ptr<game_move> moves);
+        const game_board& get_board(void)const;
+        const game_move* get_moves(void)const;
 };
 
 #endif

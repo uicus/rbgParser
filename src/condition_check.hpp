@@ -24,6 +24,7 @@ class condition_check : public pure_game_move{
         void accept(abstract_dispatcher& dispatcher)override;
         const condition* get_content(void)const;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{return std::unique_ptr<pure_game_move>(new condition_check(std::move(content)));};
+        std::unique_ptr<pure_game_move> pure_simplify(void)override;
         friend parser_result<condition_check> parse_condition_check(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<condition_check>;
 };

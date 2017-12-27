@@ -25,6 +25,7 @@ class pure_bracketed_move : public pure_game_move{
         uint get_number_of_repetitions(void)const;
         bool is_star(void)const;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
+        std::unique_ptr<pure_game_move> pure_simplify(void)override;
         friend class bracketed_move;
 };
 

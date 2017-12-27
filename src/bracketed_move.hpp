@@ -25,6 +25,7 @@ class bracketed_move : public game_move{
         bool modifies(void)override;
         void set_lazy(void)override{contained_move->set_lazy();};
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
+        std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)override;
         const game_move* get_content(void)const;
         uint get_number_of_repetitions(void)const;

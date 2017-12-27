@@ -23,6 +23,7 @@ class move_condition : public condition{
         move_condition& operator=(move_condition&&)=default;
         void accept(abstract_dispatcher& dispatcher)override;
         const pure_game_move* get_content(void)const;
+        std::unique_ptr<condition> simplify(void)override;
         friend parser_result<move_condition> parse_move_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<move_condition>;
 };

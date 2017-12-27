@@ -21,6 +21,7 @@ class shift : public pure_game_move{
         shift& operator=(const shift&)=default;
         shift& operator=(shift&&)=default;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{return std::unique_ptr<pure_game_move>(new shift(*this));};
+        std::unique_ptr<pure_game_move> pure_simplify(void)override{return std::unique_ptr<pure_game_move>(new shift(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)override;
         int get_x(void)const;
         int get_y(void)const;
