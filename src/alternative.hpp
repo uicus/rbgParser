@@ -21,7 +21,7 @@ class alternative : public condition{
         alternative(const alternative&)=default;
         alternative& operator=(const alternative&)=default;
         alternative& operator=(alternative&&)=default;
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const std::vector<std::unique_ptr<condition>>& get_content(void)const;
         std::unique_ptr<condition> simplify(void)override;
         friend parser_result<alternative> parse_alternative(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

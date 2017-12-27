@@ -20,7 +20,7 @@ class pure_bracketed_move : public pure_game_move{
         pure_bracketed_move(const pure_bracketed_move&)=default;
         pure_bracketed_move& operator=(const pure_bracketed_move&)=default;
         pure_bracketed_move& operator=(pure_bracketed_move&&)=default;
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const pure_game_move* get_content(void)const;
         uint get_number_of_repetitions(void)const;
         bool is_star(void)const;

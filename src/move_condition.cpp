@@ -5,7 +5,7 @@ move_condition::move_condition(std::unique_ptr<pure_game_move> content):
 content(std::move(content)){
 }
 
-void move_condition::accept(abstract_dispatcher& dispatcher){
+void move_condition::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

@@ -25,7 +25,7 @@ class sum : public game_move{
         void set_lazy(void)override;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         std::unique_ptr<game_move> simplify(void)override;
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
         void add_move(std::unique_ptr<game_move> m);
         friend parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

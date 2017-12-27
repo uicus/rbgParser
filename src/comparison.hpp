@@ -23,7 +23,7 @@ class comparison : public condition{
         comparison(const comparison&)=default;
         comparison& operator=(const comparison&)=default;
         comparison& operator=(comparison&&)=default;
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const token& get_left_side(void)const;
         const token& get_kind_of_comparison(void)const;
         const token& get_right_side(void)const;

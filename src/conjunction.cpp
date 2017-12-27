@@ -5,7 +5,7 @@ conjunction::conjunction(std::vector<std::unique_ptr<condition>> content):
 content(std::move(content)){
 }
 
-void conjunction::accept(abstract_dispatcher& dispatcher){
+void conjunction::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

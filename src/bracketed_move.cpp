@@ -39,7 +39,7 @@ std::unique_ptr<game_move> bracketed_move::simplify(void){
         return std::unique_ptr<game_move>(new bracketed_move(std::move(content), number_of_repetitions));
 }
 
-void bracketed_move::accept(abstract_dispatcher& dispatcher){
+void bracketed_move::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

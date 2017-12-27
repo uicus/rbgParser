@@ -21,23 +21,23 @@ class move_condition;
 
 class abstract_dispatcher{
     public:
-        virtual void dispatch(sum&)=0;
-        virtual void dispatch(pure_sum&)=0;
-        virtual void dispatch(concatenation&)=0;
-        virtual void dispatch(pure_concatenation&)=0;
-        virtual void dispatch(bracketed_move&)=0;
-        virtual void dispatch(pure_bracketed_move&)=0;
-        virtual void dispatch(shift&)=0;
-        virtual void dispatch(ons&)=0;
-        virtual void dispatch(off&)=0;
-        virtual void dispatch(assignment&)=0;
-        virtual void dispatch(player_switch&)=0;
-        virtual void dispatch(condition_check&)=0;
-        virtual void dispatch(conjunction&)=0;
-        virtual void dispatch(alternative&)=0;
-        virtual void dispatch(negatable_condition&)=0;
-        virtual void dispatch(comparison&)=0;
-        virtual void dispatch(move_condition&)=0;
+        virtual void dispatch(const sum&)=0;
+        virtual void dispatch(const pure_sum&)=0;
+        virtual void dispatch(const concatenation&)=0;
+        virtual void dispatch(const pure_concatenation&)=0;
+        virtual void dispatch(const bracketed_move&)=0;
+        virtual void dispatch(const pure_bracketed_move&)=0;
+        virtual void dispatch(const shift&)=0;
+        virtual void dispatch(const ons&)=0;
+        virtual void dispatch(const off&)=0;
+        virtual void dispatch(const assignment&)=0;
+        virtual void dispatch(const player_switch&)=0;
+        virtual void dispatch(const condition_check&)=0;
+        virtual void dispatch(const conjunction&)=0;
+        virtual void dispatch(const alternative&)=0;
+        virtual void dispatch(const negatable_condition&)=0;
+        virtual void dispatch(const comparison&)=0;
+        virtual void dispatch(const move_condition&)=0;
 };
 
 #endif

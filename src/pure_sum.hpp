@@ -21,7 +21,7 @@ class pure_sum : public pure_game_move{
         pure_sum& operator=(pure_sum&&)=default;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         std::unique_ptr<pure_game_move> pure_simplify(void)override;
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const std::vector<std::unique_ptr<pure_game_move>>& get_content(void)const;
         friend class sum;
 };

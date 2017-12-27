@@ -18,7 +18,7 @@ std::unique_ptr<pure_game_move> pure_concatenation::pure_simplify(void){
         return std::unique_ptr<pure_game_move>(new pure_concatenation(std::move(result)));
 }
 
-void pure_concatenation::accept(abstract_dispatcher& dispatcher){
+void pure_concatenation::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

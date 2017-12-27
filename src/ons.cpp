@@ -4,7 +4,7 @@ ons::ons(std::vector<token>&& legal_ons):
 legal_ons(legal_ons.begin(),legal_ons.end()){
 }
 
-void ons::accept(abstract_dispatcher& dispatcher){
+void ons::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

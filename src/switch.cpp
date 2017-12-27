@@ -5,7 +5,7 @@ to_player(std::move(to_player)),
 turn_changer(true){
 }
 
-void player_switch::accept(abstract_dispatcher& dispatcher){
+void player_switch::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

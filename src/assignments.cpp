@@ -6,7 +6,7 @@ right_side(std::move(right_side)),
 lazy(lazy){
 }
 
-void assignment::accept(abstract_dispatcher& dispatcher){
+void assignment::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

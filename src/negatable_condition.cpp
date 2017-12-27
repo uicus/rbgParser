@@ -8,7 +8,7 @@ content(std::move(content)),
 modifier(modifier){
 }
 
-void negatable_condition::accept(abstract_dispatcher& dispatcher){
+void negatable_condition::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

@@ -18,7 +18,7 @@ void comparison::reverse(void){
     kind_of_comparison.reverse_comparison();
 }
 
-void comparison::accept(abstract_dispatcher& dispatcher){
+void comparison::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

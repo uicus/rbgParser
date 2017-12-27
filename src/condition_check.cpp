@@ -5,7 +5,7 @@ condition_check::condition_check(std::unique_ptr<condition> content):
 content(std::move(content)){
 }
 
-void condition_check::accept(abstract_dispatcher& dispatcher){
+void condition_check::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

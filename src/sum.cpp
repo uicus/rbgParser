@@ -35,7 +35,7 @@ std::unique_ptr<game_move> sum::simplify(void){
         return std::unique_ptr<game_move>(new sum(std::move(result)));
 }
 
-void sum::accept(abstract_dispatcher& dispatcher){
+void sum::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

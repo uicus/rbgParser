@@ -5,7 +5,7 @@ alternative::alternative(std::vector<std::unique_ptr<condition>> content):
 content(std::move(content)){
 }
 
-void alternative::accept(abstract_dispatcher& dispatcher){
+void alternative::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

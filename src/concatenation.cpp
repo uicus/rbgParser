@@ -35,7 +35,7 @@ std::unique_ptr<game_move> concatenation::simplify(void){
         return std::unique_ptr<game_move>(new concatenation(std::move(result)));
 }
 
-void concatenation::accept(abstract_dispatcher& dispatcher){
+void concatenation::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

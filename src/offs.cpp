@@ -5,7 +5,7 @@ off_piece(std::move(off_piece)),
 lazy(lazy){
 }
 
-void off::accept(abstract_dispatcher& dispatcher){
+void off::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

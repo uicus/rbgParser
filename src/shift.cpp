@@ -21,7 +21,7 @@ parser_result<shift> parse_shift(slice_iterator& it, messages_container& msg)thr
     return success(shift(x,y));
 }
 
-void shift::accept(abstract_dispatcher& dispatcher){
+void shift::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 

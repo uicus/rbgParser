@@ -21,7 +21,7 @@ class condition_check : public pure_game_move{
         condition_check(const condition_check&)=default;
         condition_check& operator=(const condition_check&)=default;
         condition_check& operator=(condition_check&&)=default;
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const condition* get_content(void)const;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{return std::unique_ptr<pure_game_move>(new condition_check(std::move(content)));};
         std::unique_ptr<pure_game_move> pure_simplify(void)override;

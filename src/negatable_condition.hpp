@@ -21,7 +21,7 @@ class negatable_condition : public condition{
         negatable_condition(const negatable_condition&)=default;
         negatable_condition& operator=(const negatable_condition&)=default;
         negatable_condition& operator=(negatable_condition&&)=default;
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const condition* get_content(void)const;
         bool is_negated(void)const;
         std::unique_ptr<condition> simplify(void)override;

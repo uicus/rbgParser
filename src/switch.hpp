@@ -23,7 +23,7 @@ class player_switch : public game_move{
         player_switch& operator=(player_switch&&)=default;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new player_switch(std::move(*this)));};
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const token& get_player(void)const;
         bool changes_player(void)const;
         friend parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

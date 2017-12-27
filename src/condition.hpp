@@ -8,7 +8,7 @@ class abstract_dispatcher;
 class condition{
     public:
         virtual ~condition(void)=default;
-        virtual void accept(abstract_dispatcher &dispatcher)=0;
+        virtual void accept(abstract_dispatcher &dispatcher)const=0;
         virtual std::unique_ptr<condition> simplify(void)=0;
 };
 

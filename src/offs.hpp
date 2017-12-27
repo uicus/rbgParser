@@ -26,7 +26,7 @@ class off : public game_move{
         void set_lazy(void)override{lazy=true;};
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new off(std::move(*this)));};
-        void accept(abstract_dispatcher& dispatcher)override;
+        void accept(abstract_dispatcher& dispatcher)const override;
         const token& get_piece(void)const;
         bool is_lazy(void)const;
         friend parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
