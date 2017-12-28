@@ -10,13 +10,16 @@
 
 class parsed_game{
         std::string name;
+        declarations decl;
         game_board brd;
         std::unique_ptr<game_move> moves;
     public:
         parsed_game(
             std::string&& name,
+            declarations&& decl,
             game_board&& brd,
             std::unique_ptr<game_move> moves);
+        const declarations& get_declarations(void)const;
         const game_board& get_board(void)const;
         const game_move* get_moves(void)const;
 };
