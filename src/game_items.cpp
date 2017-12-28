@@ -356,7 +356,6 @@ parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     std::unique_ptr<game_move> moves = parse_moves(decl,msg);
     return parsed_game(
         parse_name(msg),
-        std::move(decl),
         std::move(brd),
         std::move(moves)
     );

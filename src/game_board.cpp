@@ -22,5 +22,5 @@ void game_board::add_row(std::vector<token>&& next_row){
 
 const token& game_board::get_square(uint x,uint y)const{
     assert(y<get_height() and x<get_width());
-    return squares[y][x];
+    return squares[get_height()-y][x];
 }
