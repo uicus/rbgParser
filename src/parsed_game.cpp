@@ -11,6 +11,10 @@ brd(std::move(brd)),
 moves(std::move(moves)){
 }
 
+const declarations& parsed_game::get_declarations(void)const{
+    return decl;
+}
+
 const game_board& parsed_game::get_board(void)const{
     return brd;
 }

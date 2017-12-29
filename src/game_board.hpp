@@ -13,6 +13,7 @@ class game_board{
         uint get_width(void)const;
         void add_row(std::vector<token>&& next_row);
         std::string to_rbg(bool pretty)const;
+        const token& get_square(uint x,uint y)const;
 };
 
 #endif

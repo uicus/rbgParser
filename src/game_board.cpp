@@ -1,6 +1,8 @@
 #include"game_board.hpp"
 #include"printer_helpers.hpp"
 
+#include<cassert>
+
 bool game_board::is_initialized(void)const{
     return get_height()>0;
 }
@@ -26,4 +28,9 @@ std::string game_board::to_rbg(bool pretty)const{
         result += "["+::to_rbg(row)+"]";
     }
     return result+"\n";
+}
+
+const token& game_board::get_square(uint x,uint y)const{
+    assert(y<get_height() and x<get_width());
+    return squares[get_height()-y][x];
 }
