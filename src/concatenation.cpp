@@ -1,6 +1,7 @@
 #include"concatenation.hpp"
 #include"bracketed_move.hpp"
 #include"pure_concatenation.hpp"
+#include"printer_helpers.hpp"
 
 concatenation::concatenation(std::vector<std::unique_ptr<game_move>>&& content):
 content(std::move(content)){
@@ -37,6 +38,26 @@ std::unique_ptr<game_move> concatenation::simplify(void){
 
 void concatenation::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
+}
+
+std::string concatenation::to_rbg(uint indent)const{
+    std::string result = "";
+    for(uint i=0;i<content.size();++i){
+        result += open_bracket_if_necessary(priority(),content[i]->priority());
+        result += content[i]->to_rbg(indent);
+        result += close_bracket_if_necessary(priority(),content[i]->priority());
+    }
+    return result;
+}
+
+std::string concatenation::to_rbg()const{
+    std::string result = "";
+    for(uint i=0;i<content.size();++i){
+        result += open_bracket_if_necessary(priority(),content[i]->priority());
+        result += content[i]->to_rbg();
+        result += close_bracket_if_necessary(priority(),content[i]->priority());
+    }
+    return result;
 }
 
 const std::vector<std::unique_ptr<game_move>>& concatenation::get_content(void)const{

@@ -22,6 +22,9 @@ class pure_concatenation : public pure_game_move{
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         std::unique_ptr<pure_game_move> pure_simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
+        uint priority(void)const override{return 1;};
+        std::string to_rbg(uint indent)const override;
+        std::string to_rbg()const override;
         const std::vector<std::unique_ptr<pure_game_move>>& get_content(void)const;
         friend class concatenation;
 };

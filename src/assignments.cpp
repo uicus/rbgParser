@@ -1,4 +1,5 @@
 #include"assignments.hpp"
+#include"printer_helpers.hpp"
 
 assignment::assignment(token&& left_side, token&& right_side,bool lazy):
 left_side(std::move(left_side)),
@@ -8,6 +9,20 @@ lazy(lazy){
 
 void assignment::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
+}
+
+std::string assignment::to_rbg(uint)const{
+    return to_rbg();
+}
+
+std::string assignment::to_rbg()const{
+    std::string result = "";
+    result += (lazy ? "[@" : "[");
+    result += print_variable(left_side);
+    result += "=";
+    result += (left_side.get_type() == player ? right_side.to_string() : print_variable(right_side));
+    result += "]";
+    return result;
 }
 
 const token& assignment::get_left_side(void)const{

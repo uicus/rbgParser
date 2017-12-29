@@ -2,6 +2,7 @@
 #include"move_condition.hpp"
 #include"alternative.hpp"
 #include"comparison.hpp"
+#include"printer_helpers.hpp"
 
 negatable_condition::negatable_condition(std::unique_ptr<condition> content, bool modifier=false):
 content(std::move(content)),
@@ -26,6 +27,22 @@ std::unique_ptr<condition> negatable_condition::simplify(void){
         return c;
     else
         return std::unique_ptr<condition>(new negatable_condition(std::move(c),modifier));
+}
+
+std::string negatable_condition::to_rbg(uint indent)const{
+    std::string result = (modifier ? "" : "not ");
+    result += open_bracket_if_necessary(priority(),content->priority());
+    result += content->to_rbg(indent);
+    result += close_bracket_if_necessary(priority(),content->priority());
+    return result;
+}
+
+std::string negatable_condition::to_rbg()const{
+    std::string result = (modifier ? "" : "not ");
+    result += open_bracket_if_necessary(priority(),content->priority());
+    result += content->to_rbg();
+    result += close_bracket_if_necessary(priority(),content->priority());
+    return result;
 }
 
 parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){

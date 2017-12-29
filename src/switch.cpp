@@ -9,6 +9,17 @@ void player_switch::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
+std::string player_switch::to_rbg(uint)const{
+    return to_rbg();
+}
+
+std::string player_switch::to_rbg()const{
+    std::string result = "->";
+    if(changes_player())
+        result += to_player.to_string();
+    return result;
+}
+
 const token& player_switch::get_player(void)const{
     return to_player;
 }

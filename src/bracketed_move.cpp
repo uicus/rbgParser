@@ -9,6 +9,7 @@
 #include"offs.hpp"
 #include"assignments.hpp"
 #include"switch.hpp"
+#include"printer_helpers.hpp"
 
 bracketed_move::bracketed_move(void):
 contained_move(),
@@ -41,6 +42,30 @@ std::unique_ptr<game_move> bracketed_move::simplify(void){
 
 void bracketed_move::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
+}
+
+std::string bracketed_move::print_power(void)const{
+    if(number_of_repetitions!=1)
+        return "^"+(number_of_repetitions>0 ? std::to_string(number_of_repetitions) : "*");
+    return "";
+}
+
+std::string bracketed_move::to_rbg(uint indent)const{
+    std::string result = "";
+    result += open_bracket_if_necessary(priority(),contained_move->priority());
+    result += contained_move->to_rbg(indent);
+    result += close_bracket_if_necessary(priority(),contained_move->priority());
+    result += print_power();
+    return result;
+}
+
+std::string bracketed_move::to_rbg()const{
+    std::string result = "";
+    result += open_bracket_if_necessary(priority(),contained_move->priority());
+    result += contained_move->to_rbg();
+    result += close_bracket_if_necessary(priority(),contained_move->priority());
+    result += print_power();
+    return result;
 }
 
 const game_move* bracketed_move::get_content(void)const{

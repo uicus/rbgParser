@@ -18,3 +18,10 @@ const game_board& parsed_game::get_board(void)const{
 const game_move* parsed_game::get_moves(void)const{
     return moves.get();
 }
+
+std::string parsed_game::to_rbg(bool pretty)const{
+    return "#game = "+name+"\n"
+          +brd.to_rbg(pretty)
+          +decl.to_rbg()
+          +"#rules = "+(pretty ? "\n"+moves->to_rbg(1) : moves->to_rbg())+"\n";
+}

@@ -17,6 +17,22 @@ std::unique_ptr<condition> move_condition::simplify(void){
     return std::unique_ptr<condition>(new move_condition(content->pure_simplify()));
 }
 
+std::string move_condition::to_rbg(uint indent)const{
+    std::string result = "";
+    result += "(!";
+    result += content->to_rbg(indent);
+    result += ")";
+    return result;
+}
+
+std::string move_condition::to_rbg()const{
+    std::string result = "";
+    result += "(!";
+    result += content->to_rbg();
+    result += ")";
+    return result;
+}
+
 parser_result<move_condition> parse_move_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing move pattern inside condition");
     if(!it.has_value() || it.current(msg).get_type() != exclamation)

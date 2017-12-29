@@ -40,17 +40,16 @@ int main(int argc, const char** argv){
                 throw msg.build_message("Couldn't open file "+o.output_file());
             std::vector<token> result = tokenize(buffer.str(),msg);
             game_items g = input_tokens(result,msg);
-            if(o.just_preprocess())
-                g.print_rbg(out,msg);
+            parsed_game pg = g.parse_game(msg);
+            if(o.verifying()){
+                if(msg.is_empty())
+                    std::cout<<"Verification successful"<<std::endl;
+            }
+            else if(o.just_preprocess()){
+                out<<pg.to_rbg(true);
+            }
             else{
-                parsed_game pg = g.parse_game(msg);
-                if(o.verifying()){
-                    if(msg.is_empty())
-                        std::cout<<"Verification successful"<<std::endl;
-                }
-                else{
-                    // print GDL
-                }
+                // print GDL
             }
         }
         catch(message& m){

@@ -24,6 +24,9 @@ class conjunction : public condition{
         void accept(abstract_dispatcher& dispatcher)const override;
         const std::vector<std::unique_ptr<condition>>& get_content(void)const;
         std::unique_ptr<condition> simplify(void)override;
+        uint priority(void)const override{return 1;};
+        std::string to_rbg(uint indent)const override;
+        std::string to_rbg()const override;
         friend parser_result<conjunction> parse_conjunction(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<conjunction>;
 };

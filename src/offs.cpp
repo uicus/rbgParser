@@ -17,6 +17,18 @@ bool off::is_lazy(void)const{
     return lazy;
 }
 
+std::string off::to_rbg(uint)const{
+    return to_rbg();
+}
+
+std::string off::to_rbg()const{
+    std::string result = "";
+    result += (lazy ? "[@" : "[");
+    result += off_piece.to_string();
+    result += "]";
+    return result;
+}
+
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing offs");
     auto set_result = parse_sequence(it,"legal offs",decls.get_legal_pieces(),true,msg);

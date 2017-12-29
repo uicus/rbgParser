@@ -1,5 +1,6 @@
 #include"alternative.hpp"
 #include"conjunction.hpp"
+#include"printer_helpers.hpp"
 
 alternative::alternative(std::vector<std::unique_ptr<condition>> content):
 content(std::move(content)){
@@ -21,6 +22,29 @@ std::unique_ptr<condition> alternative::simplify(void){
         return std::move(result[0]);
     else
         return std::unique_ptr<condition>(new alternative(std::move(result)));
+}
+
+std::string alternative::to_rbg(uint indent)const{
+    std::string result = "";
+    for(uint i=0;i<content.size();++i){
+        result += "\n"+(i==0 ? print_tabs(indent+1) : print_tabs(indent)+" or ");
+        result += open_bracket_if_necessary(priority(),content[i]->priority());
+        result += content[i]->to_rbg(indent+1);
+        result += close_bracket_if_necessary(priority(),content[i]->priority());
+    }
+    result += "\n"+print_tabs(indent);
+    return result;
+}
+
+std::string alternative::to_rbg()const{
+    std::string result = "";
+    for(uint i=0;i<content.size();++i){
+        result += (i==0 ? "" : " or ");
+        result += open_bracket_if_necessary(priority(),content[i]->priority());
+        result += content[i]->to_rbg();
+        result += close_bracket_if_necessary(priority(),content[i]->priority());
+    }
+    return result;
 }
 
 parser_result<alternative> parse_alternative(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){

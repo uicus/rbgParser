@@ -1,5 +1,6 @@
 #include"conjunction.hpp"
 #include"negatable_condition.hpp"
+#include"printer_helpers.hpp"
 
 conjunction::conjunction(std::vector<std::unique_ptr<condition>> content):
 content(std::move(content)){
@@ -21,6 +22,28 @@ std::unique_ptr<condition> conjunction::simplify(void){
         return std::move(result[0]);
     else
         return std::unique_ptr<condition>(new conjunction(std::move(result)));
+}
+
+std::string conjunction::to_rbg(uint indent)const{
+    std::string result = "";
+    for(uint i=0;i<content.size();++i){
+        result += (i==0 ? "" : " and ");
+        result += open_bracket_if_necessary(priority(),content[i]->priority());
+        result += content[i]->to_rbg(indent);
+        result += close_bracket_if_necessary(priority(),content[i]->priority());
+    }
+    return result;
+}
+
+std::string conjunction::to_rbg()const{
+    std::string result = "";
+    for(uint i=0;i<content.size();++i){
+        result += (i==0 ? "" : " and ");
+        result += open_bracket_if_necessary(priority(),content[i]->priority());
+        result += content[i]->to_rbg();
+        result += close_bracket_if_necessary(priority(),content[i]->priority());
+    }
+    return result;
 }
 
 parser_result<conjunction> parse_conjunction(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){

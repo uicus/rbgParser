@@ -28,6 +28,9 @@ class assignment : public game_move{
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new assignment(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
+        uint priority(void)const override{return 3;};
+        std::string to_rbg(uint)const override;
+        std::string to_rbg()const override;
         const token& get_left_side(void)const;
         const token& get_right_side(void)const;
         bool is_lazy(void)const;

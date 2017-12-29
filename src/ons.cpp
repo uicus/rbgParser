@@ -1,4 +1,5 @@
 #include"ons.hpp"
+#include"printer_helpers.hpp"
 
 ons::ons(std::vector<token>&& legal_ons):
 legal_ons(legal_ons.begin(),legal_ons.end()){
@@ -6,6 +7,17 @@ legal_ons(legal_ons.begin(),legal_ons.end()){
 
 void ons::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
+}
+
+std::string ons::to_rbg(uint)const{
+    return to_rbg();
+}
+
+std::string ons::to_rbg()const{
+    std::string result = "(";
+    result += ::to_rbg(legal_ons);
+    result += ")";
+    return result;
 }
 
 const std::set<token>& ons::get_legal_ons(void)const{

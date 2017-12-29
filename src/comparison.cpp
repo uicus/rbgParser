@@ -1,4 +1,5 @@
 #include"comparison.hpp"
+#include"printer_helpers.hpp"
 
 comparison::comparison(token left_side,token kind_of_comparison,token right_side):
 left_side(left_side),
@@ -20,6 +21,18 @@ void comparison::reverse(void){
 
 void comparison::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
+}
+
+std::string comparison::to_rbg(uint)const{
+    return to_rbg();
+}
+
+std::string comparison::to_rbg()const{
+    std::string result = "";
+    result += print_variable(left_side);
+    result += kind_of_comparison.to_string();
+    result += (left_side.get_type() == player ? right_side.to_string() : print_variable(right_side));
+    return result;
 }
 
 const token& comparison::get_left_side(void)const{

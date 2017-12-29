@@ -21,6 +21,7 @@ class parsed_game{
             std::unique_ptr<game_move> moves);
         const game_board& get_board(void)const;
         const game_move* get_moves(void)const;
+        std::string to_rbg(bool pretty=false)const;
 };
 
 #endif

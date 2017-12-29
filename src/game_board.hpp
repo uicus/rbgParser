@@ -12,6 +12,7 @@ class game_board{
         uint get_height(void)const;
         uint get_width(void)const;
         void add_row(std::vector<token>&& next_row);
+        std::string to_rbg(bool pretty)const;
 };
 
 #endif

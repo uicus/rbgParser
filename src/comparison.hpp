@@ -28,6 +28,9 @@ class comparison : public condition{
         const token& get_kind_of_comparison(void)const;
         const token& get_right_side(void)const;
         std::unique_ptr<condition> simplify(void)override{return std::unique_ptr<condition>(new comparison(std::move(*this)));};
+        uint priority(void)const override{return 3;};
+        std::string to_rbg(uint)const override;
+        std::string to_rbg()const override;
         friend parser_result<comparison> parse_comparison(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<comparison>;
 };

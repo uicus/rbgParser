@@ -23,6 +23,9 @@ class shift : public pure_game_move{
         std::unique_ptr<pure_game_move> transform_into_pure(void)override{return std::unique_ptr<pure_game_move>(new shift(*this));};
         std::unique_ptr<pure_game_move> pure_simplify(void)override{return std::unique_ptr<pure_game_move>(new shift(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
+        uint priority(void)const override{return 3;};
+        std::string to_rbg(uint)const override;
+        std::string to_rbg()const override;
         int get_x(void)const;
         int get_y(void)const;
         friend parser_result<shift> parse_shift(slice_iterator& it, messages_container& msg)throw(message);
