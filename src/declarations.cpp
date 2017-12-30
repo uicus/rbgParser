@@ -22,6 +22,10 @@ const std::set<token>& declarations::get_legal_variables(void)const{
     return variables_names;
 }
 
+const token& declarations::get_first_player(void)const{
+    return first_player;
+}
+
 std::string declarations::to_rbg(void)const{
     return "#players = "+first_player.to_string()+","+rbg_parser::to_rbg_without(players_names,first_player)+"\n"
           +"#pieces = "+rbg_parser::to_rbg(pieces_names)+"\n"

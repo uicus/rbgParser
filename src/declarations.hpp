@@ -18,7 +18,7 @@ class declarations{
         const std::set<token>& get_legal_pieces(void)const;
         const std::set<token>& get_legal_players(void)const;
         const std::set<token>& get_legal_variables(void)const;
-        const token& get_first_player(void);
+        const token& get_first_player(void)const;
         std::string to_rbg(void)const;
 };
 
