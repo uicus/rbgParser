@@ -34,7 +34,7 @@ std::string game_board::to_rbg(bool pretty)const{
 
 const token& game_board::get_square(uint x,uint y)const{
     assert(y<get_height() and x<get_width());
-    return squares[get_height()-y][x];
+    return squares[get_height()-y-1][x];
 }
 
 }
