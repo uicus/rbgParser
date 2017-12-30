@@ -20,6 +20,16 @@ std::string to_rbg(const std::set<token>& s){
     return result;
 }
 
+std::string to_rbg_without(const std::set<token>& s, const token& except){
+    std::string result = "";
+    for(const auto& el: s)
+        if(not (el==except))
+            result+=el.to_string()+",";
+    if(not result.empty())
+        result.pop_back();
+    return result;
+}
+
 std::string print_tabs(uint indent){
     std::string result = "";
     for(uint i=0;i<indent;++i)

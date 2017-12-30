@@ -3,10 +3,11 @@
 
 namespace rbg_parser{
 
-declarations::declarations(std::set<token>&& players_names, std::set<token>&& pieces_names, std::set<token>&& variables_names):
+declarations::declarations(std::set<token>&& players_names, std::set<token>&& pieces_names, std::set<token>&& variables_names, token&& first_player):
 players_names(std::move(players_names)),
 pieces_names(std::move(pieces_names)),
-variables_names(std::move(variables_names)){
+variables_names(std::move(variables_names)),
+first_player(std::move(first_player)){
 }
 
 const std::set<token>& declarations::get_legal_pieces(void)const{
@@ -22,7 +23,7 @@ const std::set<token>& declarations::get_legal_variables(void)const{
 }
 
 std::string declarations::to_rbg(void)const{
-    return "#players = "+rbg_parser::to_rbg(players_names)+"\n"
+    return "#players = "+first_player.to_string()+","+rbg_parser::to_rbg_without(players_names,first_player)+"\n"
           +"#pieces = "+rbg_parser::to_rbg(pieces_names)+"\n"
           +"#variables = "+rbg_parser::to_rbg(variables_names)+"\n";
 }

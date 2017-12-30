@@ -294,11 +294,19 @@ messages_container& msg)const throw(message){
             throw msg.build_message("Identifier \'"+el.to_string()+"\' is found in both "+sets_names+" declarations");
 }
 
+token game_items::parse_first_player(messages_container& msg)const throw(message){
+    slice_iterator it(*players_segment,&macros);
+    it.next(msg);
+    assert(it.current(msg).get_type() == identifier);
+    return it.current(msg);
+}
+
 declarations game_items::parse_declarations(messages_container& msg)const throw(message){
     declarations result(
         parse_declaration_set(&game_items::players_segment,"players",msg),
         parse_declaration_set(&game_items::pieces_segment,"pieces",msg),
-        parse_declaration_set(&game_items::variables_segment,"variables",msg)
+        parse_declaration_set(&game_items::variables_segment,"variables",msg),
+        parse_first_player(msg)
     );
     check_if_sets_disjoint(result.get_legal_pieces(),result.get_legal_players(),"\'pieces\' and \'players\'",msg);
     check_if_sets_disjoint(result.get_legal_pieces(),result.get_legal_variables(),"\'pieces\' and \'variables\'",msg);

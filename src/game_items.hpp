@@ -47,6 +47,7 @@ class game_items{
         void print_segment(std::ostream& out,slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message);
         std::string parse_name(messages_container& msg)const throw(message);
         std::set<token> parse_declaration_set(slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message);
+        token parse_first_player(messages_container& msg)const throw(message);
         void check_if_sets_disjoint(
             const std::set<token>& s1,
             const std::set<token>& s2,
