@@ -1,6 +1,8 @@
 #include"comparison.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 comparison::comparison(token left_side,token kind_of_comparison,token right_side):
 left_side(left_side),
 kind_of_comparison(kind_of_comparison),
@@ -112,4 +114,6 @@ parser_result<comparison> parse_comparison(slice_iterator& it, const declaration
             throw msg.build_message(beginning.create_call_stack("Player name in non-$player comparison"));
     }
     return success(std::move(result));
+}
+
 }

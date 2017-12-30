@@ -9,6 +9,8 @@
 #include"slice.hpp"
 #include"message.hpp"
 
+namespace rbg_parser{
+
 class macro{
         std::vector<token> arguments;
         const std::vector<token>* data;
@@ -40,5 +42,7 @@ class macro_bank{
         bool is_non_zero_arity_macro(const token& name, uint context_order)const;
         bool is_macro_name_and_arity(const token& name, uint arity, uint context_order)const;
 };
+
+}
 
 #endif

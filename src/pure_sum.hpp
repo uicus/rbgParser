@@ -7,6 +7,8 @@
 #include"pure_game_move.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class sum;
 
 class pure_sum : public pure_game_move{
@@ -28,4 +30,7 @@ class pure_sum : public pure_game_move{
         const std::vector<std::unique_ptr<pure_game_move>>& get_content(void)const;
         friend class sum;
 };
+
+}
+
 #endif

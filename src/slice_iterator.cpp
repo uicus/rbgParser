@@ -2,6 +2,8 @@
 
 #include"slice_iterator.hpp"
 
+namespace rbg_parser{
+
 clipboard::clipboard(void)noexcept:
 stored(), // dummy token
 up_to_date(false),
@@ -319,4 +321,6 @@ guarded_iterator(iterator){
 
 parsing_context_string_guard::~parsing_context_string_guard(void){
     guarded_iterator->swap_parsing_context_string(previous_context_string);
+}
+
 }

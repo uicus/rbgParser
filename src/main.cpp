@@ -28,19 +28,19 @@ int main(int argc, const char** argv){
         std::cerr<<"\"-skip-input\" - do not generate input predicates in *.gdl"<<std::endl;
     }
     else{
-        messages_container msg;
+        rbg_parser::messages_container msg;
         try{
             std::string input_file_name(argv[argc-1]);
-            options o(argc-2, argv+1);
+            rbg_parser::options o(argc-2, argv+1);
             std::ifstream t(input_file_name);
             std::stringstream buffer;
             buffer << t.rdbuf();
             std::ofstream out(o.output_file());
             if(!out.good())
                 throw msg.build_message("Couldn't open file "+o.output_file());
-            std::vector<token> result = tokenize(buffer.str(),msg);
-            game_items g = input_tokens(result,msg);
-            parsed_game pg = g.parse_game(msg);
+            std::vector<rbg_parser::token> result = rbg_parser::tokenize(buffer.str(),msg);
+            rbg_parser::game_items g = rbg_parser::input_tokens(result,msg);
+            rbg_parser::parsed_game pg = g.parse_game(msg);
             if(o.verifying()){
                 if(msg.is_empty())
                     std::cout<<"Verification successful"<<std::endl;
@@ -52,7 +52,7 @@ int main(int argc, const char** argv){
                 // print GDL
             }
         }
-        catch(message& m){
+        catch(rbg_parser::message& m){
             std::cout<<m.as_error()<<std::endl;
         }
         catch(std::exception& e){

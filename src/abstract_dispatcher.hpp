@@ -1,6 +1,8 @@
 #ifndef ABSTRACT_DISPATCHER
 #define ABSTRACT_DISPATCHER
 
+namespace rbg_parser{
+
 class sum;
 class pure_sum;
 class concatenation;
@@ -39,5 +41,7 @@ class abstract_dispatcher{
         virtual void dispatch(const comparison&)=0;
         virtual void dispatch(const move_condition&)=0;
 };
+
+}
 
 #endif

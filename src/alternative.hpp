@@ -11,6 +11,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class alternative : public condition{
         std::vector<std::unique_ptr<condition>> content;
         alternative(void)=default;
@@ -32,5 +34,7 @@ class alternative : public condition{
 };
 
 parser_result<alternative> parse_alternative(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

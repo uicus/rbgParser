@@ -11,6 +11,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class bracketed_move : public game_move{
         std::unique_ptr<game_move> contained_move;
         uint number_of_repetitions;
@@ -41,5 +43,7 @@ class bracketed_move : public game_move{
 };
 
 parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

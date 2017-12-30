@@ -11,6 +11,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class sum : public game_move{
         std::vector<std::unique_ptr<game_move>> content;
         sum(std::vector<std::unique_ptr<game_move>>&& content);
@@ -36,5 +38,7 @@ class sum : public game_move{
 };
 
 parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

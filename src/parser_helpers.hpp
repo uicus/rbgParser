@@ -7,6 +7,8 @@
 #include"token.hpp"
 #include"message.hpp"
 
+namespace rbg_parser{
+
 template<typename T>
 class parser_result;
 
@@ -48,5 +50,7 @@ parser_result<std::vector<token>> parse_sequence(
     bool should_verify,
     messages_container& msg
     )throw(message);
+
+}
 
 #endif

@@ -1,6 +1,8 @@
 #include"move_condition.hpp"
 #include"sum.hpp"
 
+namespace rbg_parser{
+
 move_condition::move_condition(std::unique_ptr<pure_game_move> content):
 content(std::move(content)){
 }
@@ -47,4 +49,6 @@ parser_result<move_condition> parse_move_condition(slice_iterator& it, const dec
         throw msg.build_message(move_begin.create_call_stack("Moves after \'!\' cannot contain modifiers (i.e. moves inside \'[]\')"));
     auto pure_sum_result = sum_result.transform_into_pure();
     return success(move_condition(std::move(pure_sum_result)));
+}
+
 }

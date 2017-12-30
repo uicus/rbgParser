@@ -11,6 +11,8 @@
 #include"switch.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 bracketed_move::bracketed_move(void):
 contained_move(),
 number_of_repetitions(1){
@@ -168,4 +170,6 @@ parser_result<bracketed_move> parse_bracketed_move(slice_iterator& it, const dec
     }
     else
         return failure<bracketed_move>();
+}
+
 }

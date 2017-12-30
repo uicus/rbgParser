@@ -8,6 +8,8 @@
 #include"game_board.hpp"
 #include"game_move.hpp"
 
+namespace rbg_parser{
+
 class parsed_game{
         std::string name;
         declarations decl;
@@ -24,5 +26,7 @@ class parsed_game{
         const game_move* get_moves(void)const;
         std::string to_rbg(bool pretty=false)const;
 };
+
+}
 
 #endif

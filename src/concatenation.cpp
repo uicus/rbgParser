@@ -3,6 +3,8 @@
 #include"pure_concatenation.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 concatenation::concatenation(std::vector<std::unique_ptr<game_move>>&& content):
 content(std::move(content)){
 }
@@ -82,4 +84,6 @@ parser_result<concatenation> parse_concatenation(slice_iterator& it, const decla
         auto next_elem = std::unique_ptr<game_move>(new bracketed_move(lower_result.move_value()));
         result.push_back(std::move(next_elem));
     }
+}
+
 }

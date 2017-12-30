@@ -4,6 +4,8 @@
 #include"types.hpp"
 #include"parser_helpers.hpp"
 
+namespace rbg_parser{
+
 game_items::game_items(void)noexcept:
 macros(),
 game_segment(nullptr),
@@ -365,4 +367,6 @@ parsed_game game_items::parse_game(messages_container& msg)const throw(message){
 void print_spaces(std::ostream& out, uint n){
     for(uint i=0;i<n;++i)
         out<<' ';
+}
+
 }

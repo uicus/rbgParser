@@ -2,6 +2,8 @@
 #include"negatable_condition.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 conjunction::conjunction(std::vector<std::unique_ptr<condition>> content):
 content(std::move(content)){
 }
@@ -68,4 +70,6 @@ parser_result<conjunction> parse_conjunction(slice_iterator& it, const declarati
         result.push_back(std::move(next_elem));
         already_started = true;
     }
+}
+
 }

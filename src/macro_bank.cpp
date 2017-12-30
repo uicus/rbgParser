@@ -2,6 +2,8 @@
 
 #include"macro_bank.hpp"
 
+namespace rbg_parser{
+
 macro::macro(std::vector<token>&& args, const std::vector<token>* d, uint b, uint e, uint co)noexcept:
 arguments(std::move(args)),
 data(d),
@@ -95,4 +97,6 @@ bool macro_bank::is_macro_name_and_arity(const token& name, uint arity, uint con
         else
             return it2->second.get_context_order() < context_order;
     }
+}
+
 }

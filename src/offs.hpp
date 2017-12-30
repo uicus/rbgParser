@@ -12,6 +12,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class off : public game_move{
         token off_piece;
         bool lazy;
@@ -36,5 +38,7 @@ class off : public game_move{
 };
 
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

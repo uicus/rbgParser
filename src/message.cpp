@@ -2,6 +2,8 @@
 
 #include"message.hpp"
 
+namespace rbg_parser{
+
 message::message(uint l, uint c, const std::string& d)noexcept:
 call_stack(){
     call_stack.push_back(std::make_pair(std::make_pair(l,c),d));
@@ -95,4 +97,6 @@ void messages_container::write_as_warnings(std::ostream& out)const{
 
 bool messages_container::is_empty(void)const{
     return warnings_list.empty();
+}
+
 }

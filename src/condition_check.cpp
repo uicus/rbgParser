@@ -1,6 +1,8 @@
 #include"condition_check.hpp"
 #include"alternative.hpp"
 
+namespace rbg_parser{
+
 condition_check::condition_check(std::unique_ptr<condition> content):
 content(std::move(content)){
 }
@@ -42,4 +44,6 @@ parser_result<condition_check> parse_condition_check(slice_iterator& it, const d
     if(!condition_result.is_success())
         throw msg.build_message(it.create_call_stack("Expected condition, encountered \'"+it.current(msg).to_string()+"\'"));
     return success(condition_check(std::unique_ptr<condition>(new alternative(condition_result.move_value()))));
+}
+
 }

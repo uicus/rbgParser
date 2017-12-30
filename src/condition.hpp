@@ -3,6 +3,8 @@
 
 #include<memory>
 
+namespace rbg_parser{
+
 class abstract_dispatcher;
 // interface
 class condition{
@@ -14,5 +16,7 @@ class condition{
         virtual std::string to_rbg(uint indent)const=0;
         virtual std::string to_rbg()const=0;
 };
+
+}
 
 #endif

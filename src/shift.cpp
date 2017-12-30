@@ -1,5 +1,7 @@
 #include"shift.hpp"
 
+namespace rbg_parser{
+
 shift::shift(int x,int y):
 x(x),
 y(y){
@@ -44,4 +46,6 @@ int shift::get_x(void)const{
 
 int shift::get_y(void)const{
     return y;
+}
+
 }

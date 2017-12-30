@@ -1,6 +1,8 @@
 #include"ons.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 ons::ons(std::vector<token>&& legal_ons):
 legal_ons(legal_ons.begin(),legal_ons.end()){
 }
@@ -15,7 +17,7 @@ std::string ons::to_rbg(uint)const{
 
 std::string ons::to_rbg()const{
     std::string result = "(";
-    result += ::to_rbg(legal_ons);
+    result += rbg_parser::to_rbg(legal_ons);
     result += ")";
     return result;
 }
@@ -31,4 +33,6 @@ parser_result<ons> parse_ons(slice_iterator& it, const declarations& decls, mess
         return failure<ons>();
     else
         return success(ons(set_result.move_value()));
+}
+
 }

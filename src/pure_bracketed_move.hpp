@@ -7,6 +7,8 @@
 #include"types.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class bracketed_move;
 
 class pure_bracketed_move : public pure_game_move{
@@ -32,5 +34,7 @@ class pure_bracketed_move : public pure_game_move{
         std::unique_ptr<pure_game_move> pure_simplify(void)override;
         friend class bracketed_move;
 };
+
+}
 
 #endif

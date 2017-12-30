@@ -11,6 +11,8 @@
 #include"message.hpp"
 #include"types.hpp"
 
+namespace rbg_parser{
+
 class clipboard{
         token stored;
         bool up_to_date : 1;
@@ -89,5 +91,7 @@ class parsing_context_string_guard{
         parsing_context_string_guard(slice_iterator* iterator, std::string&& current_context_string);
         ~parsing_context_string_guard(void);
 };
+
+}
 
 #endif

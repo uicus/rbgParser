@@ -11,6 +11,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class conjunction : public condition{
         std::vector<std::unique_ptr<condition>> content;
         conjunction(void)=default;
@@ -32,5 +34,7 @@ class conjunction : public condition{
 };
 
 parser_result<conjunction> parse_conjunction(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

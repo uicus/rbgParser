@@ -1,6 +1,8 @@
 #include"pure_concatenation.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 pure_concatenation::pure_concatenation(std::vector<std::unique_ptr<pure_game_move>>&& content):
 content(std::move(content)){
 }
@@ -45,4 +47,6 @@ std::string pure_concatenation::to_rbg()const{
 
 const std::vector<std::unique_ptr<pure_game_move>>& pure_concatenation::get_content(void)const{
     return content;
+}
+
 }

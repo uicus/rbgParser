@@ -2,6 +2,8 @@
 
 #include"slice.hpp"
 
+namespace rbg_parser{
+
 slice::slice(const slice& src, uint from, uint to)noexcept:
 data(src.data),
 begin(src.begin+from),
@@ -88,4 +90,6 @@ uint slice::get_beginning(void)const{
 
 bool slice::is_end(uint index)const{
     return begin+index >= end;
+}
+
 }

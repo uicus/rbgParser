@@ -9,6 +9,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class comparison : public condition{
         token left_side;
         token kind_of_comparison;
@@ -36,5 +38,7 @@ class comparison : public condition{
 };
 
 parser_result<comparison> parse_comparison(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

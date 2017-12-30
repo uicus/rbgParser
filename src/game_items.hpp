@@ -16,6 +16,8 @@
 #include"parser_helpers.hpp"
 #include"sum.hpp"
 
+namespace rbg_parser{
+
 class game_items{
         macro_bank macros;
         slice* game_segment;
@@ -70,5 +72,7 @@ uint reach_end_of_directive(const std::vector<token>& input,uint current_token);
 uint parse_arguments(const std::vector<token>& input,uint current_token,std::vector<token>& args,messages_container& msg)throw(message);
 game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message);
 void print_spaces(std::ostream& out, uint n);
+
+}
 
 #endif

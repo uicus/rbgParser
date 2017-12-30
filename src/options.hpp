@@ -6,6 +6,8 @@
 
 #include"types.hpp"
 
+namespace rbg_parser{
+
 class wrong_argument_error : public std::exception{
         std::string description;
     public:
@@ -44,5 +46,7 @@ class options{
         bool full_translation(void)const;
         const std::string& output_file(void)const;
 };
+
+}
 
 #endif

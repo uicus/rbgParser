@@ -7,6 +7,8 @@
 #include"pure_game_move.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class concatenation;
 
 class pure_concatenation : public pure_game_move{
@@ -28,5 +30,7 @@ class pure_concatenation : public pure_game_move{
         const std::vector<std::unique_ptr<pure_game_move>>& get_content(void)const;
         friend class concatenation;
 };
+
+}
 
 #endif

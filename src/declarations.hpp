@@ -6,6 +6,8 @@
 
 #include"token.hpp"
 
+namespace rbg_parser{
+
 class declarations{
         std::set<token> players_names;
         std::set<token> pieces_names;
@@ -17,5 +19,7 @@ class declarations{
         const std::set<token>& get_legal_variables(void)const;
         std::string to_rbg(void)const;
 };
+
+}
 
 #endif

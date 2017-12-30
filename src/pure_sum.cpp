@@ -1,6 +1,8 @@
 #include"pure_sum.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 pure_sum::pure_sum(std::vector<std::unique_ptr<pure_game_move>>&& content):
 content(std::move(content)){
 }
@@ -48,4 +50,6 @@ std::string pure_sum::to_rbg()const{
 
 const std::vector<std::unique_ptr<pure_game_move>>& pure_sum::get_content(void)const{
     return content;
+}
+
 }

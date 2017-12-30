@@ -1,5 +1,7 @@
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 std::string to_rbg(const std::vector<token>& v){
     std::string result = "";
     for(const auto& el: v)
@@ -47,4 +49,6 @@ std::string print_variable(const token& v){
         return v.to_string();
     else
         return "$"+v.to_string();
+}
+
 }

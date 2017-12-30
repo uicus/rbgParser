@@ -4,6 +4,8 @@
 #include"comparison.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 negatable_condition::negatable_condition(std::unique_ptr<condition> content, bool modifier=false):
 content(std::move(content)),
 modifier(modifier){
@@ -86,4 +88,6 @@ parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it,
         }
         return success(negatable_condition(std::move(result),modifier));
     }
+}
+
 }

@@ -7,6 +7,8 @@
 
 #include"message.hpp"
 
+namespace rbg_parser{
+
 enum token_type{
     left_round_bracket=0,
     right_round_bracket,
@@ -92,5 +94,7 @@ uint seek_end_of_multiline_comment(const std::string& input, uint current_char, 
 uint skip_whitespace(const std::string& input, uint current_char, messages_container& msg);
 bool filter_set_with_character(std::set<token>& current_set, char next_character, uint position, messages_container& msg)throw(message); // returns whether char should be re-parsed and current_set contains full parsed token
 std::vector<token> tokenize(const std::string& input, messages_container& msg)throw(message);
+
+}
 
 #endif

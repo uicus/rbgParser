@@ -12,6 +12,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class assignment : public game_move{
         token left_side;
         token right_side;
@@ -40,5 +42,7 @@ class assignment : public game_move{
 };
 
 parser_result<concatenation> parse_assignments(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

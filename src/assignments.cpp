@@ -1,6 +1,8 @@
 #include"assignments.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 assignment::assignment(token&& left_side, token&& right_side,bool lazy):
 left_side(std::move(left_side)),
 right_side(std::move(right_side)),
@@ -80,4 +82,6 @@ parser_result<concatenation> parse_assignments(slice_iterator& it, const declara
         result.add_move(std::unique_ptr<game_move>(new assignment(assignment_result.move_value())));
     }
     return success(std::move(result));
+}
+
 }

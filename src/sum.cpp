@@ -3,6 +3,8 @@
 #include"pure_sum.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 sum::sum(std::vector<std::unique_ptr<game_move>>&& content):
 content(std::move(content)){
 }
@@ -93,4 +95,6 @@ parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, mess
         result.push_back(std::move(next_elem));
         already_started = true;
     }
+}
+
 }

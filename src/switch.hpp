@@ -10,6 +10,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class player_switch : public game_move{
         token to_player;
         bool turn_changer;
@@ -34,5 +36,7 @@ class player_switch : public game_move{
 };
 
 parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

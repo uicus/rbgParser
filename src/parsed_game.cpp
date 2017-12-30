@@ -1,5 +1,7 @@
 #include"parsed_game.hpp"
 
+namespace rbg_parser{
+
 parsed_game::parsed_game(
 std::string&& name,
 declarations&& decl,
@@ -28,4 +30,6 @@ std::string parsed_game::to_rbg(bool pretty)const{
           +brd.to_rbg(pretty)
           +decl.to_rbg()
           +"#rules = "+(pretty ? "\n"+moves->to_rbg(1) : moves->to_rbg())+"\n";
+}
+
 }

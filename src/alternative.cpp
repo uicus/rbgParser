@@ -2,6 +2,8 @@
 #include"conjunction.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 alternative::alternative(std::vector<std::unique_ptr<condition>> content):
 content(std::move(content)){
 }
@@ -69,4 +71,6 @@ parser_result<alternative> parse_alternative(slice_iterator& it, const declarati
         result.push_back(std::move(next_elem));
         already_started = true;
     }
+}
+
 }

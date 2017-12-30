@@ -7,6 +7,8 @@
 #include"types.hpp"
 #include"token.hpp"
 
+namespace rbg_parser{
+
 class slice{
         const std::vector<token>* data; // doesn't own the data
         uint begin;
@@ -34,5 +36,7 @@ class slice{
         uint get_beginning(void)const;
         bool is_end(uint index)const;
 };
+
+}
 
 #endif

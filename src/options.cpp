@@ -2,6 +2,8 @@
 
 #include"options.hpp"
 
+namespace rbg_parser{
+
 wrong_argument_error::wrong_argument_error(void):
 std::exception(),
 description("Wrong argument error"){
@@ -127,4 +129,6 @@ bool options::full_translation(void)const{
 
 const std::string& options::output_file(void)const{
     return output_name;
+}
+
 }

@@ -9,6 +9,8 @@
 #include"parser_helpers.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class shift : public pure_game_move{
         int x;
         int y;
@@ -33,5 +35,7 @@ class shift : public pure_game_move{
 };
 
 parser_result<shift> parse_shift(slice_iterator& it, messages_container& msg)throw(message);
+
+}
 
 #endif

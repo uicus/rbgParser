@@ -11,6 +11,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class condition_check : public pure_game_move{
         std::unique_ptr<condition> content;
         condition_check(void)=default;
@@ -33,5 +35,7 @@ class condition_check : public pure_game_move{
 };
 
 parser_result<condition_check> parse_condition_check(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

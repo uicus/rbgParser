@@ -10,6 +10,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class negatable_condition : public condition{
         std::unique_ptr<condition> content;
         bool modifier;
@@ -33,5 +35,7 @@ class negatable_condition : public condition{
 };
 
 parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

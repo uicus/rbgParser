@@ -1,6 +1,8 @@
 #include"parser_helpers.hpp"
 #include"types.hpp"
 
+namespace rbg_parser{
+
 parser_result<int> parse_int(slice_iterator& it, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing integer");
     bool is_positive = true;
@@ -47,4 +49,6 @@ messages_container& msg)throw(message){
         it.next(msg);
     }
     return success(std::move(result));
+}
+
 }

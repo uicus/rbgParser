@@ -11,6 +11,8 @@
 #include"pure_game_move.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class move_condition : public condition{
         std::unique_ptr<pure_game_move> content;
         move_condition(void)=default;
@@ -32,5 +34,7 @@ class move_condition : public condition{
 };
 
 parser_result<move_condition> parse_move_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

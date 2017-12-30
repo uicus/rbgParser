@@ -3,6 +3,8 @@
 
 #include<cassert>
 
+namespace rbg_parser{
+
 bool game_board::is_initialized(void)const{
     return get_height()>0;
 }
@@ -25,7 +27,7 @@ std::string game_board::to_rbg(bool pretty)const{
     std::string result = "#board = ";
     for(const auto& row: squares){
         result += (pretty ? "\n    " : "");
-        result += "["+::to_rbg(row)+"]";
+        result += "["+rbg_parser::to_rbg(row)+"]";
     }
     return result+"\n";
 }
@@ -33,4 +35,6 @@ std::string game_board::to_rbg(bool pretty)const{
 const token& game_board::get_square(uint x,uint y)const{
     assert(y<get_height() and x<get_width());
     return squares[get_height()-y][x];
+}
+
 }

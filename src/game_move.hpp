@@ -3,6 +3,8 @@
 
 #include<memory>
 
+namespace rbg_parser{
+
 class pure_game_move;
 class abstract_dispatcher;
 // interface
@@ -18,5 +20,7 @@ class game_move{
         virtual std::string to_rbg(uint indent)const=0;
         virtual std::string to_rbg()const=0;
 };
+
+}
 
 #endif

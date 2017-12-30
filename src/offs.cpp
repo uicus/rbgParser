@@ -1,5 +1,7 @@
 #include"offs.hpp"
 
+namespace rbg_parser{
+
 off::off(token&& off_piece, bool lazy):
 off_piece(std::move(off_piece)),
 lazy(lazy){
@@ -43,4 +45,6 @@ parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, mes
         }
         return success(std::move(result));
     }
+}
+
 }

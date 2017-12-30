@@ -7,6 +7,8 @@
 
 #include"types.hpp"
 
+namespace rbg_parser{
+
 class message{
         std::vector<std::pair<std::pair<uint,uint>,std::string>> call_stack;
     public:
@@ -34,5 +36,7 @@ class messages_container{
         void write_as_warnings(std::ostream& out)const;
         bool is_empty(void)const;
 };
+
+}
 
 #endif

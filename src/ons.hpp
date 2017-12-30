@@ -11,6 +11,8 @@
 #include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
+namespace rbg_parser{
+
 class ons : public pure_game_move{
         std::set<token> legal_ons;
         ons(std::vector<token>&& legal_ons);
@@ -33,5 +35,7 @@ class ons : public pure_game_move{
 };
 
 parser_result<ons> parse_ons(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+
+}
 
 #endif

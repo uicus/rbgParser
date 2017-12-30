@@ -4,6 +4,8 @@
 
 #include"token.hpp"
 
+namespace rbg_parser{
+
 token::token(void)noexcept:
 position_in_file(0),
 type(dummy){}
@@ -441,4 +443,6 @@ std::vector<token> tokenize(const std::string& input, messages_container& msg)th
         }
     }
     return result;
+}
+
 }

@@ -1,6 +1,8 @@
 #include"pure_bracketed_move.hpp"
 #include"printer_helpers.hpp"
 
+namespace rbg_parser{
+
 pure_bracketed_move::pure_bracketed_move(void):
 contained_move(),
 number_of_repetitions(1){
@@ -61,4 +63,6 @@ uint pure_bracketed_move::get_number_of_repetitions(void)const{
 
 bool pure_bracketed_move::is_star(void)const{
     return number_of_repetitions==0;
+}
+
 }
