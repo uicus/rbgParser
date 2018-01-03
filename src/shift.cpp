@@ -31,6 +31,10 @@ std::string shift::to_rbg(uint)const{
     return to_rbg();
 }
 
+std::unique_ptr<pure_game_move> shift::pure_flatten(void){
+    return std::unique_ptr<pure_game_move>(new shift(std::move(*this)));
+}
+
 std::string shift::to_rbg()const{
     std::string result = "(";
     result += std::to_string(x);

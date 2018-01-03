@@ -49,6 +49,18 @@ std::string alternative::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<condition> alternative::flatten(void){
+    std::vector<std::unique_ptr<condition>> result;
+    for(auto& el: content)
+        el->gather_alterantive_elements(result);
+    return std::unique_ptr<condition>(new alternative(std::move(result)));
+}
+
+void alternative::gather_alterantive_elements(std::vector<std::unique_ptr<condition>>& elements){
+    for(auto& el: content)
+        el->gather_alterantive_elements(elements);
+}
+
 parser_result<alternative> parse_alternative(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition alternative");
     std::vector<std::unique_ptr<condition>> result;

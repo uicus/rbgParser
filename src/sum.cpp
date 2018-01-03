@@ -65,6 +65,18 @@ std::string sum::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<game_move> sum::flatten(void){
+    std::vector<std::unique_ptr<game_move>> result;
+    for(auto& el: content)
+        el->gather_sum_elements(result);
+    return std::unique_ptr<game_move>(new sum(std::move(result)));
+}
+
+void sum::gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements){
+    for(auto& el: content)
+        el->gather_sum_elements(elements);
+}
+
 const std::vector<std::unique_ptr<game_move>>& sum::get_content(void)const{
     return content;
 }

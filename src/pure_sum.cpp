@@ -48,6 +48,18 @@ std::string pure_sum::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<pure_game_move> pure_sum::pure_flatten(void){
+    std::vector<std::unique_ptr<pure_game_move>> result;
+    for(auto& el: content)
+        el->gather_pure_sum_elements(result);
+    return std::unique_ptr<pure_game_move>(new pure_sum(std::move(result)));
+}
+
+void pure_sum::gather_pure_sum_elements(std::vector<std::unique_ptr<pure_game_move>>& elements){
+    for(auto& el: content)
+        el->gather_pure_sum_elements(elements);
+}
+
 const std::vector<std::unique_ptr<pure_game_move>>& pure_sum::get_content(void)const{
     return content;
 }

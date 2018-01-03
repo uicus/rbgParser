@@ -29,6 +29,7 @@ class player_switch : public game_move{
         uint priority(void)const override{return 3;};
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<game_move> flatten(void)override;
         const token& get_player(void)const;
         bool changes_player(void)const;
         friend parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

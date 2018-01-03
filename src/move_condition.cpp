@@ -35,6 +35,10 @@ std::string move_condition::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<condition> move_condition::flatten(void){
+    return std::unique_ptr<condition>(new move_condition(content->pure_flatten()));
+}
+
 parser_result<move_condition> parse_move_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing move pattern inside condition");
     if(!it.has_value() || it.current(msg).get_type() != exclamation)

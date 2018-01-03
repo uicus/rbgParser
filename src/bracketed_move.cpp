@@ -70,6 +70,10 @@ std::string bracketed_move::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<game_move> bracketed_move::flatten(void){
+    return std::unique_ptr<game_move>(new bracketed_move(contained_move->flatten(),number_of_repetitions));
+}
+
 const game_move* bracketed_move::get_content(void)const{
     return contained_move.get();
 }

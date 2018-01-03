@@ -30,6 +30,7 @@ class negatable_condition : public condition{
         std::unique_ptr<condition> simplify(void)override;
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<condition> flatten(void)override;
         friend parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<negatable_condition>;
 };

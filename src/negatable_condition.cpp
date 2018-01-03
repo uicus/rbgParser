@@ -47,6 +47,10 @@ std::string negatable_condition::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<condition> negatable_condition::flatten(void){
+    return std::unique_ptr<condition>(new negatable_condition(content->flatten(),modifier));
+}
+
 parser_result<negatable_condition> parse_negatable_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition");
     if(!it.has_value())

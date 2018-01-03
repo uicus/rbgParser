@@ -31,6 +31,10 @@ std::string off::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<game_move> off::flatten(void){
+    return std::unique_ptr<game_move>(new off(std::move(*this)));
+}
+
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing offs");
     auto set_result = parse_sequence(it,"legal offs",decls.get_legal_pieces(),true,msg);

@@ -29,6 +29,7 @@ class move_condition : public condition{
         uint priority(void)const override{return 3;};
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<condition> flatten(void)override;
         friend parser_result<move_condition> parse_move_condition(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<move_condition>;
 };

@@ -27,6 +27,10 @@ std::string assignment::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<game_move> assignment::flatten(void){
+    return std::unique_ptr<game_move>(new assignment(std::move(*this)));
+}
+
 const token& assignment::get_left_side(void)const{
     return left_side;
 }

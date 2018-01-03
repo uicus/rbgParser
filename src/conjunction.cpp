@@ -48,6 +48,18 @@ std::string conjunction::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<condition> conjunction::flatten(void){
+    std::vector<std::unique_ptr<condition>> result;
+    for(auto& el: content)
+        el->gather_conjunction_elements(result);
+    return std::unique_ptr<condition>(new conjunction(std::move(result)));
+}
+
+void conjunction::gather_conjunction_elements(std::vector<std::unique_ptr<condition>>& elements){
+    for(auto& el: content)
+        el->gather_conjunction_elements(elements);
+}
+
 parser_result<conjunction> parse_conjunction(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition conjunction");
     std::vector<std::unique_ptr<condition>> result;

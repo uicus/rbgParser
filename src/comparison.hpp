@@ -33,6 +33,7 @@ class comparison : public condition{
         uint priority(void)const override{return 3;};
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<condition> flatten(void)override;
         friend parser_result<comparison> parse_comparison(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<comparison>;
 };

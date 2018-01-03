@@ -27,6 +27,8 @@ class pure_sum : public pure_game_move{
         uint priority(void)const override{return 0;};
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<pure_game_move> pure_flatten(void)override;
+        void gather_pure_sum_elements(std::vector<std::unique_ptr<pure_game_move>>& elements)override;
         const std::vector<std::unique_ptr<pure_game_move>>& get_content(void)const;
         friend class sum;
 };

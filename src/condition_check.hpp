@@ -30,6 +30,7 @@ class condition_check : public pure_game_move{
         uint priority(void)const override{return 3;};
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<pure_game_move> pure_flatten(void)override;
         friend parser_result<condition_check> parse_condition_check(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<condition_check>;
 };

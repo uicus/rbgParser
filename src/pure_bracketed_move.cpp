@@ -53,6 +53,10 @@ std::string pure_bracketed_move::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<pure_game_move> pure_bracketed_move::pure_flatten(void){
+    return std::unique_ptr<pure_game_move>(new pure_bracketed_move(contained_move->pure_flatten(),number_of_repetitions));
+}
+
 const pure_game_move* pure_bracketed_move::get_content(void)const{
     return contained_move.get();
 }

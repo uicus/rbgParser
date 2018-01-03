@@ -37,6 +37,10 @@ std::string comparison::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<condition> comparison::flatten(void){
+    return std::unique_ptr<condition>(new comparison(std::move(*this)));
+}
+
 const token& comparison::get_left_side(void)const{
     return left_side;
 }

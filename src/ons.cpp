@@ -22,6 +22,10 @@ std::string ons::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<pure_game_move> ons::pure_flatten(void){
+    return std::unique_ptr<pure_game_move>(new ons(std::move(*this)));
+}
+
 const std::set<token>& ons::get_legal_ons(void)const{
     return legal_ons;
 }

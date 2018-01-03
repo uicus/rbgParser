@@ -28,6 +28,7 @@ class shift : public pure_game_move{
         uint priority(void)const override{return 3;};
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<pure_game_move> pure_flatten(void)override;
         int get_x(void)const;
         int get_y(void)const;
         friend parser_result<shift> parse_shift(slice_iterator& it, messages_container& msg)throw(message);

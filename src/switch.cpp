@@ -22,6 +22,10 @@ std::string player_switch::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<game_move> player_switch::flatten(void){
+    return std::unique_ptr<game_move>(new player_switch(std::move(*this)));
+}
+
 const token& player_switch::get_player(void)const{
     return to_player;
 }

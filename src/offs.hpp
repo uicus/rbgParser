@@ -32,6 +32,7 @@ class off : public game_move{
         uint priority(void)const override{return 3;};
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<game_move> flatten(void)override;
         const token& get_piece(void)const;
         bool is_lazy(void)const;
         friend parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

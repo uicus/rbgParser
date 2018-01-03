@@ -27,6 +27,7 @@ class pure_bracketed_move : public pure_game_move{
         uint priority(void)const override{return 2;};
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<pure_game_move> pure_flatten(void)override;
         const pure_game_move* get_content(void)const;
         uint get_number_of_repetitions(void)const;
         bool is_star(void)const;

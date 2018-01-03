@@ -29,6 +29,8 @@ class alternative : public condition{
         uint priority(void)const override{return 0;};
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<condition> flatten(void)override;
+        void gather_alterantive_elements(std::vector<std::unique_ptr<condition>>& elements)override;
         friend parser_result<alternative> parse_alternative(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<alternative>;
 };

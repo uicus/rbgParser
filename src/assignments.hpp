@@ -33,6 +33,7 @@ class assignment : public game_move{
         uint priority(void)const override{return 3;};
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
+        std::unique_ptr<game_move> flatten(void)override;
         const token& get_left_side(void)const;
         const token& get_right_side(void)const;
         bool is_lazy(void)const;

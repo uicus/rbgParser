@@ -62,6 +62,18 @@ std::string concatenation::to_rbg()const{
     return result;
 }
 
+std::unique_ptr<game_move> concatenation::flatten(void){
+    std::vector<std::unique_ptr<game_move>> result;
+    for(auto& el: content)
+        el->gather_concatenation_elements(result);
+    return std::unique_ptr<game_move>(new concatenation(std::move(result)));
+}
+
+void concatenation::gather_concatenation_elements(std::vector<std::unique_ptr<game_move>>& elements){
+    for(auto& el: content)
+        el->gather_concatenation_elements(elements);
+}
+
 const std::vector<std::unique_ptr<game_move>>& concatenation::get_content(void)const{
     return content;
 }
