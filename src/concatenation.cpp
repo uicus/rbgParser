@@ -2,6 +2,7 @@
 #include"bracketed_move.hpp"
 #include"pure_concatenation.hpp"
 #include"printer_helpers.hpp"
+#include"modifier_block.hpp"
 
 namespace rbg_parser{
 
@@ -9,7 +10,7 @@ concatenation::concatenation(std::vector<std::unique_ptr<game_move>>&& content):
 content(std::move(content)){
 }
 
-bool concatenation::modifies(void){
+bool concatenation::modifies(void)const{
     for(const auto& el: content)
         if(el->modifies())
             return true;
@@ -64,14 +65,36 @@ std::string concatenation::to_rbg()const{
 
 std::unique_ptr<game_move> concatenation::flatten(void){
     std::vector<std::unique_ptr<game_move>> result;
+    std::vector<std::unique_ptr<game_move>> first_modifier_block;
     for(auto& el: content)
-        el->gather_concatenation_elements(result);
-    return std::unique_ptr<game_move>(new concatenation(std::move(result)));
+        el->gather_concatenation_elements(result,first_modifier_block);
+    if(!first_modifier_block.empty()){
+        if(first_modifier_block.size()>1)
+            result.push_back(std::unique_ptr<game_move>(new modifier_block(std::move(first_modifier_block))));
+        else
+            result.push_back(std::move(first_modifier_block[0]));
+    }
+    if(result.size()==1) // probably only modifiers
+        return std::move(result[0]);
+    else
+        return std::unique_ptr<game_move>(new concatenation(std::move(result)));
 }
 
-void concatenation::gather_concatenation_elements(std::vector<std::unique_ptr<game_move>>& elements){
+void concatenation::gather_concatenation_elements(
+    std::vector<std::unique_ptr<game_move>>& elements,
+    std::vector<std::unique_ptr<game_move>>& next_block_elements){
     for(auto& el: content)
-        el->gather_concatenation_elements(elements);
+        el->gather_concatenation_elements(elements,next_block_elements);
+}
+
+#include<cassert>
+
+straightness_result concatenation::compute_k_straightness(void)const{
+    std::vector<straightness_result> partial_results;
+    for(const auto& el: content)
+        partial_results.push_back(el->compute_k_straightness());
+    // TODO (main algorithm here)
+    assert(false);
 }
 
 const std::vector<std::unique_ptr<game_move>>& concatenation::get_content(void)const{

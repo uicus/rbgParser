@@ -25,7 +25,7 @@ class bracketed_move : public game_move{
         bracketed_move(const bracketed_move&)=default;
         bracketed_move& operator=(const bracketed_move&)=default;
         bracketed_move& operator=(bracketed_move&&)=default;
-        bool modifies(void)override;
+        bool modifies(void)const override;
         void set_lazy(void)override{contained_move->set_lazy();};
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         std::unique_ptr<game_move> simplify(void)override;
@@ -34,6 +34,7 @@ class bracketed_move : public game_move{
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
+        straightness_result compute_k_straightness(void)const override;
         const game_move* get_content(void)const;
         uint get_number_of_repetitions(void)const;
         bool is_star(void)const;

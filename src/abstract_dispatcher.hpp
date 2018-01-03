@@ -15,6 +15,7 @@ class off;
 class assignment;
 class player_switch;
 class condition_check;
+class modifier_block;
 class conjunction;
 class alternative;
 class negatable_condition;
@@ -35,6 +36,7 @@ class abstract_dispatcher{
         virtual void dispatch(const assignment&)=0;
         virtual void dispatch(const player_switch&)=0;
         virtual void dispatch(const condition_check&)=0;
+        virtual void dispatch(const modifier_block&)=0;
         virtual void dispatch(const conjunction&)=0;
         virtual void dispatch(const alternative&)=0;
         virtual void dispatch(const negatable_condition&)=0;

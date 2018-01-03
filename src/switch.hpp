@@ -30,6 +30,7 @@ class player_switch : public game_move{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
+        straightness_result compute_k_straightness(void)const override;
         const token& get_player(void)const;
         bool changes_player(void)const;
         friend parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

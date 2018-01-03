@@ -23,7 +23,7 @@ class sum : public game_move{
         sum(const sum&)=default;
         sum& operator=(const sum&)=default;
         sum& operator=(sum&&)=default;
-        bool modifies(void)override;
+        bool modifies(void)const override;
         void set_lazy(void)override;
         std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         std::unique_ptr<game_move> simplify(void)override;
@@ -33,6 +33,7 @@ class sum : public game_move{
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
         void gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements)override;
+        straightness_result compute_k_straightness(void)const override;
         const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
         void add_move(std::unique_ptr<game_move> m);
         friend parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

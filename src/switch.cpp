@@ -26,6 +26,10 @@ std::unique_ptr<game_move> player_switch::flatten(void){
     return std::unique_ptr<game_move>(new player_switch(std::move(*this)));
 }
 
+straightness_result player_switch::compute_k_straightness(void)const{
+    return standard_switch();
+}
+
 const token& player_switch::get_player(void)const{
     return to_player;
 }

@@ -23,7 +23,7 @@ contained_move(std::move(contained_move)),
 number_of_repetitions(number_of_repetitions){
 }
 
-bool bracketed_move::modifies(void){
+bool bracketed_move::modifies(void)const{
     if(contained_move)
         return contained_move->modifies();
     else
@@ -72,6 +72,12 @@ std::string bracketed_move::to_rbg()const{
 
 std::unique_ptr<game_move> bracketed_move::flatten(void){
     return std::unique_ptr<game_move>(new bracketed_move(contained_move->flatten(),number_of_repetitions));
+}
+
+straightness_result bracketed_move::compute_k_straightness(void)const{
+    auto content_result = contained_move->compute_k_straightness();
+    content_result.repeat_result(number_of_repetitions);
+    return content_result;
 }
 
 const game_move* bracketed_move::get_content(void)const{

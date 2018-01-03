@@ -9,7 +9,7 @@ sum::sum(std::vector<std::unique_ptr<game_move>>&& content):
 content(std::move(content)){
 }
 
-bool sum::modifies(void){
+bool sum::modifies(void)const{
     for(const auto& el: content)
         if(el->modifies())
             return true;
@@ -75,6 +75,13 @@ std::unique_ptr<game_move> sum::flatten(void){
 void sum::gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements){
     for(auto& el: content)
         el->gather_sum_elements(elements);
+}
+
+straightness_result sum::compute_k_straightness(void)const{
+    auto current_max = empty_move();
+    for(const auto& el: content)
+        current_max.max_of_results(el->compute_k_straightness());
+    return current_max;
 }
 
 const std::vector<std::unique_ptr<game_move>>& sum::get_content(void)const{

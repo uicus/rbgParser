@@ -34,6 +34,10 @@ class assignment : public game_move{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
+        void gather_concatenation_elements(
+            std::vector<std::unique_ptr<game_move>>& elements,
+            std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
+        straightness_result compute_k_straightness(void)const override;
         const token& get_left_side(void)const;
         const token& get_right_side(void)const;
         bool is_lazy(void)const;

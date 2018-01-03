@@ -35,6 +35,16 @@ std::unique_ptr<game_move> off::flatten(void){
     return std::unique_ptr<game_move>(new off(std::move(*this)));
 }
 
+void off::gather_concatenation_elements(
+    std::vector<std::unique_ptr<game_move>>&,
+    std::vector<std::unique_ptr<game_move>>& next_block_elements){
+    next_block_elements.push_back(flatten());
+}
+
+straightness_result off::compute_k_straightness(void)const{
+    return modifier_non_switch();
+}
+
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing offs");
     auto set_result = parse_sequence(it,"legal offs",decls.get_legal_pieces(),true,msg);
