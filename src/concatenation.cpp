@@ -87,14 +87,11 @@ void concatenation::gather_concatenation_elements(
         el->gather_concatenation_elements(elements,next_block_elements);
 }
 
-#include<cassert>
-
 straightness_result concatenation::compute_k_straightness(void)const{
-    std::vector<straightness_result> partial_results;
+    auto current_max = standard_non_switch();
     for(const auto& el: content)
-        partial_results.push_back(el->compute_k_straightness());
-    // TODO (main algorithm here)
-    assert(false);
+        current_max.concatenate_result(el->compute_k_straightness());
+    return current_max;
 }
 
 const std::vector<std::unique_ptr<game_move>>& concatenation::get_content(void)const{

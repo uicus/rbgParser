@@ -41,6 +41,7 @@ int main(int argc, const char** argv){
             std::vector<rbg_parser::token> result = rbg_parser::tokenize(buffer.str(),msg);
             rbg_parser::game_items g = rbg_parser::input_tokens(result,msg);
             rbg_parser::parsed_game pg = g.parse_game(msg);
+            std::cerr<<"Straightness = "<<pg.get_straightness()<<std::endl;
             if(o.verifying()){
                 if(msg.is_empty())
                     std::cout<<"Verification successful"<<std::endl;

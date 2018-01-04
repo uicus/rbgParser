@@ -1,5 +1,4 @@
 #include"parsed_game.hpp"
-
 namespace rbg_parser{
 
 parsed_game::parsed_game(
@@ -10,7 +9,9 @@ std::unique_ptr<game_move> moves):
 name(std::move(name)),
 decl(std::move(decl)),
 brd(std::move(brd)),
-moves(std::move(moves)){
+moves(std::move(moves)),
+straightness(){
+    straightness = this->moves->compute_k_straightness().final_result();
 }
 
 const declarations& parsed_game::get_declarations(void)const{
@@ -23,6 +24,10 @@ const game_board& parsed_game::get_board(void)const{
 
 const game_move* parsed_game::get_moves(void)const{
     return moves.get();
+}
+
+int parsed_game::get_straightness(void)const{
+    return straightness;
 }
 
 std::string parsed_game::to_rbg(bool pretty)const{
