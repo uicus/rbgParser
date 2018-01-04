@@ -143,8 +143,9 @@ parser_result<bracketed_move> parse_modifier(slice_iterator& it, const declarati
         if(!it.has_value())
             throw msg.build_message(it.create_call_stack("Unexpected end of input after \'@\'"));
     }
-    else
-        throw msg.build_message(it.create_call_stack("Eager moves are not supported (hint: add \'@\' after \'[\')"));
+    // TODO: have to invent some other way of checking...
+    //else
+    //    throw msg.build_message(it.create_call_stack("Eager moves are not supported (hint: add \'@\' after \'[\')"));
     auto assignments_result = parse_assignments(it,decls,msg);
     if(assignments_result.is_success())
         contained_move = std::unique_ptr<game_move>(new concatenation(assignments_result.move_value()));
