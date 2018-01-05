@@ -78,8 +78,8 @@
 
 #capturingManMove(color; opponentColor) =
     pickUpPiece(color~Man)
-    potentialJump(opponentColor; [@empty])
-    (->potentialJump(opponentColor; [@empty]))^*
+    potentialJump(opponentColor; [@empty])->
+    (potentialJump(opponentColor; [@empty])->)^*
     (empty)
 
 #atLeastOne(xDirection; yDirection) =
@@ -113,8 +113,8 @@
 
 #capturingKingMove(color; opponentColor) =
     pickUpPiece(color~King)
-    potentialLongJump(opponentColor; [@empty])
-    (->potentialLongJump(opponentColor; [@empty]))^*
+    potentialLongJump(opponentColor; [@empty])->
+    (potentialLongJump(opponentColor; [@empty])->)^*
     placePiece(color~King)
 
 #canCapture(color; opponentColor) =
