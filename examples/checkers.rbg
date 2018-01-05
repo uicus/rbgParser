@@ -150,8 +150,8 @@
 #rules =
     (
         gameContinues
-        allMoves(+;white;black)
+        allMoves(+;black;white)
         gameContinues
-        allMoves(-;black;white)
+        allMoves(-;white;black)
     )^*
 
