@@ -3,8 +3,10 @@
 
 #include<memory>
 #include<vector>
+#include<set>
 
 #include"straightness_helpers.hpp"
+#include"token.hpp"
 
 namespace rbg_parser{
 
@@ -28,6 +30,7 @@ class game_move{
         virtual std::string to_rbg(uint indent)const=0;
         virtual std::string to_rbg()const=0;
         virtual straightness_result compute_k_straightness(void)const{return standard_non_switch();};
+        virtual bool check_if_redundant(std::set<token>&, bool&)const{return false;};
 };
 
 }

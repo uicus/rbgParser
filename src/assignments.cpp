@@ -41,6 +41,13 @@ straightness_result assignment::compute_k_straightness(void)const{
     return modifier_non_switch();
 }
 
+bool assignment::check_if_redundant(std::set<token>& assignments_so_far, bool&)const{
+    if(assignments_so_far.find(left_side) != assignments_so_far.end())
+        return true;
+    assignments_so_far.insert(left_side);
+    return false;
+}
+
 const token& assignment::get_left_side(void)const{
     return left_side;
 }

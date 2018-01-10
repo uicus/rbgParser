@@ -6,6 +6,7 @@
 namespace rbg_parser{
 
 class modifier_block : public concatenation{
+        void remove_redundant_modifiers(void);
     public:
         modifier_block(std::vector<std::unique_ptr<game_move>>&& content);
         void accept(abstract_dispatcher& dispatcher)const override;

@@ -45,6 +45,13 @@ straightness_result off::compute_k_straightness(void)const{
     return modifier_non_switch();
 }
 
+bool off::check_if_redundant(std::set<token>&, bool& already_met_off)const{
+    if(already_met_off)
+        return true;
+    already_met_off = true;
+    return false;
+}
+
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing offs");
     auto set_result = parse_sequence(it,"legal offs",decls.get_legal_pieces(),true,msg);
