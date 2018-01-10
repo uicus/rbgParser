@@ -26,6 +26,10 @@ const game_move* parsed_game::get_moves(void)const{
     return moves.get();
 }
 
+const std::string& parsed_game::get_name(void)const{
+    return name;
+}
+
 int parsed_game::get_straightness(void)const{
     return straightness;
 }
