@@ -7,6 +7,10 @@ OBJECTS = src/options.o src/token.o src/message.o src/slice.o src/macro_bank.o s
 all: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(EXEC) src/main.cpp $(OBJECTS)
 
+lib: $(OBJECTS)
+	$(CXX) -shared -fPIC $(CXXFLAGS) -o $(EXEC).so $(OBJECTS)
+
+
 debug: $(OBJECTS)
 	$(CXX) $(CXXFLAGSDEBUG) -o $(EXEC) src/main.cpp $(OBJECTS)
 
