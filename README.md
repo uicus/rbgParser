@@ -1,2 +1,2 @@
-# rbg2gdl
-Regular Boardgames to Game Description Language translator
+# rbgParser
+Regular Boardgames parser library
