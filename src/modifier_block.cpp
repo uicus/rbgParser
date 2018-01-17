@@ -1,5 +1,6 @@
 #include"modifier_block.hpp"
 #include"printer_helpers.hpp"
+#include"switch.hpp"
 
 namespace rbg_parser{
 
@@ -13,7 +14,7 @@ void modifier_block::accept(abstract_dispatcher& dispatcher)const{
 }
 
 straightness_result modifier_block::compute_k_straightness(void)const{
-    return modifier_non_switch();
+    return finisher() ? standard_switch() : modifier_non_switch();
 }
 
 void modifier_block::remove_redundant_modifiers(void){

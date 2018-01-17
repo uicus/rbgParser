@@ -1,4 +1,5 @@
 #include"switch.hpp"
+#include"modifier_block.hpp"
 
 namespace rbg_parser{
 
@@ -24,6 +25,17 @@ std::string player_switch::to_rbg()const{
 
 std::unique_ptr<game_move> player_switch::flatten(void){
     return std::unique_ptr<game_move>(new player_switch(std::move(*this)));
+}
+
+void player_switch::gather_concatenation_elements(
+    std::vector<std::unique_ptr<game_move>>& elements,
+    std::vector<std::unique_ptr<game_move>>& next_block_elements){
+    next_block_elements.push_back(flatten());
+    if(next_block_elements.size()>1)
+        elements.push_back(std::unique_ptr<game_move>(new modifier_block(std::move(next_block_elements))));
+    else
+        elements.push_back(std::move(next_block_elements[0]));
+    next_block_elements.clear();
 }
 
 straightness_result player_switch::compute_k_straightness(void)const{

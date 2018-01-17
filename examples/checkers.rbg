@@ -128,18 +128,21 @@
 
 #allMoves(forwardDirection; color; opponentColor) =
     [@$opponentColor=1, $color=0]
-    anySquare
     (
         (? not canCapture(color; opponentColor))
         (
+            anySquare
             nonCapturingManMove(color; forwardDirection)
             checkForPromotion(color; forwardDirection)
-          + nonCapturingKingMove(color)
+          + anySquare
+            nonCapturingKingMove(color)
         )
       + (
+            anySquare
             capturingManMove(color; opponentColor)
             checkForPromotion(color; forwardDirection)
-          + capturingKingMove(color; opponentColor)
+          + anySquare
+            capturingKingMove(color; opponentColor)
         )
     )->opponentColor
 

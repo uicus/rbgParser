@@ -31,6 +31,7 @@ class game_move{
         virtual std::string to_rbg()const=0;
         virtual straightness_result compute_k_straightness(void)const{return standard_non_switch();};
         virtual bool check_if_redundant(std::set<token>&, bool&)const{return false;};
+        virtual bool finisher(void)const{return false;};
 };
 
 }
