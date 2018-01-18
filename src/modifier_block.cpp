@@ -14,7 +14,7 @@ void modifier_block::accept(abstract_dispatcher& dispatcher)const{
 }
 
 straightness_result modifier_block::compute_k_straightness(void)const{
-    return finisher() ? standard_switch() : modifier_non_switch();
+    return has_finisher() ? standard_switch() : modifier_non_switch();
 }
 
 void modifier_block::remove_redundant_modifiers(void){

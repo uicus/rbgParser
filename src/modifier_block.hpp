@@ -12,7 +12,8 @@ class modifier_block : public concatenation{
         void accept(abstract_dispatcher& dispatcher)const override;
         bool modifies(void)const override{return true;};
         straightness_result compute_k_straightness(void)const override;
-        bool finisher(void)const override{return content.back()->finisher();};
+        bool has_finisher(void)const override{return content.back()->has_finisher();};
+        virtual token finisher(void)const{return content.back()->finisher();};
 };
 
 }
