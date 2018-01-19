@@ -32,7 +32,6 @@ class game_move{
         virtual straightness_result compute_k_straightness(void)const{return standard_non_switch();};
         virtual bool check_if_redundant(std::set<token>&, bool&)const{return false;};
         virtual bool has_finisher(void)const{return false;};
-        virtual token finisher(void)const{return token();};
 };
 
 }

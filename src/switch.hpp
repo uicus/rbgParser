@@ -35,7 +35,6 @@ class player_switch : public game_move{
             std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         straightness_result compute_k_straightness(void)const override;
         bool has_finisher(void)const override{return true;};
-        virtual token finisher(void)const{return to_player;};
         const token& get_player(void)const;
         bool changes_player(void)const;
         friend parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
