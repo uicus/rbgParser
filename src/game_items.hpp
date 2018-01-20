@@ -26,6 +26,7 @@ class game_items{
         slice* variables_segment;
         slice* pieces_segment;
         slice* rules_segment;
+        slice* finalizer_segment;
         uint next_item_context_order;
         game_items(void)noexcept;
 
@@ -36,6 +37,7 @@ class game_items{
         uint input_variables(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
         uint input_pieces(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
         uint input_rules(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
+        uint input_finalizer(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
         uint input_slice(
             const std::vector<token>& input,
             uint current_token,
@@ -56,7 +58,7 @@ class game_items{
         declarations parse_declarations(messages_container& msg)const throw(message);
         parser_result<std::vector<token>> parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message);
         game_board parse_board(const declarations& decl, messages_container& msg)const throw(message);
-        std::unique_ptr<game_move> parse_moves(const declarations& decl, messages_container& msg)const throw(message);
+        std::unique_ptr<game_move> parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const throw(message);
     public:
         game_items(const game_items&)=delete;
         game_items(game_items&& src)noexcept;

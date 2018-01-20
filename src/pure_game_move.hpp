@@ -16,6 +16,7 @@ class pure_game_move : public game_move{
         virtual std::unique_ptr<pure_game_move> pure_flatten(void)=0;
         virtual void gather_pure_concatenation_elements(std::vector<std::unique_ptr<pure_game_move>>& elements){elements.push_back(pure_flatten());};
         virtual void gather_pure_sum_elements(std::vector<std::unique_ptr<pure_game_move>>& elements){elements.push_back(pure_flatten());};
+        bool finalizer_elligible(void)const override{return true;};
 };
 
 }

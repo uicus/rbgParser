@@ -30,6 +30,10 @@ const std::set<token>& ons::get_legal_ons(void)const{
     return legal_ons;
 }
 
+bool ons::finalizer_elligible(void)const{
+    return true;
+}
+
 parser_result<ons> parse_ons(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'ons\' move");
     auto set_result = parse_sequence(it,"legal ons",decls.get_legal_pieces(),true,msg);

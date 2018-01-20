@@ -84,6 +84,13 @@ straightness_result sum::compute_k_straightness(void)const{
     return current_max;
 }
 
+bool sum::finalizer_elligible(void)const{
+    for(const auto& el: content)
+        if(not el->finalizer_elligible())
+            return false;
+    return true;
+}
+
 const std::vector<std::unique_ptr<game_move>>& sum::get_content(void)const{
     return content;
 }

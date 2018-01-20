@@ -150,3 +150,5 @@
         [@$black=1]
         wholeMove->white
     )^*
+
+#finalizer = ()

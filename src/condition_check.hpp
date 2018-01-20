@@ -31,6 +31,7 @@ class condition_check : public pure_game_move{
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
         std::unique_ptr<pure_game_move> pure_flatten(void)override;
+        bool finalizer_elligible(void)const override;
         friend parser_result<condition_check> parse_condition_check(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<condition_check>;
 };

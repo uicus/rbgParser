@@ -30,6 +30,7 @@ class ons : public pure_game_move{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<pure_game_move> pure_flatten(void)override;
+        bool finalizer_elligible(void)const override;
         const std::set<token>& get_legal_ons(void)const;
         friend parser_result<ons> parse_ons(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<ons>;

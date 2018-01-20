@@ -50,3 +50,5 @@
         moveAndWinCheck(x; o)
         moveAndWinCheck(o; x)
     )^*
+
+#finalizer = ()

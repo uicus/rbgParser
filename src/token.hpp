@@ -44,6 +44,7 @@ enum token_type{
     pieces,
     variables,
     rules,
+    finalizer,
     board,
     number,
     identifier, // must third-to-last

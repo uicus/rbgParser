@@ -5,11 +5,13 @@ parsed_game::parsed_game(
 std::string&& name,
 declarations&& decl,
 game_board&& brd,
-std::unique_ptr<game_move> moves):
+std::unique_ptr<game_move> moves,
+std::unique_ptr<game_move> finisher):
 name(std::move(name)),
 decl(std::move(decl)),
 brd(std::move(brd)),
 moves(std::move(moves)),
+finisher(std::move(finisher)),
 straightness(){
     straightness = this->moves->compute_k_straightness().final_result();
 }
@@ -24,6 +26,10 @@ const game_board& parsed_game::get_board(void)const{
 
 const game_move* parsed_game::get_moves(void)const{
     return moves.get();
+}
+
+const game_move* parsed_game::get_finalizer(void){
+    return finisher.get();
 }
 
 const std::string& parsed_game::get_name(void)const{

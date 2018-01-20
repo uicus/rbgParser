@@ -40,6 +40,7 @@ class off : public game_move{
         bool check_if_redundant(std::set<token>&, bool& already_met_off)const override;
         const token& get_piece(void)const;
         bool is_lazy(void)const;
+        bool finalizer_elligible(void)const override;
         friend parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
 };
 

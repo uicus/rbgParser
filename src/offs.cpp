@@ -52,6 +52,10 @@ bool off::check_if_redundant(std::set<token>&, bool& already_met_off)const{
     return false;
 }
 
+bool off::finalizer_elligible(void)const{
+    return true;
+}
+
 parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing offs");
     auto set_result = parse_sequence(it,"legal offs",decls.get_legal_pieces(),true,msg);

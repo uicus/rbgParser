@@ -17,6 +17,10 @@ straightness_result modifier_block::compute_k_straightness(void)const{
     return has_finisher() ? standard_switch() : modifier_non_switch();
 }
 
+bool modifier_block::finalizer_elligible(void)const{
+    return not has_finisher();
+}
+
 void modifier_block::remove_redundant_modifiers(void){
     std::vector<bool> slated_for_removal(content.size(),false);
     std::set<token> met_assignments;

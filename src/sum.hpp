@@ -34,6 +34,7 @@ class sum : public game_move{
         std::unique_ptr<game_move> flatten(void)override;
         void gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements)override;
         straightness_result compute_k_straightness(void)const override;
+        bool finalizer_elligible(void)const override;
         const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
         void add_move(std::unique_ptr<game_move> m);
         friend parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

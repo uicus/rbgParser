@@ -80,6 +80,10 @@ straightness_result bracketed_move::compute_k_straightness(void)const{
     return content_result;
 }
 
+bool bracketed_move::finalizer_elligible(void)const{
+    return contained_move->finalizer_elligible();
+}
+
 const game_move* bracketed_move::get_content(void)const{
     return contained_move.get();
 }

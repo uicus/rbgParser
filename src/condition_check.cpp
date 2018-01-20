@@ -39,6 +39,10 @@ std::unique_ptr<pure_game_move> condition_check::pure_flatten(void){
     return std::unique_ptr<pure_game_move>(new condition_check(content->flatten()));
 }
 
+bool condition_check::finalizer_elligible(void)const{
+    return true;
+}
+
 parser_result<condition_check> parse_condition_check(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing condition");
     if(!it.has_value() || it.current(msg).get_type() != question)

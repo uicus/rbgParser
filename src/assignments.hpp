@@ -39,6 +39,7 @@ class assignment : public game_move{
             std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         straightness_result compute_k_straightness(void)const override;
         bool check_if_redundant(std::set<token>& assignments_so_far, bool&)const override;
+        bool finalizer_elligible(void)const override;
         const token& get_left_side(void)const;
         const token& get_right_side(void)const;
         bool is_lazy(void)const;

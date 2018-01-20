@@ -218,3 +218,4 @@
         allMoves(-;+;black;white)
     )^*
 
+#finalizer = ()

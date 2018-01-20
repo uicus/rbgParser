@@ -48,6 +48,10 @@ bool assignment::check_if_redundant(std::set<token>& assignments_so_far, bool&)c
     return false;
 }
 
+bool assignment::finalizer_elligible(void)const{
+    return true;
+}
+
 const token& assignment::get_left_side(void)const{
     return left_side;
 }
