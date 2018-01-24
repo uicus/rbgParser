@@ -87,7 +87,7 @@ parser_result<assignment> parse_single_assignment(slice_iterator& it, const decl
     it.next(msg);
     token num;
     if(it.current(msg).get_type() == number)
-        token num = it.current(msg);
+        num = it.current(msg);
     else if(it.current(msg).get_type() == dollar){
         it.next(msg);
         num = it.current(msg);

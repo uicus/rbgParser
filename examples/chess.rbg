@@ -35,6 +35,66 @@
 #variables = pawnDoubleMove, whiteKingMoved, blackKingMoved
 
 
+#isBetween(color; opponentColor; piece; direction; oppositeDirection) =
+    ((! (direction(empty))^*direction(color~King)) and (! (oppositeDirection(empty))^*oppositeDirection(piece)))
+
+#isBetweenUpperRight(color; opponentColor; piece) = isBetween(color; opponentColor; piece; (1,1); (-1,-1))
+#isBetweenUpperLeft(color; opponentColor; piece) = isBetween(color; opponentColor; piece; (-1,1); (1,-1))
+#isBetweenLowerRight(color; opponentColor; piece) = isBetween(color; opponentColor; piece; (1,-1); (-1,1))
+#isBetweenLowerLeft(color; opponentColor; piece) = isBetween(color; opponentColor; piece; (-1,-1); (1,1))
+#isBetweenUp(color; opponentColor; piece) = isBetween(color; opponentColor; piece; (0,1); (0,-1))
+#isBetweenDown(color; opponentColor; piece) = isBetween(color; opponentColor; piece; (0,-1); (0,1))
+#isBetweenLeft(color; opponentColor; piece) = isBetween(color; opponentColor; piece; (-1,0); (1,0))
+#isBetweenRight(color; opponentColor; piece) = isBetween(color; opponentColor; piece; (1,0); (-1,0))
+
+#isBetweenAllExceptHorizontal(color; opponentColor; piece) =
+    isBetweenUpperRight(color;opponentColor;piece)
+ or isBetweenUpperLeft(color;opponentColor;piece)
+ or isBetweenLowerRight(color;opponentColor;piece)
+ or isBetweenLowerLeft(color;opponentColor;piece)
+ or isBetweenUp(color;opponentColor;piece)
+ or isBetweenDown(color;opponentColor;piece)
+
+#isBetweenAllExceptVertical(color; opponentColor; piece) =
+    isBetweenUpperRight(color;opponentColor;piece)
+ or isBetweenUpperLeft(color;opponentColor;piece)
+ or isBetweenLowerRight(color;opponentColor;piece)
+ or isBetweenLowerLeft(color;opponentColor;piece)
+ or isBetweenLeft(color;opponentColor;piece)
+ or isBetweenRight(color;opponentColor;piece)
+
+#isBetweenAllExceptLeftDiagonal(color; opponentColor; piece) = // from upper left to lower right
+    isBetweenUpperRight(color;opponentColor;piece)
+ or isBetweenLowerLeft(color;opponentColor;piece)
+ or isBetweenUp(color;opponentColor;piece)
+ or isBetweenDown(color;opponentColor;piece)
+ or isBetweenLeft(color;opponentColor;piece)
+ or isBetweenRight(color;opponentColor;piece)
+
+#isBetweenAllExceptRightDiagonal(color; opponentColor; piece) = // from upper right to lower left
+    isBetweenUpperLeft(color;opponentColor;piece)
+ or isBetweenLowerRight(color;opponentColor;piece)
+ or isBetweenUp(color;opponentColor;piece)
+ or isBetweenDown(color;opponentColor;piece)
+ or isBetweenLeft(color;opponentColor;piece)
+ or isBetweenRight(color;opponentColor;piece)
+
+#isBetweenDiagonal(color; opponentColor; piece) =
+    isBetweenUpperRight(color;opponentColor;piece)
+ or isBetweenUpperLeft(color;opponentColor;piece)
+ or isBetweenLowerRight(color;opponentColor;piece)
+ or isBetweenLowerLeft(color;opponentColor;piece)
+
+#isBetweenParallel(color; opponentColor; piece) =
+    isBetweenUp(color;opponentColor;piece)
+ or isBetweenDown(color;opponentColor;piece)
+ or isBetweenLeft(color;opponentColor;piece)
+ or isBetweenRight(color;opponentColor;piece)
+
+#isBetweenAnyDirection(color; opponentColor; piece) =
+    isBetweenDiagonal(color; opponentColor; piece)
+ or isBetweenParallel(color; opponentColor; piece)
+
 #anySquare =
     (
         (1,0)
@@ -42,6 +102,14 @@
       + (-1,0)
       + (0,-1)
     )^*
+
+#anyDistinctSquare =
+    (
+        (1,0)((1,0)+(0,1))^*
+      + (0,1)((-1,0)+(0,1))^*
+      + (-1,0)((-1,0)+(0,-1))^*
+      + (0,-1)((1,0)+(0,-1))^*
+    )
 
 #anyNeighborSquare =
     (
@@ -55,12 +123,32 @@
       + (-1,-1)
     )
 
+#anyNeighborSquareWithCheck(color; opponentColor; piece) =
+    (
+        (? not (isBetweenAllExceptHorizontal(color; opponentColor; piece)))( 1, 0)
+      + (? not (isBetweenAllExceptVertical(color; opponentColor; piece)))( 0, 1)
+      + (? not (isBetweenAllExceptHorizontal(color; opponentColor; piece)))(-1, 0)
+      + (? not (isBetweenAllExceptVertical(color; opponentColor; piece)))( 0,-1)
+      + (? not (isBetweenAllExceptRightDiagonal(color; opponentColor; piece)))( 1, 1)
+      + (? not (isBetweenAllExceptLeftDiagonal(color; opponentColor; piece)))(-1, 1)
+      + (? not (isBetweenAllExceptLeftDiagonal(color; opponentColor; piece)))( 1,-1)
+      + (? not (isBetweenAllExceptRightDiagonal(color; opponentColor; piece)))(-1,-1)
+    )
+
 #diagonalLine =
     (
         (( 1, 1)(empty))^*( 1, 1)
       + (( 1,-1)(empty))^*( 1,-1)
       + ((-1, 1)(empty))^*(-1, 1)
       + ((-1,-1)(empty))^*(-1,-1)
+    )
+
+#diagonalLineWithCheck(color; opponentColor; piece) =
+    (
+        (? not (isBetweenAllExceptRightDiagonal(color; opponentColor; piece)))(( 1, 1)(empty))^*( 1, 1)
+      + (? not (isBetweenAllExceptLeftDiagonal(color; opponentColor; piece)))(( 1,-1)(empty))^*( 1,-1)
+      + (? not (isBetweenAllExceptLeftDiagonal(color; opponentColor; piece)))((-1, 1)(empty))^*(-1, 1)
+      + (? not (isBetweenAllExceptRightDiagonal(color; opponentColor; piece)))((-1,-1)(empty))^*(-1,-1)
     )
 
 #parallelLine =
@@ -71,10 +159,24 @@
       + (( 0,-1)(empty))^*( 0,-1)
     )
 
+#parallelLineWithCheck(color; opponentColor; piece) =
+    (
+        (? not (isBetweenAllExceptHorizontal(color; opponentColor; piece)))(( 1, 0)(empty))^*( 1, 0)
+      + (? not (isBetweenAllExceptVertical(color; opponentColor; piece)))(( 0, 1)(empty))^*( 0, 1)
+      + (? not (isBetweenAllExceptHorizontal(color; opponentColor; piece)))((-1, 0)(empty))^*(-1, 0)
+      + (? not (isBetweenAllExceptVertical(color; opponentColor; piece)))(( 0,-1)(empty))^*( 0,-1)
+    )
+
 #anyDirectionLine =
     (
         diagonalLine
       + parallelLine
+    )
+
+#anyDirectionLineWithCheck(color; opponentColor; piece) =
+    (
+        diagonalLineWithCheck(color; opponentColor; piece)
+      + parallelLineWithCheck(color; opponentColor; piece)
     )
 
 #knightHop =
@@ -89,6 +191,49 @@
       + (-2,-1)
     )
 
+#knightHopWithCheck(color; opponentColor; piece) =
+    (
+        ( 1, 2)
+      + ( 1,-2)
+      + (-1, 2)
+      + (-1,-2)
+      + ( 2, 1)
+      + ( 2,-1)
+      + (-2, 1)
+      + (-2,-1)
+    )
+
+#checkedBy(color;piece;pattern) =
+    (!
+        (piece)
+        pattern
+        (color~King)
+    )
+
+#checkedByBishop(color;opponentColor) = checkedBy(color;opponentColor~Bishop;diagonalLine)
+#checkedByRook(color;opponentColor) = checkedBy(color;anyRook(opponentColor);parallelLine)
+#checkedByKnight(color;opponentColor) = checkedBy(color;opponentColor~Knight;knightHop)
+#checkedByQueen(color;opponentColor) = checkedBy(color;opponentColor~Queen;anyDirectionLine)
+#checkedByPawn(color;opponentColor;backDirection) = checkedBy(color;opponentColor~Pawn;(1,backDirection 1)+(-1,backDirection 1))
+
+#checked(color;opponentColor;backDirection) =
+    (
+        checkedByBishop(color; opponentColor)
+     or checkedByRook(color; opponentColor)
+     or checkedByKnight(color; opponentColor)
+     or checkedByQueen(color; opponentColor)
+     or checkedByQueen(color; opponentColor; backDirection)
+    )
+
+#doublyCkecked(color;opponentColor;backDirection) =
+    (
+        checked(color;opponentColor;backDirection)
+    and (!
+            anyDistinctSquare
+            (? checked(color;opponentColor;backDirection))
+        )
+    )
+
 #captureAnyBy(capturingPiece; opponentColor) =
     (emptyOrColor(opponentColor))
     [@capturingPiece]
@@ -101,17 +246,17 @@
     movePattern
     captureAnyBy(piece; opponentColor)
 
-#bishopMove(color; opponentColor) = standardMove(color~Bishop; diagonalLine; opponentColor)
-#knightMove(color; opponentColor) = standardMove(color~Knight; knightHop; opponentColor)
-#queenMove(color; opponentColor) = standardMove(color~Queen; anyDirectionLine; opponentColor)
+#bishopMove(color; opponentColor) = standardMove(color~Bishop; diagonalLineWithCheck(color; opponentColor; color~Bishop); opponentColor)
+#knightMove(color; opponentColor) = standardMove(color~Knight; knightHopWithCheck(color; opponentColor; color~Knight); opponentColor)
+#queenMove(color; opponentColor) = standardMove(color~Queen; anyDirectionLineWithCheck(color; opponentColor; color~Queen); opponentColor)
 
 #rookMove(color; opponentColor) =
     pickUpPiece(anyRook(color))
-    parallelLine
+    parallelLineWithCheck(color; opponentColor; anyRook(color))
     captureAnyBy(color~RookMoved; opponentColor)
 
 #standardKingMove(color; opponentColor) =
-    standardMove(color~King; anyNeighborSquare; opponentColor)
+    standardMove(color~King; anyNeighborSquareWithCheck(color;opponentColor;color~King); opponentColor)
     [@$color~KingMoved=1]
 
 #isAttackedByBishop(opponentColor) = diagonalLine(opponentColor~Bishop)
