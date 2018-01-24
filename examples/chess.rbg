@@ -204,11 +204,9 @@
     )
 
 #checkedBy(color;piece;pattern) =
-    (!
-        (piece)
-        pattern
-        (color~King)
-    )
+    (piece)
+    (pattern)
+    (color~King)
 
 #checkedByBishop(color;opponentColor) = checkedBy(color;opponentColor~Bishop;diagonalLine)
 #checkedByRook(color;opponentColor) = checkedBy(color;anyRook(opponentColor);parallelLine)
@@ -216,22 +214,27 @@
 #checkedByQueen(color;opponentColor) = checkedBy(color;opponentColor~Queen;anyDirectionLine)
 #checkedByPawn(color;opponentColor;backDirection) = checkedBy(color;opponentColor~Pawn;(1,backDirection 1)+(-1,backDirection 1))
 
-#checked(color;opponentColor;backDirection) =
+#checkedHelper(color;opponentColor;backDirection) =
     (
         checkedByBishop(color; opponentColor)
-     or checkedByRook(color; opponentColor)
-     or checkedByKnight(color; opponentColor)
-     or checkedByQueen(color; opponentColor)
-     or checkedByQueen(color; opponentColor; backDirection)
+      + checkedByRook(color; opponentColor)
+      + checkedByKnight(color; opponentColor)
+      + checkedByQueen(color; opponentColor)
+      + checkedByPawn(color; opponentColor; backDirection)
     )
 
-#doublyCkecked(color;opponentColor;backDirection) =
-    (
-        checked(color;opponentColor;backDirection)
-    and (!
-            anyDistinctSquare
-            (? checked(color;opponentColor;backDirection))
-        )
+#checked(color;opponentColor;backDirection) =
+    (!
+        anySquare
+        checkedHelper(color; opponentColor; backDirection)
+    )
+
+#doublyChecked(color;opponentColor;backDirection) =
+    (!
+        anySquare
+        (?(! checkedHelper(color;opponentColor;backDirection)))
+        anyDistinctSquare
+        (?(! checkedHelper(color;opponentColor;backDirection)))
     )
 
 #captureAnyBy(capturingPiece; opponentColor) =
@@ -255,10 +258,6 @@
     parallelLineWithCheck(color; opponentColor; anyRook(color))
     captureAnyBy(color~RookMoved; opponentColor)
 
-#standardKingMove(color; opponentColor) =
-    standardMove(color~King; anyNeighborSquareWithCheck(color;opponentColor;color~King); opponentColor)
-    [@$color~KingMoved=1]
-
 #isAttackedByBishop(opponentColor) = diagonalLine(opponentColor~Bishop)
 #isAttackedByRook(opponentColor) = parallelLine(anyRook(opponentColor))
 #isAttackedByQueen(opponentColor) = anyDirectionLine(opponentColor~Queen)
@@ -276,6 +275,11 @@
       + isAttackedByKing(opponentColor)
       + isAttackedByPawn(opponentColor; forwardDirection)
     ))
+
+#standardKingMove(forwardDirection; color; opponentColor) =
+    standardMove(color~King; anyNeighborSquare; opponentColor)
+    isNotAttackedBy(opponentColor; forwardDirection)
+    [@$color~KingMoved=1]
 
 #castlingKingMove(forwardDirection; color; opponentColor) =
     (? $color~KingMoved==0)
@@ -299,7 +303,7 @@
 #kingMove(forwardDirection; color; opponentColor) =
     (
         castlingKingMove(forwardDirection; color; opponentColor)
-      + standardKingMove(color; opponentColor)
+      + standardKingMove(forwardDirection; color; opponentColor)
     )
 
 #checkForPromotion(forwardDirection; color) =
@@ -313,11 +317,13 @@
     (
         // promotion cannot occur
         (? not (!(0, backDirection 2)))
+        (? not (isBetweenAllExceptHorizontal(color; opponentColor; color~Pawn)))
         (0, forwardDirection 1)(empty)
         (0, forwardDirection 1)(empty)
         [@color~Pawn]
         [@$pawnDoubleMove=1]
       + (
+            (? not (isBetweenAllExceptHorizontal(color; opponentColor; color~Pawn)))
             (0, forwardDirection 1)(empty)
           + ((1, forwardDirection 1)+(-1, forwardDirection 1))(singleColorPieces(opponentColor))
         )
@@ -340,17 +346,31 @@
 
 #allMoves(forwardDirection; backDirection; color; opponentColor) =
     (
-        anySquare
-        [@$pawnDoubleMove=0]
+        (? not checked(color;opponentColor;backDirection))
         (
-            bishopMove(color; opponentColor)
-          + rookMove(color; opponentColor)
-          + knightMove(color; opponentColor)
-          + queenMove(color; opponentColor)
-          + kingMove(forwardDirection; color; opponentColor)
-          + standardPawnMove(forwardDirection; backDirection; color; opponentColor)
+            anySquare
+            [@$pawnDoubleMove=0]
+            (
+                bishopMove(color; opponentColor)
+              + rookMove(color; opponentColor)
+              + knightMove(color; opponentColor)
+              + queenMove(color; opponentColor)
+              + kingMove(forwardDirection; color; opponentColor)
+              + standardPawnMove(forwardDirection; backDirection; color; opponentColor)
+            )
+          + enPassantPawnMove(forwardDirection; color)
         )
-      + enPassantPawnMove(forwardDirection; color)
+      + (? checked(color;opponentColor;backDirection) and not doublyChecked(color;opponentColor;backDirection))
+        (
+            ()
+          + [$opponentColor=1]->() // no defense -- we fail
+        )
+      + (? doublyChecked(color;opponentColor;backDirection))
+        (
+            [@$pawnDoubleMove=0]
+            kingMove(forwardDirection; color; opponentColor)
+          + [$opponentColor=1]->() // no defense -- we fail
+        )
     )->opponentColor
     (
         (? $opponentColor~King==0)[@$color=1]->()
