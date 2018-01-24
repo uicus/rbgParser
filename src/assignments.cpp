@@ -85,9 +85,19 @@ parser_result<assignment> parse_single_assignment(slice_iterator& it, const decl
     if(it.current(msg).get_type() != equal)
         throw msg.build_message(it.create_call_stack("Expected \'=\' after variable name, encountered \'"+it.current(msg).to_string()+"\'"));
     it.next(msg);
-    if(it.current(msg).get_type() != number)
+    token num;
+    if(it.current(msg).get_type() == number)
+        token num = it.current(msg);
+    else if(it.current(msg).get_type() == dollar){
+        it.next(msg);
+        num = it.current(msg);
+        if(num.get_type()!=identifier && num.get_type()!=turn)
+            throw msg.build_message(it.create_call_stack("Expected identifier or \'turn\' token after \'$\', encountered \'"+it.current(msg).to_string()+"\'"));
+        if(num.get_type()!=turn && decls.get_legal_pieces().count(num)==0 && decls.get_legal_players().count(num)==0 && decls.get_legal_variables().count(num)==0)
+            throw msg.build_message(it.create_call_stack("Variable, piece or player \'"+num.to_string()+"\' was not declared"));
+    }
+    else
         throw msg.build_message(it.create_call_stack("Expected non-negative number after variable name, encountered \'"+it.current(msg).to_string()+"\'"));
-    token num = it.current(msg);
     it.next(msg);
     return success(assignment(variable_result.move_value(),std::move(num)));
 }
