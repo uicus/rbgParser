@@ -427,21 +427,22 @@
               + queenMoveWithoutCheck(color; opponentColor)
               + standardPawnMove(forwardDirection; backDirection; color; opponentColor)
             )(? isBetweenAnyDirection(color; opponentColor)) // we've managed to guard the king
-          + [$opponentColor=1]->() // no defense -- we fail
+          + [$opponentColor=10]->() // no defense -- we fail
         )
       + (? doublyChecked(color;opponentColor;backDirection))
         (
             [@$pawnDoubleMove=0]
             kingMove(forwardDirection; color; opponentColor)
-          + [$opponentColor=1]->() // no defense -- we fail
+          + [$opponentColor=10]->() // no defense -- we fail
         )
     )->opponentColor
     (
-        (? $opponentColor~King==0)[@$color=1]->()
-      + (? $turn<=180 and $opponentColor~King>0)
+        (? $turn>180)->()
+      + (? $turn<=180)
     )
 
 #rules =
+    [@ $white=5, $black=5] // to give tie in case of no legal move
     (
         allMoves(+;-;white;black)
         allMoves(-;+;black;white)
