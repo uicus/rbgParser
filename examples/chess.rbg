@@ -207,14 +207,14 @@
 
 #knightHopWithCheck(color; opponentColor) =
     (
-        anyDirectionLineWithCheck(color; opponentColor)( 1, 2)
-      + anyDirectionLineWithCheck(color; opponentColor)( 1,-2)
-      + anyDirectionLineWithCheck(color; opponentColor)(-1, 2)
-      + anyDirectionLineWithCheck(color; opponentColor)(-1,-2)
-      + anyDirectionLineWithCheck(color; opponentColor)( 2, 1)
-      + anyDirectionLineWithCheck(color; opponentColor)( 2,-1)
-      + anyDirectionLineWithCheck(color; opponentColor)(-2, 1)
-      + anyDirectionLineWithCheck(color; opponentColor)(-2,-1)
+        (? not (isBetweenAnyDirection(color; opponentColor)))( 1, 2)
+      + (? not (isBetweenAnyDirection(color; opponentColor)))( 1,-2)
+      + (? not (isBetweenAnyDirection(color; opponentColor)))(-1, 2)
+      + (? not (isBetweenAnyDirection(color; opponentColor)))(-1,-2)
+      + (? not (isBetweenAnyDirection(color; opponentColor)))( 2, 1)
+      + (? not (isBetweenAnyDirection(color; opponentColor)))( 2,-1)
+      + (? not (isBetweenAnyDirection(color; opponentColor)))(-2, 1)
+      + (? not (isBetweenAnyDirection(color; opponentColor)))(-2,-1)
     )
 
 #checkedBy(color;piece;pattern) =
@@ -267,8 +267,8 @@
 #knightMove(color; opponentColor) = standardMove(color~Knight; knightHopWithCheck(color; opponentColor); opponentColor)
 #queenMove(color; opponentColor) = standardMove(color~Queen; anyDirectionLineWithCheck(color; opponentColor); opponentColor)
 #bishopMoveWithoutCheck(color; opponentColor) = standardMove(color~Bishop; diagonalLine; opponentColor)
-#knightMoveWithoutCheck(color; opponentColor) = standardMove(color~Bishop; knightHop; opponentColor)
-#queenMoveWithoutCheck(color; opponentColor) = standardMove(color~Bishop; anyDirectionLine; opponentColor)
+#knightMoveWithoutCheck(color; opponentColor) = standardMove(color~Knight; knightHop; opponentColor)
+#queenMoveWithoutCheck(color; opponentColor) = standardMove(color~Queen; anyDirectionLine; opponentColor)
 
 #rookMove(color; opponentColor) =
     pickUpPiece(anyRook(color))
@@ -437,8 +437,8 @@
         )
     )->opponentColor
     (
-        (? $turn>180)->()
-      + (? $turn<=180)
+        (? $turn>200)->()
+      + (? $turn<=200)
     )
 
 #rules =
