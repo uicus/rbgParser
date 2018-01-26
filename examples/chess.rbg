@@ -131,40 +131,6 @@
       + isAttackedByPawn(opponentColor; forwardDirection)
     ))
 
-#standardMoveCheck(piece; movePattern; opponentColor) =
-    (piece)
-    movePattern
-    emptyOrColor(opponentColor)
-
-#canMoveBishop(color; opponentColor) = standardMoveCheck(color~Bishop; diagonalLine; opponentColor)
-#canMoveKnight(color; opponentColor) = standardMoveCheck(color~Knight; knightHop; opponentColor)
-#canMoveQueen(color; opponentColor) = standardMoveCheck(color~Queen; anyDirectionLine; opponentColor)
-#canMoveRook(color; opponentColor) = standardMoveCheck(anyRook(color); parallelLine; opponentColor)
-#canMoveKing(color; opponentColor; forwardDirection) =
-    standardMoveCheck(color~King; anyNeighborSquare; opponentColor)
-    isNotAttackedBy(opponentColor; forwardDirection)
-#canMovePawn(color; opponentColor; forwardDirection; backDirection) =
-    (
-        (? not (!(0, backDirection 2)))
-        (0, forwardDirection 1)(empty)
-        (0, forwardDirection 1)(empty)
-      + (0, forwardDirection 1)(empty)
-      + (
-            (1, forwardDirection 1)
-          + (-1, forwardDirection 1)
-        )(singleColorPieces(color))
-    )
-#canEnPassantPawn(color; opponentColor; forwardDirection; backDirection) =
-    (? $pawnDoubleMove==1)
-    (
-        (1,0)(color~Pawn)
-        (-1,0)(opponentColor~Pawn)
-        (0, forwardDirection 1)(empty)
-      + (-1,0)(color~Pawn)
-        (1,0)(opponentColor~Pawn)
-        (0, forwardDirection 1)(empty)
-    )
-
 #checked(color; opponentColor; forwardDirection) =
     (!
         anySquare
