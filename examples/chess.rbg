@@ -209,10 +209,6 @@
 
 #allMoves(forwardDirection; backDirection; color; opponentColor) =
     (
-        (? checked(color; opponentColor; forwardDirection))[$color=0,$opponentColor=10]
-      + (? not checked(color; opponentColor; forwardDirection))[$color=5,$opponentColor=5]
-    )
-    (
         anySquare
         [$pawnDoubleMove=0]
         (
@@ -226,7 +222,11 @@
       + enPassantPawnMove(forwardDirection; color)
     )(? not checked(color; opponentColor; forwardDirection))
     (
-        (? $turn>200)[$color=5,$opponentColor=5]->()
+        (? checked(opponentColor; color; backDirection))[$opponentColor=0,$color=10]
+      + (? not checked(opponentColor; color; backDirection))[$color=5,$opponentColor=5]
+    )
+    (
+        (? $turn>200)->()
       + (? $turn<=200)->opponentColor
     )
 
