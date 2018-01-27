@@ -42,6 +42,7 @@ class abstract_dispatcher{
         virtual void dispatch(const negatable_condition&)=0;
         virtual void dispatch(const comparison&)=0;
         virtual void dispatch(const move_condition&)=0;
+        virtual ~abstract_dispatcher(void)=default;
 };
 
 }
