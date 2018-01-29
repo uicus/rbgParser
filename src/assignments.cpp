@@ -3,9 +3,10 @@
 
 namespace rbg_parser{
 
-assignment::assignment(token&& left_side, token&& right_side,bool lazy):
+assignment::assignment(token&& left_side, token&& right_side, token&& kind_of_modification, bool lazy):
 left_side(std::move(left_side)),
 right_side(std::move(right_side)),
+kind_of_modification(std::move(kind_of_modification)),
 lazy(lazy){
 }
 
@@ -21,8 +22,9 @@ std::string assignment::to_rbg()const{
     std::string result = "";
     result += (lazy ? "[@" : "[");
     result += print_variable(left_side);
-    result += "=";
-    result += (left_side.get_type() == player ? right_side.to_string() : print_variable(right_side));
+    result += kind_of_modification.to_string();
+    if(is_assignment())
+        result += (left_side.get_type() == player ? right_side.to_string() : print_variable(right_side));
     result += "]";
     return result;
 }
@@ -64,6 +66,18 @@ bool assignment::is_lazy(void)const{
     return lazy;
 }
 
+bool assignment::is_assignment(void)const{
+    return kind_of_modification.get_type() == equal;
+}
+
+bool assignment::is_incrementation(void)const{
+    return kind_of_modification.get_type() == double_plus;
+}
+
+bool assignment::is_decrementation(void)const{
+    return kind_of_modification.get_type() == double_minus;
+}
+
 parser_result<token> parse_left_side_variable(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing variable");
     if(!it.has_value() || it.current(msg).get_type()!=dollar)
@@ -82,24 +96,27 @@ parser_result<assignment> parse_single_assignment(slice_iterator& it, const decl
     auto variable_result = parse_left_side_variable(it,decls,msg);
     if(!variable_result.is_success())
         return failure<assignment>();
-    if(it.current(msg).get_type() != equal)
-        throw msg.build_message(it.create_call_stack("Expected \'=\' after variable name, encountered \'"+it.current(msg).to_string()+"\'"));
-    it.next(msg);
+    token kind_of_action = it.current(msg);
+    if(kind_of_action.get_type() != equal && kind_of_action.get_type() != double_plus && kind_of_action.get_type() != double_minus)
+        throw msg.build_message(it.create_call_stack("Expected \'=\', \'++\' or \'--\' after variable name, encountered \'"+it.current(msg).to_string()+"\'"));
     token num;
-    if(it.current(msg).get_type() == number)
-        num = it.current(msg);
-    else if(it.current(msg).get_type() == dollar){
+    if(kind_of_action.get_type() == equal){
         it.next(msg);
-        num = it.current(msg);
-        if(num.get_type()!=identifier && num.get_type()!=turn)
-            throw msg.build_message(it.create_call_stack("Expected identifier or \'turn\' token after \'$\', encountered \'"+it.current(msg).to_string()+"\'"));
-        if(num.get_type()!=turn && decls.get_legal_pieces().count(num)==0 && decls.get_legal_players().count(num)==0 && decls.get_legal_variables().count(num)==0)
-            throw msg.build_message(it.create_call_stack("Variable, piece or player \'"+num.to_string()+"\' was not declared"));
+        if(it.current(msg).get_type() == number)
+            num = it.current(msg);
+        else if(it.current(msg).get_type() == dollar){
+            it.next(msg);
+            num = it.current(msg);
+            if(num.get_type()!=identifier && num.get_type()!=turn)
+                throw msg.build_message(it.create_call_stack("Expected identifier or \'turn\' token after \'$\', encountered \'"+it.current(msg).to_string()+"\'"));
+            if(num.get_type()!=turn && decls.get_legal_pieces().count(num)==0 && decls.get_legal_players().count(num)==0 && decls.get_legal_variables().count(num)==0)
+                throw msg.build_message(it.create_call_stack("Variable, piece or player \'"+num.to_string()+"\' was not declared"));
+        }
+        else
+            throw msg.build_message(it.create_call_stack("Expected non-negative number or variable after \'=\', encountered \'"+it.current(msg).to_string()+"\'"));
     }
-    else
-        throw msg.build_message(it.create_call_stack("Expected non-negative number after variable name, encountered \'"+it.current(msg).to_string()+"\'"));
     it.next(msg);
-    return success(assignment(variable_result.move_value(),std::move(num)));
+    return success(assignment(variable_result.move_value(),std::move(num),std::move(kind_of_action)));
 }
 
 parser_result<concatenation> parse_assignments(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){

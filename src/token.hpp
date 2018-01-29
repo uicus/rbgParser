@@ -18,6 +18,8 @@ enum token_type{
     hash,
     minus,
     plus,
+    double_plus,
+    double_minus,
     caret,
     star,
     comma,

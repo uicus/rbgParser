@@ -17,8 +17,9 @@ namespace rbg_parser{
 class assignment : public game_move{
         token left_side;
         token right_side;
+        token kind_of_modification; // =, ++ or --; just a temporary solution
         bool lazy;
-        assignment(token&& left_side, token&& right_side, bool lazy=false);
+        assignment(token&& left_side, token&& right_side, token&& kind_of_modification, bool lazy=false);
         assignment(void)=default;
     public:
         ~assignment(void)override=default;
@@ -43,6 +44,9 @@ class assignment : public game_move{
         const token& get_left_side(void)const;
         const token& get_right_side(void)const;
         bool is_lazy(void)const;
+        bool is_assignment(void)const;
+        bool is_incrementation(void)const;
+        bool is_decrementation(void)const;
         friend parser_result<assignment> parse_single_assignment(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<assignment>;
         friend parser_result<concatenation> parse_assignments(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);

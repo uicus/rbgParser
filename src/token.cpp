@@ -88,6 +88,8 @@ std::string tokens_table[] = {
 "#",
 "-",
 "+",
+"++",
+"--",
 "^",
 "*",
 ",",
@@ -128,6 +130,8 @@ std::string token::to_string(void)const{
         case hash:
         case minus:
         case plus:
+        case double_plus:
+        case double_minus:
         case caret:
         case star:
         case comma:
@@ -252,6 +256,10 @@ void token::reverse_comparison(void){
 token& token::operator+=(const token& t)throw(std::string){
     if(type == minus && t.type == greater)
         type = arrow;
+    else if(type == plus && t.type == plus)
+        type = double_plus;
+    else if(type == minus && t.type == minus)
+        type = double_minus;
     else if(type == less && t.type == equal)
         type = less_equal;
     else if(type == greater && t.type == equal)
