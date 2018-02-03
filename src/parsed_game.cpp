@@ -6,12 +6,12 @@ std::string&& name,
 declarations&& decl,
 game_board&& brd,
 std::unique_ptr<game_move> moves,
-std::unique_ptr<game_move> finisher):
+uint bound_val):
 name(std::move(name)),
 decl(std::move(decl)),
 brd(std::move(brd)),
 moves(std::move(moves)),
-finisher(std::move(finisher)),
+bound_val(bound_val),
 straightness(){
     straightness = this->moves->compute_k_straightness().final_result();
 }
@@ -28,12 +28,12 @@ const game_move* parsed_game::get_moves(void)const{
     return moves.get();
 }
 
-const game_move* parsed_game::get_finalizer(void){
-    return finisher.get();
-}
-
 const std::string& parsed_game::get_name(void)const{
     return name;
+}
+
+uint parsed_game::get_bound(void){
+    return bound_val;
 }
 
 int parsed_game::get_straightness(void)const{
@@ -44,7 +44,8 @@ std::string parsed_game::to_rbg(bool pretty)const{
     return "#game = "+name+"\n"
           +brd.to_rbg(pretty)
           +decl.to_rbg()
-          +"#rules = "+(pretty ? "\n"+moves->to_rbg(1) : moves->to_rbg())+"\n";
+          +"#rules = "+(pretty ? "\n"+moves->to_rbg(1) : moves->to_rbg())+"\n"
+          +"#bound = "+std::to_string(bound_val)+"\n";
 }
 
 }

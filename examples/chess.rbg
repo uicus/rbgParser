@@ -31,7 +31,8 @@
 
 #players = white, black
 #pieces = allPieces, empty
-#variables = pawnDoubleMove, whiteKingMoved, blackKingMoved
+#variables = pawnDoubleMove, whiteKingMoved, blackKingMoved, turn // not used yet
+#bound = 2
 
 
 #anySquare =
@@ -235,6 +236,4 @@
         allMoves(+;-;white;black)
         allMoves(-;+;black;white)
     )^*
-
-#finalizer = ()
 

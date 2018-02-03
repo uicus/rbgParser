@@ -14,8 +14,10 @@ namespace rbg_parser{
 
 class player_switch : public game_move{
         token to_player;
-        bool turn_changer;
+        bool non_deterministic_keeper;
+        bool deterministic_keeper;
         player_switch(token&& to_player);
+        player_switch(bool deterministic);
     public:
         ~player_switch(void)override=default;
         player_switch(void)=default;
@@ -37,7 +39,8 @@ class player_switch : public game_move{
         bool has_finisher(void)const override{return true;};
         bool finalizer_elligible(void)const override;
         const token& get_player(void)const;
-        bool changes_player(void)const;
+        bool is_deterministic_keeper(void)const;
+        bool is_non_deterministic_keeper(void)const;
         friend parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
         friend parser_result<player_switch>;
 };

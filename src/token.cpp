@@ -109,7 +109,7 @@ std::string tokens_table[] = {
 "and",
 "or",
 "not",
-"turn",
+"bound",
 "player",
 "game",
 "players",
@@ -151,7 +151,7 @@ std::string token::to_string(void)const{
         case logical_and:
         case logical_or:
         case logical_not:
-        case turn:
+        case bound:
         case player:
         case game:
         case players:

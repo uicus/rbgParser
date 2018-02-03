@@ -8,7 +8,8 @@
 
 #players = xplayer, oplayer
 #pieces = empty, xpiece, opiece
-#variables = 
+#variables =
+#bound = 0
 
 #anySquare =
     (
@@ -51,4 +52,3 @@
         moveAndWinCheck(o; x)
     )^*
 
-#finalizer = ()

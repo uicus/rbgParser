@@ -5,7 +5,14 @@ namespace rbg_parser{
 
 player_switch::player_switch(token&& to_player):
 to_player(std::move(to_player)),
-turn_changer(true){
+non_deterministic_keeper(false),
+deterministic_keeper(false){
+}
+
+player_switch::player_switch(bool deterministic):
+to_player(),
+non_deterministic_keeper(!deterministic),
+deterministic_keeper(deterministic){
 }
 
 void player_switch::accept(abstract_dispatcher& dispatcher)const{
@@ -18,7 +25,9 @@ std::string player_switch::to_rbg(uint)const{
 
 std::string player_switch::to_rbg()const{
     std::string result = "->";
-    if(changes_player())
+    if(is_non_deterministic_keeper())
+        result += '*';
+    else if(!is_deterministic_keeper())
         result += to_player.to_string();
     return result;
 }
@@ -50,8 +59,11 @@ const token& player_switch::get_player(void)const{
     return to_player;
 }
 
-bool player_switch::changes_player(void)const{
-    return turn_changer;
+bool player_switch::is_deterministic_keeper(void)const{
+    return deterministic_keeper;
+}
+bool player_switch::is_non_deterministic_keeper(void)const{
+    return non_deterministic_keeper;
 }
 
 parser_result<player_switch> parse_player_switch(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message){
@@ -59,13 +71,16 @@ parser_result<player_switch> parse_player_switch(slice_iterator& it, const decla
     if(!it.has_value() || it.current(msg).get_type() != arrow)
         return failure<player_switch>();
     it.next(msg);
-    if(it.current(msg).get_type() != identifier)
-        return success(player_switch());
+    if(!it.has_value() || (it.current(msg).get_type() != identifier && it.current(msg).get_type() != star))
+        return success(player_switch(true));
     token name = it.current(msg);
-    if(decls.get_legal_players().count(name) == 0)
+    if(name.get_type() != star && decls.get_legal_players().count(name) == 0)
         throw msg.build_message(it.create_call_stack("Player \'"+it.current(msg).to_string()+"\' was not declared in respective segment"));
     it.next(msg);
-    return success(player_switch(std::move(name)));
+    if(name.get_type() == star)
+        return success(player_switch(false));
+    else
+        return success(player_switch(std::move(name)));
 }
 
 }

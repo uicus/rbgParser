@@ -71,7 +71,8 @@
 
 #players = white, black
 #pieces = ball, whiteGoal, blackGoal, empty, visited, notVisited, justArrived
-#variables = // no variables
+#variables =
+#bound = 0
 
 
 #findBall = ((1,0)+(1,0)+(-1,0)+(0,-1))^*(ball)[@empty]
@@ -151,4 +152,3 @@
         wholeMove->white
     )^*
 
-#finalizer = ()

@@ -59,12 +59,12 @@ parser_result<std::pair<token,bool>> parse_side(slice_iterator& it, const declar
         return failure<std::pair<token,bool>>();
     if(it.current(msg).get_type() == dollar){
         it.next(msg);
-        if(it.current(msg).get_type()!=identifier && it.current(msg).get_type()!=player && it.current(msg).get_type()!=turn)
-            throw msg.build_message(it.create_call_stack("Expected variable, \'turn\' or \'player\' token, encountered \'"+it.current(msg).to_string()+"\'"));
+        if(it.current(msg).get_type()!=identifier && it.current(msg).get_type()!=player)
+            throw msg.build_message(it.create_call_stack("Expected variable or \'player\' token, encountered \'"+it.current(msg).to_string()+"\'"));
         token name = it.current(msg);
         auto ident_pos = it;
         it.next(msg);
-        if(name.get_type()==player || name.get_type()==turn)
+        if(name.get_type()==player)
             return success(std::make_pair(std::move(name),false));
         if(decls.get_legal_pieces().count(name)==0 && decls.get_legal_players().count(name)==0 && decls.get_legal_variables().count(name)==0)
             throw msg.build_message(ident_pos.create_call_stack("Variable, piece or player \'"+ident_pos.current(msg).to_string()+"\' was not declared"));

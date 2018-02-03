@@ -15,7 +15,7 @@ class parsed_game{
         declarations decl;
         game_board brd;
         std::unique_ptr<game_move> moves;
-        std::unique_ptr<game_move> finisher;
+        uint bound_val;
         int straightness;
     public:
         parsed_game(
@@ -23,12 +23,12 @@ class parsed_game{
             declarations&& decl,
             game_board&& brd,
             std::unique_ptr<game_move> moves,
-            std::unique_ptr<game_move> finisher);
+            uint bound_val);
         const declarations& get_declarations(void)const;
         const game_board& get_board(void)const;
         const game_move* get_moves(void)const;
-        const game_move* get_finalizer(void);
         const std::string& get_name(void)const;
+        uint get_bound(void);
         int get_straightness(void)const;
         std::string to_rbg(bool pretty=false)const;
 };

@@ -14,7 +14,7 @@ players_segment(nullptr),
 variables_segment(nullptr),
 pieces_segment(nullptr),
 rules_segment(nullptr),
-finalizer_segment(nullptr),
+bound_segment(nullptr),
 next_item_context_order(0){
 }
 
@@ -26,9 +26,9 @@ players_segment(src.players_segment),
 variables_segment(src.variables_segment),
 pieces_segment(src.pieces_segment),
 rules_segment(src.rules_segment),
-finalizer_segment(src.finalizer_segment),
+bound_segment(src.bound_segment),
 next_item_context_order(src.next_item_context_order){
-    src.game_segment = src.board_segment = src.players_segment = src.variables_segment = src.pieces_segment = src.rules_segment = src.finalizer_segment = nullptr;
+    src.game_segment = src.board_segment = src.players_segment = src.variables_segment = src.pieces_segment = src.rules_segment = src.bound_segment = nullptr;
 }
 
 game_items& game_items::operator=(game_items&& src)noexcept{
@@ -42,7 +42,7 @@ game_items& game_items::operator=(game_items&& src)noexcept{
         std::swap(variables_segment,src.variables_segment);
         std::swap(pieces_segment,src.pieces_segment);
         std::swap(rules_segment,src.rules_segment);
-        std::swap(finalizer_segment,src.finalizer_segment);
+        std::swap(bound_segment,src.bound_segment);
         next_item_context_order = src.next_item_context_order;
     }
     return *this;
@@ -55,7 +55,7 @@ game_items::~game_items(void)noexcept{
     delete variables_segment;
     delete pieces_segment;
     delete rules_segment;
-    delete finalizer_segment;
+    delete bound_segment;
 }
 
 uint game_items::input_macro(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
@@ -131,8 +131,8 @@ uint game_items::input_rules(const std::vector<token>& input,uint current_token,
     return input_slice(input, current_token, "rules", &game_items::rules_segment,true,msg);
 }
 
-uint game_items::input_finalizer(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
-    return input_slice(input, current_token, "finalizer", &game_items::finalizer_segment,true,msg);
+uint game_items::input_bound(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+    return input_slice(input, current_token, "bound", &game_items::bound_segment,true,msg);
 }
 
 uint reach_end_of_directive(const std::vector<token>& input,uint current_token){
@@ -189,14 +189,14 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
             case rules:
                 current_token = result.input_rules(input,current_token+1,msg);
                 break;
-            case finalizer:
-                current_token = result.input_finalizer(input,current_token+1,msg);
+            case bound:
+                current_token = result.input_bound(input,current_token+1,msg);
                 break;
             case identifier:
                 current_token = result.input_macro(input,current_token,msg);
                 break;
             default:
-                throw msg.build_message(input[current_token].get_position(),"Expected \'game\', \'board\', \'players\', \'variables\', \'pieces\', \'rules\', \'finalizer\' token or identifier, encountered \'"+input[current_token].to_string()+"\'");
+                throw msg.build_message(input[current_token].get_position(),"Expected \'game\', \'board\', \'players\', \'variables\', \'pieces\' or \'rules\' token or identifier, encountered \'"+input[current_token].to_string()+"\'");
             }
         }
     }
@@ -212,8 +212,8 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
         throw msg.build_message("No \'pieces\' directive");
     if(result.rules_segment == nullptr)
         throw msg.build_message("No \'rules\' directive");
-    if(result.finalizer_segment == nullptr)
-        throw msg.build_message("No \'finalizer\' directive");
+    if(result.bound_segment == nullptr)
+        throw msg.build_message("No \'bound\' directive");
     return result;
 }
 
@@ -269,7 +269,7 @@ void game_items::print_rbg(std::ostream& out,messages_container& msg)const throw
     print_segment(out,&game_items::pieces_segment,"pieces",msg);
     print_segment(out,&game_items::variables_segment,"variables",msg);
     print_segment(out,&game_items::rules_segment,"rules",msg);
-    print_segment(out,&game_items::finalizer_segment,"finalizer",msg);
+    print_segment(out,&game_items::bound_segment,"bound",msg);
 }
 
 std::string game_items::parse_name(messages_container& msg)const throw(message){
@@ -374,19 +374,29 @@ std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, sli
     return result->simplify()->flatten();
 }
 
+uint game_items::parse_bound(messages_container& msg)const throw(message){
+    slice_iterator it(*bound_segment,&macros);
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'bound\' segment");
+    it.next(msg);
+    if(it.current(msg).get_type() != number)
+        throw msg.build_message(it.create_call_stack("Segment \'bound\' should contain single positive number"));
+    uint result = it.current(msg).get_value();
+    it.next(msg);
+    if(it.has_value())
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'bound\' segment"));
+    return result;
+}
+
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     declarations decl = parse_declarations(msg);
     game_board brd = parse_board(decl,msg);
     std::unique_ptr<game_move> moves = parse_moves(decl,&game_items::rules_segment,"rules",msg);
-    std::unique_ptr<game_move> finisher = parse_moves(decl,&game_items::finalizer_segment,"finalizer",msg);
-    if(not finisher->finalizer_elligible())
-        throw msg.build_message("Finalizer cannot contain \'->\'");
     return parsed_game(
         parse_name(msg),
         std::move(decl),
         std::move(brd),
         std::move(moves),
-        std::move(finisher)
+        parse_bound(msg)
     );
 }
 
