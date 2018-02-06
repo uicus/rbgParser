@@ -32,7 +32,7 @@ const std::string& parsed_game::get_name(void)const{
     return name;
 }
 
-uint parsed_game::get_bound(void){
+uint parsed_game::get_bound(void)const{
     return bound_val;
 }
 
