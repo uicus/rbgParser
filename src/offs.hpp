@@ -5,11 +5,6 @@
 
 #include"game_move.hpp"
 #include"token.hpp"
-#include"sum.hpp"
-#include"message.hpp"
-#include"slice_iterator.hpp"
-#include"parser_helpers.hpp"
-#include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
 namespace rbg_parser{
@@ -26,10 +21,9 @@ class off : public game_move{
         off& operator=(const off&)=default;
         off& operator=(off&&)=default;
         void set_lazy(void)override{lazy=true;};
-        std::unique_ptr<pure_game_move> transform_into_pure(void)override{assert(false);};
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new off(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
-        uint priority(void)const override{return 3;};
+        uint priority(void)const override{return 4;};
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
@@ -41,10 +35,10 @@ class off : public game_move{
         const token& get_piece(void)const;
         bool is_lazy(void)const;
         bool finalizer_elligible(void)const override;
-        friend parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+        friend std::unique_ptr<game_move> make_offs_sum(std::vector<token>&& legal_offs);
 };
 
-parser_result<sum> parse_offs(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
+std::unique_ptr<game_move> make_offs_sum(std::vector<token>&& legal_offs);
 
 }
 

@@ -14,7 +14,7 @@ class straightness_result{
         int only_coming_through_moves;
         straightness_result(int self_contained_moves,int beginning_moves,int ending_moves,int only_coming_through_moves);
     public:
-        void repeat_result(int times);
+        void repeat_result(int times=0);
         void max_of_results(const straightness_result& rhs);
         void concatenate_result(const straightness_result& rhs);
         int final_result(void)const;

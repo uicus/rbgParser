@@ -5,18 +5,14 @@
 #include<memory>
 
 #include"game_move.hpp"
-#include"message.hpp"
-#include"slice_iterator.hpp"
-#include"parser_helpers.hpp"
-#include"declarations.hpp"
 #include"abstract_dispatcher.hpp"
 
 namespace rbg_parser{
 
 class sum : public game_move{
         std::vector<std::unique_ptr<game_move>> content;
-        sum(std::vector<std::unique_ptr<game_move>>&& content);
     public:
+        sum(std::vector<std::unique_ptr<game_move>>&& content);
         ~sum(void)override=default;
         sum(void)=default;
         sum(sum&&)=default;
@@ -25,10 +21,9 @@ class sum : public game_move{
         sum& operator=(sum&&)=default;
         bool modifies(void)const override;
         void set_lazy(void)override;
-        std::unique_ptr<pure_game_move> transform_into_pure(void)override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
-        uint priority(void)const override{return 0;};
+        uint priority(void)const override{return 1;};
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
@@ -37,11 +32,7 @@ class sum : public game_move{
         bool finalizer_elligible(void)const override;
         const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
         void add_move(std::unique_ptr<game_move> m);
-        friend parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
-        friend parser_result<sum>;
 };
-
-parser_result<sum> parse_sum(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
 
 }
 

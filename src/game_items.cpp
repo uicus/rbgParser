@@ -3,6 +3,9 @@
 #include"game_items.hpp"
 #include"types.hpp"
 #include"parser_helpers.hpp"
+#include"rules_parser.hpp"
+#include"tree_utils.hpp"
+#include"typing_machine.hpp"
 
 namespace rbg_parser{
 
@@ -363,15 +366,15 @@ game_board game_items::parse_board(const declarations& decl, messages_container&
 
 std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const throw(message){
     slice_iterator it(*(this->*segment_position),&macros);
-    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'"+name+"\' segment");
     it.next(msg);
-    auto sum_result = parse_sum(it,decl,msg);
-    if(!sum_result.is_success())
-        throw msg.build_message("No rules given"); // We shouldn't reach this point anyway
-    auto result = std::unique_ptr<game_move>(new sum(sum_result.move_value()));
+    auto res = parse_rules(it, msg);
     if(it.has_value())
         msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'"+name+"\' segment"));
-    return result->simplify()->flatten();
+    auto typer = prepare_types_for_rbg(decl);
+    res->type(typer, msg);
+    if(not is_subtype(gmove, res->get_type()))
+        throw msg.build_message("Segment \'"+name+"\' is of type \'"+expression_type_description(res->get_type())+"\' (should be move  expression)");
+    return res->get_game_move()->simplify()->flatten();
 }
 
 uint game_items::parse_bound(messages_container& msg)const throw(message){

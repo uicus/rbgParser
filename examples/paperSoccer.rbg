@@ -78,16 +78,14 @@
 #findBall = ((1,0)+(1,0)+(-1,0)+(0,-1))^*(ball)[@empty]
 
 #canMoveFurther =
-    (!
-        ( 1, 0)(visited)
-      + ( 0, 1)(visited)
-      + (-1, 0)(visited)
-      + ( 0,-1)(visited)
-      + ( 1, 1)(visited)
-      + (-1, 1)(visited)
-      + ( 1,-1)(visited)
-      + (-1,-1)(visited)
-    )
+    ( 1, 0)(visited)
+  + ( 0, 1)(visited)
+  + (-1, 0)(visited)
+  + ( 0,-1)(visited)
+  + ( 1, 1)(visited)
+  + (-1, 1)(visited)
+  + ( 1,-1)(visited)
+  + (-1,-1)(visited)
 
 #changeNeighbor(from; to) =
     (
@@ -105,7 +103,7 @@
     changeNeighbor(justArrived; visited)
 
 #endMove =
-    (?not canMoveFurther)
+    (! canMoveFurther)
     changeJustArrivedIntoVisited
 
 #visitAuxilialrySquare(x; y; how) =

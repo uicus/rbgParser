@@ -11,13 +11,17 @@ namespace rbg_parser{
 
 enum token_type{
     left_round_bracket=0,
+    left_question_bracket,
+    left_exclamation_bracket,
     right_round_bracket,
     left_square_bracket,
+    left_lazy_bracket,
     right_square_bracket,
     tilde,
     hash,
     minus,
     plus,
+    greater_plus,
     double_plus,
     double_minus,
     caret,

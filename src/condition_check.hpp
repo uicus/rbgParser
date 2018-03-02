@@ -4,20 +4,17 @@
 #include<memory>
 
 #include"condition.hpp"
-#include"pure_game_move.hpp"
-#include"message.hpp"
-#include"slice_iterator.hpp"
-#include"parser_helpers.hpp"
-#include"declarations.hpp"
+#include"game_move.hpp"
 #include"abstract_dispatcher.hpp"
 
 namespace rbg_parser{
 
-class condition_check : public pure_game_move{
+class condition_check : public game_move{
         std::unique_ptr<condition> content;
+        bool negated;
         condition_check(void)=default;
-        condition_check(std::unique_ptr<condition> content);
     public:
+        condition_check(std::unique_ptr<condition> content, bool negated);
         ~condition_check(void)override=default;
         condition_check(condition_check&&)=default;
         condition_check(const condition_check&)=default;
@@ -25,18 +22,14 @@ class condition_check : public pure_game_move{
         condition_check& operator=(condition_check&&)=default;
         void accept(abstract_dispatcher& dispatcher)const override;
         const condition* get_content(void)const;
-        std::unique_ptr<pure_game_move> transform_into_pure(void)override{return std::unique_ptr<pure_game_move>(new condition_check(std::move(content)));};
-        std::unique_ptr<pure_game_move> pure_simplify(void)override;
-        uint priority(void)const override{return 3;};
+        bool is_negated(void)const;
+        std::unique_ptr<game_move> simplify(void)override;
+        uint priority(void)const override{return 4;};
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
-        std::unique_ptr<pure_game_move> pure_flatten(void)override;
+        std::unique_ptr<game_move> flatten(void)override;
         bool finalizer_elligible(void)const override;
-        friend parser_result<condition_check> parse_condition_check(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
-        friend parser_result<condition_check>;
 };
-
-parser_result<condition_check> parse_condition_check(slice_iterator& it, const declarations& decls, messages_container& msg)throw(message);
 
 }
 

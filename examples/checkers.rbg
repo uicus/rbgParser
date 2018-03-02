@@ -77,15 +77,15 @@
 
 #checkForPromotion(color; forwardDirection) =
     (
-        (?(!(0,forwardDirection 1)))[@color~Man]
-      + (?not (!(0, forwardDirection 1)))[@color~King]
+        (? (0,forwardDirection 1))[@color~Man]
+      + (! (0, forwardDirection 1))[@color~King]
     )
 
 #capturingManMove(color; opponentColor; forwardDirection) =
     pickUpPiece(color~Man)
     potentialJump(opponentColor; [@empty]; forwardDirection)->
     (potentialJump(opponentColor; [@empty]; forwardDirection)->)^*
-    (? not (! potentialJump(opponentColor;;forwardDirection)))
+    (! potentialJump(opponentColor;;forwardDirection))
     (empty)
 
 #nonCapturingKingMove(color) =
@@ -102,22 +102,20 @@
     pickUpPiece(color~King)
     potentialJumpAround(opponentColor; [empty])->
     (potentialJumpAround(opponentColor; [empty])->)^*
-    (? not (! potentialJumpAround(opponentColor;)))
+    (! potentialJumpAround(opponentColor;))
     placePiece(color~King)
 
 #canCapture(color; opponentColor; forwardDirection) =
-    (!
-        anySquare
-        (
-            (color~King)potentialJumpAround(opponentColor;)
-          + (color~Man)potentialJump(opponentColor;;forwardDirection)
-        )
+    anySquare
+    (
+        (color~King)potentialJumpAround(opponentColor;)
+      + (color~Man)potentialJump(opponentColor;;forwardDirection)
     )
 
 #allMoves(forwardDirection; color; opponentColor) =
     [@$opponentColor=1, $color=0]
     (
-        (? not canCapture(color; opponentColor; forwardDirection))
+        (! canCapture(color; opponentColor; forwardDirection))
         (
             anySquare
             nonCapturingManMove(color; forwardDirection)
@@ -132,7 +130,7 @@
           + anySquare
             capturingKingMove(color; opponentColor)
         )
-    )->opponentColor
+    )[$turn=$turn+1]->opponentColor
 
 #gameContinues =
     [@$white=0, $black=0]

@@ -123,27 +123,25 @@
     ((1, forwardDirection 1) + (-1, forwardDirection 1))(opponentColor~Pawn)
 
 #isNotAttackedBy(opponentColor; forwardDirection) =
-    (? not (!
+    (!
         isAttackedByBishop(opponentColor)
       + isAttackedByRook(opponentColor)
       + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
       + isAttackedByPawn(opponentColor; forwardDirection)
-    ))
+    )
 
 #checked(color; opponentColor; forwardDirection) =
-    (!
-        anySquare
-        (color~King)
-        (
-            isAttackedByBishop(opponentColor)
-          + isAttackedByRook(opponentColor)
-          + isAttackedByQueen(opponentColor)
-          + isAttackedByKnight(opponentColor)
-          + isAttackedByKing(opponentColor)
-          + isAttackedByPawn(opponentColor; forwardDirection)
-        )
+    anySquare
+    (color~King)
+    (
+        isAttackedByBishop(opponentColor)
+      + isAttackedByRook(opponentColor)
+      + isAttackedByQueen(opponentColor)
+      + isAttackedByKnight(opponentColor)
+      + isAttackedByKing(opponentColor)
+      + isAttackedByPawn(opponentColor; forwardDirection)
     )
 
 #castlingKingMove(forwardDirection; color; opponentColor) =
@@ -174,15 +172,15 @@
 
 #checkForPromotion(forwardDirection; color) =
     (
-        (?(!(0, forwardDirection 1)))[color~Pawn]
-      + (? not (!(0, forwardDirection 1)))[majorPieces(color)]
+        (? (0, forwardDirection 1))[color~Pawn]
+      + (! (0, forwardDirection 1))[majorPieces(color)]
     )
 
 #standardPawnMove(forwardDirection; backDirection; color; opponentColor) =
     pickUpPiece(color~Pawn)
     (
         // promotion cannot occur
-        (? not (!(0, backDirection 2)))
+        (! (0, backDirection 2))
         (0, forwardDirection 1)(empty)
         (0, forwardDirection 1)(empty)
         [color~Pawn]
@@ -221,14 +219,14 @@
           + standardPawnMove(forwardDirection; backDirection; color; opponentColor)
         )
       + enPassantPawnMove(forwardDirection; color)
-    )(? not checked(color; opponentColor; forwardDirection))
+    )(! checked(color; opponentColor; forwardDirection))
     (
         (? checked(opponentColor; color; backDirection))[$opponentColor=0,$color=10]
-      + (? not checked(opponentColor; color; backDirection))[$color=5,$opponentColor=5]
+     >+ [$color=5,$opponentColor=5]
     )
     (
         (? $turn>200)->()
-      + (? $turn<=200)->opponentColor
+     >+ [$turn=$turn+1]->opponentColor
     )
 
 #rules =

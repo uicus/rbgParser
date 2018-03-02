@@ -7,28 +7,25 @@
 
 #include"straightness_helpers.hpp"
 #include"token.hpp"
+#include"condition.hpp"
 
 namespace rbg_parser{
 
-class pure_game_move;
 class abstract_dispatcher;
 // interface
-class game_move{
+class game_move : public condition{
     public:
         virtual ~game_move(void)=default;
         virtual bool modifies(void)const{return true;}
         virtual void set_lazy(void){};
-        virtual std::unique_ptr<pure_game_move> transform_into_pure(void)=0;
-        virtual void accept(abstract_dispatcher &dispatcher)const=0;
-        virtual std::unique_ptr<game_move> simplify(void)=0;
         virtual std::unique_ptr<game_move> flatten(void)=0;
+        std::unique_ptr<condition> condition_flatten(void)override{return flatten();};
+        virtual std::unique_ptr<game_move> simplify(void)=0;
+        std::unique_ptr<condition> condition_simplify(void)override{return simplify();};
         virtual void gather_concatenation_elements(
             std::vector<std::unique_ptr<game_move>>& elements,
             std::vector<std::unique_ptr<game_move>>& next_block_elements);
         virtual void gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements){elements.push_back(flatten());};
-        virtual uint priority(void)const=0; // being of higher priority containg lower ones requires surrounding them with brackets
-        virtual std::string to_rbg(uint indent)const=0;
-        virtual std::string to_rbg()const=0;
         virtual straightness_result compute_k_straightness(void)const{return standard_non_switch();};
         virtual bool check_if_redundant(std::set<token>&, bool&)const{return false;};
         virtual bool has_finisher(void)const{return false;};

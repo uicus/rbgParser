@@ -26,22 +26,20 @@
         [@piece]
     )
 
-#winLine(piece) = 
-    (!
-      anySquare
-      (piece)
-      (
-          (1,0)(piece)(1,0)(piece)
-        + (0,1)(piece)(0,1)(piece)
-        + (1,1)(piece)(1,1)(piece)
-        + (1,-1)(piece)(1,-1)(piece)
-      )
+#winLine(piece) =
+    anySquare
+    (piece)
+    (
+        (1,0)(piece)(1,0)(piece)
+      + (0,1)(piece)(0,1)(piece)
+      + (1,1)(piece)(1,1)(piece)
+      + (1,-1)(piece)(1,-1)(piece)
     )
 
 #moveAndWinCheck(me; opp) =
     (
         (? winLine(opp~piece)) [@ $me~player=0, $opp~player=10]->()
-      + (? not winLine(opp~piece))
+      + (! winLine(opp~piece))
     )
     move(me~piece)->opp~player
 

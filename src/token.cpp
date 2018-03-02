@@ -81,13 +81,17 @@ token::~token(void)noexcept{
 
 std::string tokens_table[] = {
 "(",
+"(?",
+"(!",
 ")",
 "[",
+"[@",
 "]",
 "~",
 "#",
 "-",
 "+",
+">+",
 "++",
 "--",
 "^",
@@ -123,13 +127,17 @@ std::string tokens_table[] = {
 std::string token::to_string(void)const{
     switch(type){
         case left_round_bracket:
+        case left_question_bracket:
+        case left_exclamation_bracket:
         case right_round_bracket:
         case left_square_bracket:
+        case left_lazy_bracket:
         case right_square_bracket:
         case tilde:
         case hash:
         case minus:
         case plus:
+        case greater_plus:
         case double_plus:
         case double_minus:
         case caret:
@@ -256,10 +264,18 @@ void token::reverse_comparison(void){
 token& token::operator+=(const token& t)throw(std::string){
     if(type == minus && t.type == greater)
         type = arrow;
+    if(type == greater && t.type == plus)
+        type = greater_plus;
     else if(type == plus && t.type == plus)
         type = double_plus;
     else if(type == minus && t.type == minus)
         type = double_minus;
+    else if(type == left_round_bracket && t.type == question)
+        type = left_question_bracket;
+    else if(type == left_round_bracket && t.type == exclamation)
+        type = left_exclamation_bracket;
+    else if(type == left_square_bracket && t.type == at_sign)
+        type = left_lazy_bracket;
     else if(type == less && t.type == equal)
         type = less_equal;
     else if(type == greater && t.type == equal)
