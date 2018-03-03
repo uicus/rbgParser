@@ -29,7 +29,6 @@ class player_switch : public game_move{
             std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         straightness_result compute_k_straightness(void)const override;
         bool has_finisher(void)const override{return true;};
-        bool finalizer_elligible(void)const override;
         const token& get_player(void)const;
 };
 
@@ -54,7 +53,6 @@ class keeper_switch : public game_move{
             std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         straightness_result compute_k_straightness(void)const override;
         bool has_finisher(void)const override{return true;};
-        bool finalizer_elligible(void)const override;
         bool is_deterministic(void)const;
 };
 

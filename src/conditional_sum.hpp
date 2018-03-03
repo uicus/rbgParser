@@ -28,7 +28,6 @@ class conditional_sum : public game_move{
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
         straightness_result compute_k_straightness(void)const override;
-        bool finalizer_elligible(void)const override;
         const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
 };
 

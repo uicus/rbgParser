@@ -23,6 +23,7 @@ class multiply_arithmetic : public arithmetic_expression{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<arithmetic_expression> flatten(void)override;
+        void gather_multiply_elements(std::vector<std::unique_ptr<arithmetic_expression>>& elements)override;
         const std::vector<std::unique_ptr<arithmetic_expression>>& get_content(void)const;
 };
 

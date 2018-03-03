@@ -34,7 +34,6 @@ class off : public game_move{
         bool check_if_redundant(std::set<token>&, bool& already_met_off)const override;
         const token& get_piece(void)const;
         bool is_lazy(void)const;
-        bool finalizer_elligible(void)const override;
         friend std::unique_ptr<game_move> make_offs_sum(std::vector<token>&& legal_offs);
 };
 

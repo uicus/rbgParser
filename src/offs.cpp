@@ -53,10 +53,6 @@ bool off::check_if_redundant(std::set<token>&, bool& already_met_off)const{
     return false;
 }
 
-bool off::finalizer_elligible(void)const{
-    return true;
-}
-
 std::unique_ptr<game_move> make_offs_sum(std::vector<token>&& legal_offs){
     sum* result = new sum;
     for(auto& el: legal_offs)

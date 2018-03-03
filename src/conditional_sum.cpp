@@ -70,13 +70,6 @@ straightness_result conditional_sum::compute_k_straightness(void)const{
     return current_max;
 }
 
-bool conditional_sum::finalizer_elligible(void)const{
-    for(const auto& el: content)
-        if(not el->finalizer_elligible())
-            return false;
-    return true;
-}
-
 const std::vector<std::unique_ptr<game_move>>& conditional_sum::get_content(void)const{
     return content;
 }

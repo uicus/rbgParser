@@ -28,10 +28,6 @@ std::string shift::to_rbg()const{
     return result;
 }
 
-bool shift::finalizer_elligible(void)const{
-    return true;
-}
-
 int shift::get_x(void)const{
     return x;
 }

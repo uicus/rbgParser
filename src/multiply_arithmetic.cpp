@@ -23,8 +23,15 @@ std::unique_ptr<arithmetic_expression> multiply_arithmetic::simplify(void){
 }
 
 std::unique_ptr<arithmetic_expression> multiply_arithmetic::flatten(void){
-    //TODO: put some logic here
-    return std::unique_ptr<arithmetic_expression>(new multiply_arithmetic(std::move(*this)));
+    std::vector<std::unique_ptr<arithmetic_expression>> result;
+    for(auto& el: content)
+        el->gather_multiply_elements(result);
+    return std::unique_ptr<arithmetic_expression>(new multiply_arithmetic(std::move(result)));
+}
+
+void multiply_arithmetic::gather_multiply_elements(std::vector<std::unique_ptr<arithmetic_expression>>& elements){
+    for(auto& el: content)
+        el->gather_multiply_elements(elements);
 }
 
 std::string multiply_arithmetic::to_rbg(uint)const{

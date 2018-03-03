@@ -92,8 +92,6 @@ std::string tokens_table[] = {
 "-",
 "+",
 ">+",
-"++",
-"--",
 "^",
 "*",
 ",",
@@ -110,9 +108,6 @@ std::string tokens_table[] = {
 "<=",
 ">",
 ">=",
-"and",
-"or",
-"not",
 "bound",
 "player",
 "game",
@@ -120,7 +115,6 @@ std::string tokens_table[] = {
 "pieces",
 "variables",
 "rules",
-"finalizer",
 "board",
 };
 
@@ -138,8 +132,6 @@ std::string token::to_string(void)const{
         case minus:
         case plus:
         case greater_plus:
-        case double_plus:
-        case double_minus:
         case caret:
         case star:
         case comma:
@@ -156,9 +148,6 @@ std::string token::to_string(void)const{
         case less_equal:
         case greater:
         case greater_equal:
-        case logical_and:
-        case logical_or:
-        case logical_not:
         case bound:
         case player:
         case game:
@@ -166,7 +155,6 @@ std::string token::to_string(void)const{
         case pieces:
         case variables:
         case rules:
-        case finalizer:
         case board:
             return tokens_table[type];
         case number:
@@ -266,10 +254,6 @@ token& token::operator+=(const token& t)throw(std::string){
         type = arrow;
     if(type == greater && t.type == plus)
         type = greater_plus;
-    else if(type == plus && t.type == plus)
-        type = double_plus;
-    else if(type == minus && t.type == minus)
-        type = double_minus;
     else if(type == left_round_bracket && t.type == question)
         type = left_question_bracket;
     else if(type == left_round_bracket && t.type == exclamation)
@@ -284,9 +268,9 @@ token& token::operator+=(const token& t)throw(std::string){
         type = double_equal;
     else if(type == exclamation && t.type == equal)
         type = not_equal;
-    else if(type == identifier && t.type >= logical_and){
+    else if(type == identifier && t.type >= bound){
         std::string result_string = (*contained_string) + t.to_string();
-        for(uint i=logical_and;i<=board;++i)
+        for(uint i=bound;i<=board;++i)
             if(result_string == tokens_table[i]){
                 type = token_type(i);
                 delete contained_string;
@@ -294,10 +278,10 @@ token& token::operator+=(const token& t)throw(std::string){
         if(type == identifier)
             (*contained_string) = std::move(result_string);
     }
-    else if(type >= logical_and && type <= board){
+    else if(type >= bound && type <= board){
         std::string result_string = to_string() + t.to_string();
         bool not_identifier = false;
-        for(uint i=logical_and;i<=board;++i)
+        for(uint i=bound;i<=board;++i)
             if(result_string == tokens_table[i]){
                 type = token_type(i);
                 not_identifier = true;

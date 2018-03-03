@@ -43,8 +43,4 @@ std::unique_ptr<game_move> condition_check::flatten(void){
     return std::unique_ptr<game_move>(new condition_check(content->condition_flatten(), negated));
 }
 
-bool condition_check::finalizer_elligible(void)const{
-    return true;
-}
-
 }

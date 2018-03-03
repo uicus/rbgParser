@@ -23,8 +23,15 @@ std::unique_ptr<arithmetic_expression> sum_arithmetic::simplify(void){
 }
 
 std::unique_ptr<arithmetic_expression> sum_arithmetic::flatten(void){
-    //TODO: put some logic here
-    return std::unique_ptr<arithmetic_expression>(new sum_arithmetic(std::move(*this)));
+    std::vector<std::unique_ptr<arithmetic_expression>> result;
+    for(auto& el: content)
+        el->gather_sum_elements(result);
+    return std::unique_ptr<arithmetic_expression>(new sum_arithmetic(std::move(result)));
+}
+
+void sum_arithmetic::gather_sum_elements(std::vector<std::unique_ptr<arithmetic_expression>>& elements){
+    for(auto& el: content)
+        el->gather_sum_elements(elements);
 }
 
 std::string sum_arithmetic::to_rbg(uint)const{

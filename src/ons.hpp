@@ -25,7 +25,6 @@ class ons : public game_move{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
-        bool finalizer_elligible(void)const override;
         const std::set<token>& get_legal_ons(void)const;
 };
 

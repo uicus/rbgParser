@@ -38,10 +38,6 @@ straightness_result player_switch::compute_k_straightness(void)const{
     return standard_switch();
 }
 
-bool player_switch::finalizer_elligible(void)const{
-    return false;
-}
-
 const token& player_switch::get_player(void)const{
     return to_player;
 }
@@ -79,10 +75,6 @@ void keeper_switch::gather_concatenation_elements(
 
 straightness_result keeper_switch::compute_k_straightness(void)const{
     return standard_switch();
-}
-
-bool keeper_switch::finalizer_elligible(void)const{
-    return false;
 }
 
 bool keeper_switch::is_deterministic(void)const{

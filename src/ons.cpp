@@ -30,8 +30,4 @@ const std::set<token>& ons::get_legal_ons(void)const{
     return legal_ons;
 }
 
-bool ons::finalizer_elligible(void)const{
-    return true;
-}
-
 }
