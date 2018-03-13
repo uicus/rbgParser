@@ -140,8 +140,8 @@ typing_machine prepare_types_for_rbg(const declarations& decls){
     result.add_bracket_interpretation(modifier_lazy_bracket, assignments_sequence, std::set<suffix_type>{no_suffix}, assignments_move);
     result.add_bracket_interpretation(modifier_lazy_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, offs_move);
     result.add_bracket_interpretation(standard_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, on_move);
-    result.add_bracket_interpretation(standard_bracket, shift_values, std::set<suffix_type>{no_suffix, star_power, number_power}, shift_move);
-    result.add_bracket_interpretation(standard_bracket, gmove, std::set<suffix_type>{no_suffix, star_power, number_power}, gmove);
+    result.add_bracket_interpretation(standard_bracket, shift_values, std::set<suffix_type>{no_suffix, star_power, conditional_star_power, number_power}, shift_move);
+    result.add_bracket_interpretation(standard_bracket, gmove, std::set<suffix_type>{no_suffix, star_power, conditional_star_power, number_power}, gmove);
     result.add_bracket_interpretation(standard_bracket, arithmetics, std::set<suffix_type>{no_suffix}, arithmetics);
     return result;
 }

@@ -2,7 +2,6 @@
 #include"tree_utils.hpp"
 #include"tree_parser.hpp"
 #include"slice_iterator.hpp"
-#include"parser_helpers.hpp"
 #include"variable_leaf.hpp"
 #include"integer_leaf.hpp"
 #include"identifier_leaf.hpp"
@@ -18,10 +17,12 @@ parser_result<suffix> parse_power(slice_iterator& it, messages_container& msg)th
         suffix result;
         if(it.current(msg).get_type() == star)
             result = suffix{star_power,0};
+        else if(it.current(msg).get_type() == greater_star)
+            result = suffix{conditional_star_power,0};
         else if(it.current(msg).get_type() == number)
             result = suffix{number_power, it.current(msg).get_value()};
         else
-            throw msg.build_message(it.create_call_stack("Expected number or star, encountered \'"+it.current(msg).to_string()+"\'"));
+            throw msg.build_message(it.create_call_stack("Expected number, \'*\' or \'>*\', encountered \'"+it.current(msg).to_string()+"\'"));
         it.next(msg);
         return success(std::move(result));
     }

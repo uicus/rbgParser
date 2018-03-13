@@ -94,6 +94,7 @@ std::string tokens_table[] = {
 ">+",
 "^",
 "*",
+">*",
 ",",
 ";",
 "$",
@@ -134,6 +135,7 @@ std::string token::to_string(void)const{
         case greater_plus:
         case caret:
         case star:
+        case greater_star:
         case comma:
         case semicolon:
         case dollar:
@@ -252,8 +254,10 @@ void token::reverse_comparison(void){
 token& token::operator+=(const token& t)throw(std::string){
     if(type == minus && t.type == greater)
         type = arrow;
-    if(type == greater && t.type == plus)
+    else if(type == greater && t.type == plus)
         type = greater_plus;
+    else if(type == greater && t.type == star)
+        type = greater_star;
     else if(type == left_round_bracket && t.type == question)
         type = left_question_bracket;
     else if(type == left_round_bracket && t.type == exclamation)

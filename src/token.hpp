@@ -24,6 +24,7 @@ enum token_type{
     greater_plus,
     caret,
     star,
+    greater_star,
     comma,
     semicolon,
     dollar,

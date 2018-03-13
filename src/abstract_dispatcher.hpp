@@ -8,6 +8,7 @@ class conditional_sum;
 class concatenation;
 class power_move;
 class star_move;
+class conditional_star_move;
 class shift;
 class ons;
 class off;
@@ -30,6 +31,7 @@ class abstract_dispatcher{
         virtual void dispatch(const concatenation&)=0;
         virtual void dispatch(const power_move&)=0;
         virtual void dispatch(const star_move&)=0;
+        virtual void dispatch(const conditional_star_move&)=0;
         virtual void dispatch(const shift&)=0;
         virtual void dispatch(const ons&)=0;
         virtual void dispatch(const off&)=0;

@@ -8,6 +8,7 @@
 #include"shift.hpp"
 #include"power_move.hpp"
 #include"star_move.hpp"
+#include"conditional_star_move.hpp"
 
 namespace rbg_parser{
 
@@ -27,6 +28,8 @@ std::unique_ptr<game_move> bracketed_expression::append_suffix_if_possible(std::
             return std::unique_ptr<game_move>(new power_move(std::move(base_move), s.val));
         case star_power:
             return std::unique_ptr<game_move>(new star_move(std::move(base_move)));
+        case conditional_star_power:
+            return std::unique_ptr<game_move>(new conditional_star_move(std::move(base_move)));
         case no_suffix:
         default:
             return std::move(base_move);

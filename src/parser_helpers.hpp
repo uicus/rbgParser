@@ -42,7 +42,6 @@ parser_result<T> success(T&& result){
     return parser_result<T>(std::move(result));
 }
 
-parser_result<int> parse_int(slice_iterator& it, messages_container& msg)throw(message);
 parser_result<std::vector<token>> parse_sequence(
     slice_iterator& it,
     const std::string& purpose_name,

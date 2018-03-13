@@ -156,6 +156,8 @@ std::string suffix_type_description(suffix_type t){
             return "no suffix";
         case star_power:
             return "star";
+        case conditional_star_power:
+            return "consitional star";
         case number_power:
             return "number power";
         default:

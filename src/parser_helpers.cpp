@@ -3,26 +3,6 @@
 
 namespace rbg_parser{
 
-parser_result<int> parse_int(slice_iterator& it, messages_container& msg)throw(message){
-    parsing_context_string_guard g(&it, "Unexpected end of input while parsing integer");
-    bool is_positive = true;
-    if(!it.has_value())
-        return failure<int>();
-    if(it.current(msg).get_type() == plus)
-        it.next(msg);
-    else if(it.current(msg).get_type() == minus){
-        is_positive = false;
-        it.next(msg);
-    }
-    else if(it.current(msg).get_type() != number)
-        return failure<int>();
-    if(it.current(msg).get_type() != number)
-        throw msg.build_message(it.create_call_stack("Expected digit, encountered \'"+it.current(msg).to_string()+"\'"));
-    int result = is_positive ? int(it.current(msg).get_value()) : -int(it.current(msg).get_value());
-    it.next(msg);
-    return success(std::move(result));
-}
-
 parser_result<std::vector<token>> parse_sequence(
 slice_iterator& it,
 const std::string& purpose_name,
