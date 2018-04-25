@@ -15,6 +15,7 @@
 #include"game_board.hpp"
 #include"parser_helpers.hpp"
 #include"sum.hpp"
+#include"unchecked_graph.hpp"
 
 namespace rbg_parser{
 
@@ -58,6 +59,7 @@ class game_items{
         declarations parse_declarations(messages_container& msg)const throw(message);
         parser_result<std::vector<token>> parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message);
         game_board parse_board(const declarations& decl, messages_container& msg)const throw(message);
+        unchecked_graph parse_unchecked_graph(declarations& decl, messages_container& msg)const throw(message);
         std::unique_ptr<game_move> parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const throw(message);
         uint parse_bound(messages_container& msg)const throw(message);
     public:

@@ -364,6 +364,19 @@ game_board game_items::parse_board(const declarations& decl, messages_container&
     return result;
 }
 
+unchecked_graph game_items::parse_unchecked_graph(declarations& decl, messages_container& msg)const throw(message){
+    slice_iterator it(*board_segment,&macros);
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'board\' segment");
+    it.next(msg);
+    unchecked_graph result;
+    if(not parse_vertex(result,decl,it,msg))
+        throw msg.build_message(it.create_call_stack("Board has to contain at least one vertex"));
+    while(parse_vertex(result,decl,it,msg));
+    if(it.has_value())
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'board\' segment"));
+    return result;
+}
+
 std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const throw(message){
     slice_iterator it(*(this->*segment_position),&macros);
     it.next(msg);
@@ -393,6 +406,7 @@ uint game_items::parse_bound(messages_container& msg)const throw(message){
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     declarations decl = parse_declarations(msg);
     game_board brd = parse_board(decl,msg);
+    //unchecked_graph g = parse_unchecked_graph(decl,msg);
     std::unique_ptr<game_move> moves = parse_moves(decl,&game_items::rules_segment,"rules",msg);
     return parsed_game(
         parse_name(msg),

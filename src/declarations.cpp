@@ -7,6 +7,7 @@ declarations::declarations(std::set<token>&& players_names, std::set<token>&& pi
 players_names(std::move(players_names)),
 pieces_names(std::move(pieces_names)),
 variables_names(std::move(variables_names)),
+edges_names(),
 first_player(std::move(first_player)){
 }
 
@@ -20,6 +21,14 @@ const std::set<token>& declarations::get_legal_players(void)const{
 
 const std::set<token>& declarations::get_legal_variables(void)const{
     return variables_names;
+}
+
+const std::set<token>& declarations::get_legal_edges(void)const{
+    return edges_names;
+}
+
+void declarations::add_edge_label(const token& name){
+    edges_names.insert(name);
 }
 
 const token& declarations::get_first_player(void)const{
