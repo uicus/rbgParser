@@ -15,9 +15,11 @@
 #include"game_board.hpp"
 #include"parser_helpers.hpp"
 #include"sum.hpp"
-#include"unchecked_graph.hpp"
 
 namespace rbg_parser{
+
+class unchecked_graph;
+class graph;
 
 class game_items{
         macro_bank macros;

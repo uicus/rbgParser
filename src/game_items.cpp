@@ -6,6 +6,8 @@
 #include"rules_parser.hpp"
 #include"tree_utils.hpp"
 #include"typing_machine.hpp"
+#include"unchecked_graph.hpp"
+#include"graph.hpp"
 
 namespace rbg_parser{
 
@@ -406,12 +408,14 @@ uint game_items::parse_bound(messages_container& msg)const throw(message){
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     declarations decl = parse_declarations(msg);
     game_board brd = parse_board(decl,msg);
-    //unchecked_graph g = parse_unchecked_graph(decl,msg);
+//    unchecked_graph ug = parse_unchecked_graph(decl,msg);
+    graph g;// = ug.check_vertices_consistency(msg);
     std::unique_ptr<game_move> moves = parse_moves(decl,&game_items::rules_segment,"rules",msg);
     return parsed_game(
         parse_name(msg),
         std::move(decl),
         std::move(brd),
+        std::move(g),
         std::move(moves),
         parse_bound(msg)
     );

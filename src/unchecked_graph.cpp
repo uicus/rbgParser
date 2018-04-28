@@ -2,6 +2,7 @@
 #include"message.hpp"
 #include"declarations.hpp"
 #include"slice_iterator.hpp"
+#include"graph.hpp"
 #include<cassert>
 
 namespace rbg_parser{
@@ -29,6 +30,42 @@ bool unchecked_graph::edge_exists(const token& source_vertex, const token& edge_
         return false;
     const auto& existing_neighbors = vertices.at(source_vertex).second;
     return existing_neighbors.find(edge_label) != existing_neighbors.end();
+}
+
+std::map<token, uint> unchecked_graph::create_name_number_correspondence(void)const{
+    std::map<token, uint> result;
+    uint next_number_to_use = 1;
+    for(const auto& el: vertices){
+        if(el.first == first_vertex_name)
+            result.insert(std::make_pair(el.first, 0));
+        else
+            result.insert(std::make_pair(el.first, next_number_to_use++));
+    }
+    return result;
+}
+
+std::map<token, uint> unchecked_graph::check_and_transform_edges(
+    const neighbors& n,
+    const std::map<token, uint>& name_number_correspondence,
+    messages_container& msg)const throw(message){
+    std::map<token, uint> result;
+    for(const auto& el: n){
+        if(name_number_correspondence.find(el.second.second) == name_number_correspondence.end())
+            throw msg.build_message(el.second.first.create_call_stack("Target vertex \'"+el.second.first.current(msg).to_string()+"\' was not declared"));
+        result.insert(std::make_pair(el.first, name_number_correspondence.at(el.second.second)));
+    }
+    return result;
+}
+
+graph unchecked_graph::check_vertices_consistency(messages_container& msg)const throw(message){
+    const std::map<token, uint> name_to_number_correspondence = create_name_number_correspondence();
+    graph result;
+    result.vertices.resize(name_to_number_correspondence.size());
+    for(const auto& el: vertices){
+        auto checked_edges = check_and_transform_edges(el.second.second, name_to_number_correspondence, msg);
+        result.vertices[name_to_number_correspondence.at(el.first)] = std::make_tuple(el.first, el.second.first, std::move(checked_edges));
+    }
+    return result;
 }
 
 token parse_starting_piece(const declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
@@ -99,5 +136,6 @@ bool parse_vertex(unchecked_graph& g, declarations& decl, slice_iterator& it, me
     parse_edges(g,vertex_name,decl,it,msg);
     return true;
 }
+
 
 }
