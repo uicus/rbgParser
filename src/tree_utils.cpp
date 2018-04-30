@@ -51,6 +51,8 @@ std::string expression_type_description(expression_type t){
             return "player name";
         case current_player:
             return "current player variable";
+        case edge_name:
+            return "edge name";
         case single_assignment:
             return "assignment";
         case assignments_sequence:

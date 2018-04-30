@@ -35,6 +35,7 @@ enum expression_type{
     player_score,
     player_name,
     current_player,
+    edge_name,
     // compund:
     single_assignment,
     assignments_sequence,

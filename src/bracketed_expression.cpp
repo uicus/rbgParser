@@ -86,11 +86,12 @@ std::unique_ptr<game_move> bracketed_expression::get_game_move(void)const{
         case on_move:
             return std::unique_ptr<game_move>(new ons(element->get_identifiers_sequence()));
         case shift_move:
-        {
-            auto shift_vals = element->get_integer_pair();
-            std::unique_ptr<game_move> result(new shift(shift_vals.first, shift_vals.second));
-            return append_suffix_if_possible(std::move(result));
-        }
+            return std::unique_ptr<game_move>(new shift(element->get_identifier()));
+        //{
+        //    auto shift_vals = element->get_integer_pair();
+        //    std::unique_ptr<game_move> result(new shift(shift_vals.first, shift_vals.second));
+        //    return append_suffix_if_possible(std::move(result));
+        //}
         case gmove:
             return append_suffix_if_possible(element->get_game_move());
         default:

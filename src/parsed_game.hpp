@@ -14,7 +14,7 @@ namespace rbg_parser{
 class parsed_game{
         std::string name;
         declarations decl;
-        game_board brd;
+//        game_board brd;
         graph g;
         std::unique_ptr<game_move> moves;
         uint bound_val;
@@ -23,12 +23,12 @@ class parsed_game{
         parsed_game(
             std::string&& name,
             declarations&& decl,
-            game_board&& brd,
+//            game_board&& brd,
             graph&& g,
             std::unique_ptr<game_move> moves,
             uint bound_val);
         const declarations& get_declarations(void)const;
-        const game_board& get_board(void)const;
+        const graph& get_board(void)const;
         const game_move* get_moves(void)const;
         const std::string& get_name(void)const;
         uint get_bound(void)const;
