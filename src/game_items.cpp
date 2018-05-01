@@ -289,7 +289,10 @@ std::string game_items::parse_name(messages_container& msg)const throw(message){
     return result;
 }
 
-std::set<token> game_items::parse_declaration_set(slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message){
+std::set<token> game_items::parse_declaration_set(
+    slice* game_items::*segment_position,
+    const std::string& name,
+    messages_container& msg)const throw(message){
     slice_iterator it(*(this->*segment_position),&macros);
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'"+name+"\' segment");
     it.next(msg);
@@ -303,33 +306,40 @@ std::set<token> game_items::parse_declaration_set(slice* game_items::*segment_po
     return result;
 }
 
-void game_items::check_if_sets_disjoint(
-const std::set<token>& s1,
-const std::set<token>& s2,
-const std::string sets_names,
-messages_container& msg)const throw(message){
-    for(const auto& el: s1)
-        if(s2.find(el) != s2.end())
-            throw msg.build_message("Identifier \'"+el.to_string()+"\' is found in both "+sets_names+" declarations");
-}
-
-token game_items::parse_first_player(messages_container& msg)const throw(message){
-    slice_iterator it(*players_segment,&macros);
+std::map<token, uint> game_items::parse_bounded_declaration_set(
+    slice* game_items::*segment_position,
+    const std::string& name,
+    messages_container& msg)const throw(message){
+    slice_iterator it(*(this->*segment_position),&macros);
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'"+name+"\' segment");
     it.next(msg);
-    assert(it.current(msg).get_type() == identifier);
-    return it.current(msg);
+    auto parsing_result = parse_bounded_sequence(it,name+" list",msg);
+    if(not parsing_result.is_success())
+        throw msg.build_message("Expected comma-separated list of identifiers in \'"+name+"\' segment");
+    auto result = parsing_result.move_value();
+    if(it.has_value())
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'"+name+"\' segment"));
+    return result;
 }
 
 declarations game_items::parse_declarations(messages_container& msg)const throw(message){
     declarations result(
-        parse_declaration_set(&game_items::players_segment,"players",msg),
+        parse_bounded_declaration_set(&game_items::players_segment,"players",msg),
         parse_declaration_set(&game_items::pieces_segment,"pieces",msg),
-        parse_declaration_set(&game_items::variables_segment,"variables",msg),
-        parse_first_player(msg)
+        parse_bounded_declaration_set(&game_items::variables_segment,"variables",msg)
     );
-    check_if_sets_disjoint(result.get_legal_pieces(),result.get_legal_players(),"\'pieces\' and \'players\'",msg);
-    check_if_sets_disjoint(result.get_legal_pieces(),result.get_legal_variables(),"\'pieces\' and \'variables\'",msg);
-    check_if_sets_disjoint(result.get_legal_players(),result.get_legal_variables(),"\'players\' and \'variables\'",msg);
+    const auto& legal_pieces = result.get_legal_pieces();
+    const auto& legal_players = result.get_legal_players();
+    const auto& legal_variables = result.get_legal_variables();
+    for(const auto& el: legal_pieces)
+        if(legal_players.find(el) != legal_players.end())
+            throw msg.build_message("Identifier \'"+el.to_string()+"\' is found in both \'pieces\' and \'players\' declarations");
+    for(const auto& el: legal_pieces)
+        if(legal_variables.find(el) != legal_variables.end())
+            throw msg.build_message("Identifier \'"+el.to_string()+"\' is found in both \'pieces\' and \'variables\' declarations");
+    for(const auto& el: legal_players)
+        if(legal_variables.find(el.first) != legal_variables.end())
+            throw msg.build_message("Identifier \'"+el.first.to_string()+"\' is found in both \'players\' and \'variables\' declarations");
     return result;
 }
 

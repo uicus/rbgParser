@@ -13,6 +13,7 @@ std::string graph::single_vertex_to_rbg(uint index)const{
         if(further_than_first)
             result += ",";
         result += el.first.to_string() + ":" + get_vertex(el.second).to_string();
+        further_than_first = true;
     }
     result += "}";
     return result;

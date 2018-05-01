@@ -2,6 +2,7 @@
 #define PARSER_HELPERS
 
 #include<vector>
+#include<map>
 
 #include"slice_iterator.hpp"
 #include"token.hpp"
@@ -47,6 +48,12 @@ parser_result<std::vector<token>> parse_sequence(
     const std::string& purpose_name,
     const std::set<token>& verification_set,
     bool should_verify,
+    messages_container& msg
+    )throw(message);
+
+parser_result<std::map<token, uint>> parse_bounded_sequence(
+    slice_iterator& it,
+    const std::string& purpose_name,
     messages_container& msg
     )throw(message);
 

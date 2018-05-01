@@ -51,12 +51,13 @@ class game_items{
         void print_slice(std::ostream& out,slice* segment,messages_container& msg)const throw(message);
         void print_segment(std::ostream& out,slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message);
         std::string parse_name(messages_container& msg)const throw(message);
-        std::set<token> parse_declaration_set(slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message);
-        token parse_first_player(messages_container& msg)const throw(message);
-        void check_if_sets_disjoint(
-            const std::set<token>& s1,
-            const std::set<token>& s2,
-            const std::string sets_names,
+        std::set<token> parse_declaration_set(
+            slice* game_items::*segment_position,
+            const std::string& name,
+            messages_container& msg)const throw(message);
+        std::map<token, uint> parse_bounded_declaration_set(
+            slice* game_items::*segment_position,
+            const std::string& name,
             messages_container& msg)const throw(message);
         declarations parse_declarations(messages_container& msg)const throw(message);
         parser_result<std::vector<token>> parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message);

@@ -67,9 +67,9 @@
 #allPieces = singleColorPieces(white), singleColorPieces(black)
 
 
-#players = white, black
+#players = white (11), black (11)
 #pieces = allPieces, empty
-#variables = pawnDoubleMove, whiteKingMoved, blackKingMoved, turn
+#variables = pawnDoubleMove (2), whiteKingMoved (2), blackKingMoved (2), turn (202)
 
 
 #anySquare =

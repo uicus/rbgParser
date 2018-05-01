@@ -3,6 +3,7 @@
 
 #include<vector>
 #include<set>
+#include<map>
 #include<string>
 
 #include"token.hpp"
@@ -12,7 +13,7 @@ namespace rbg_parser{
 
 std::string to_rbg(const std::vector<token>&);
 std::string to_rbg(const std::set<token>&);
-std::string to_rbg_without(const std::set<token>& s, const token& except);
+std::string to_rbg(const std::map<token, uint>&);
 std::string print_tabs(uint indent);
 std::string print_tabs_with_half_full_end(uint indent);
 std::string open_bracket_if_necessary(uint current_priority,uint lower_priority);
