@@ -16,12 +16,12 @@ class graph{
         std::vector<std::tuple<token, token, edges>> vertices;
         std::string single_vertex_to_rbg(uint index)const;
     public:
+        graph(std::vector<std::tuple<token, token, edges>>&& vertices);
         const token& get_vertex(uint index)const;
         const token& get_starting_piece(uint index)const;
         const edges& get_outgoing_edges(uint index)const;
         uint get_size(void)const;
         std::string to_rbg(bool pretty)const;
-        friend class unchecked_graph;
 };
 
 }

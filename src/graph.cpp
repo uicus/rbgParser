@@ -2,6 +2,10 @@
 
 namespace rbg_parser{
 
+graph::graph(std::vector<std::tuple<token, token, edges>>&& vertices):
+vertices(std::move(vertices)){
+}
+
 std::string graph::single_vertex_to_rbg(uint index)const{
     std::string result = "";
     result += get_vertex(index).to_string();

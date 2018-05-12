@@ -6,8 +6,9 @@
 #include"rules_parser.hpp"
 #include"tree_utils.hpp"
 #include"typing_machine.hpp"
-#include"unchecked_graph.hpp"
 #include"graph.hpp"
+#include"graph_builder.hpp"
+#include"unchecked_graph.hpp"
 
 namespace rbg_parser{
 
@@ -209,60 +210,6 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
     return result;
 }
 
-void game_items::print_slice(std::ostream& out,slice* segment,messages_container& msg)const throw(message){
-    uint spaces_of_indent = 4;
-    bool should_be_in_new_line = true;
-    slice_iterator it(*segment,&macros);
-    while(it.next(msg)){
-        if(it.current(msg).get_type() == left_round_bracket || it.current(msg).get_type() == left_square_bracket){
-            out<<'\n';
-            print_spaces(out, spaces_of_indent);
-            out<<it.current(msg).to_string();
-            spaces_of_indent+=4;
-            should_be_in_new_line = true;
-        }
-        else if(it.current(msg).get_type() == right_round_bracket || it.current(msg).get_type() == right_square_bracket){
-            out<<'\n';
-            if(spaces_of_indent>4)
-                spaces_of_indent-=4;
-            print_spaces(out, spaces_of_indent);
-            out<<it.current(msg).to_string();
-            should_be_in_new_line = true;
-        }
-        else if(it.current(msg).get_type() == plus){
-            out<<'\n';
-            print_spaces(out, spaces_of_indent-2);
-            out<<it.current(msg).to_string()<<' ';
-            should_be_in_new_line = false;
-        }
-        else{
-            if(should_be_in_new_line){
-                out<<'\n';
-                print_spaces(out, spaces_of_indent);
-                should_be_in_new_line = false;
-            }
-            out<<it.current(msg).to_string()<<' ';
-        }
-    }
-    out<<'\n';
-}
-
-void game_items::print_segment(std::ostream& out,slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message){
-    if(this->*segment_position){
-        out<<"#"<<name<<" =";
-        print_slice(out,this->*segment_position,msg);
-    }
-}
-
-void game_items::print_rbg(std::ostream& out,messages_container& msg)const throw(message){
-    print_segment(out,&game_items::game_segment,"game",msg);
-    print_segment(out,&game_items::board_segment,"board",msg);
-    print_segment(out,&game_items::players_segment,"players",msg);
-    print_segment(out,&game_items::pieces_segment,"pieces",msg);
-    print_segment(out,&game_items::variables_segment,"variables",msg);
-    print_segment(out,&game_items::rules_segment,"rules",msg);
-}
-
 std::string game_items::parse_name(messages_container& msg)const throw(message){
     slice_iterator it(*game_segment,&macros);
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'game\' segment");
@@ -329,17 +276,24 @@ declarations game_items::parse_declarations(messages_container& msg)const throw(
     return result;
 }
 
-unchecked_graph game_items::parse_unchecked_graph(declarations& decl, messages_container& msg)const throw(message){
+std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarations&, slice_iterator&, messages_container&)>>
+    game_items::prepare_graph_builders(void)const{
+    std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarations&, slice_iterator&, messages_container&)>> result;
+    result.push_back(parse_unchecked_graph);
+    return std::move(result);
+}
+
+std::unique_ptr<graph_builder> game_items::parse_graph(declarations& decl, messages_container& msg)const throw(message){
     slice_iterator it(*board_segment,&macros);
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'board\' segment");
     it.next(msg);
-    unchecked_graph result;
-    if(not parse_vertex(result,decl,it,msg))
-        throw msg.build_message(it.create_call_stack("Board has to contain at least one vertex"));
-    while(parse_vertex(result,decl,it,msg));
-    if(it.has_value())
-        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'board\' segment"));
-    return result;
+    auto graph_builders = prepare_graph_builders();
+    for(const auto& el: graph_builders){
+        auto parsing_result = el(decl, it, msg);
+        if(parsing_result.is_success())
+            return parsing_result.move_value();
+    }
+    throw msg.build_message(it.create_call_stack("Couldn't interpret this as board game"));
 }
 
 std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const throw(message){
@@ -357,8 +311,8 @@ std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, sli
 
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     declarations decl = parse_declarations(msg);
-    unchecked_graph ug = parse_unchecked_graph(decl,msg);
-    graph g = ug.check_vertices_consistency(msg);
+    auto parsed_graph_builder = parse_graph(decl,msg);
+    graph g = parsed_graph_builder->build_graph(msg);
     std::unique_ptr<game_move> moves = parse_moves(decl,&game_items::rules_segment,"rules",msg);
     return parsed_game(
         parse_name(msg),
@@ -366,11 +320,6 @@ parsed_game game_items::parse_game(messages_container& msg)const throw(message){
         std::move(g),
         std::move(moves)
     );
-}
-
-void print_spaces(std::ostream& out, uint n){
-    for(uint i=0;i<n;++i)
-        out<<' ';
 }
 
 }

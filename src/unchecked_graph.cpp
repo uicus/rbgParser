@@ -57,15 +57,15 @@ std::map<token, uint> unchecked_graph::check_and_transform_edges(
     return result;
 }
 
-graph unchecked_graph::check_vertices_consistency(messages_container& msg)const throw(message){
+graph unchecked_graph::build_graph(messages_container& msg)const throw(message){
     const std::map<token, uint> name_to_number_correspondence = create_name_number_correspondence();
-    graph result;
-    result.vertices.resize(name_to_number_correspondence.size());
+    std::vector<std::tuple<token, token, edges>> checked_vertices;
+    checked_vertices.resize(name_to_number_correspondence.size());
     for(const auto& el: vertices){
         auto checked_edges = check_and_transform_edges(el.second.second, name_to_number_correspondence, msg);
-        result.vertices[name_to_number_correspondence.at(el.first)] = std::make_tuple(el.first, el.second.first, std::move(checked_edges));
+        checked_vertices[name_to_number_correspondence.at(el.first)] = std::make_tuple(el.first, el.second.first, std::move(checked_edges));
     }
-    return result;
+    return graph(std::move(checked_vertices));
 }
 
 token parse_starting_piece(const declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
@@ -137,5 +137,14 @@ bool parse_vertex(unchecked_graph& g, declarations& decl, slice_iterator& it, me
     return true;
 }
 
+parser_result<std::unique_ptr<graph_builder>> parse_unchecked_graph(declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+    unchecked_graph result;
+    if(not parse_vertex(result,decl,it,msg))
+        return failure<std::unique_ptr<graph_builder>>();
+    while(parse_vertex(result,decl,it,msg));
+    if(it.has_value())
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'board\' segment"));
+    return success(std::unique_ptr<graph_builder>(new unchecked_graph(std::move(result))));
+}
 
 }

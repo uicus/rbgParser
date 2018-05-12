@@ -5,6 +5,7 @@
 #include<set>
 #include<vector>
 #include<ostream>
+#include<functional>
 
 #include"macro_bank.hpp"
 #include"token.hpp"
@@ -20,6 +21,7 @@ namespace rbg_parser{
 
 class unchecked_graph;
 class graph;
+class graph_builder;
 
 class game_items{
         macro_bank macros;
@@ -46,8 +48,6 @@ class game_items{
             slice* game_items::*segment_position,
             bool should_be_nonempty,
             messages_container& msg)throw(message);
-        void print_slice(std::ostream& out,slice* segment,messages_container& msg)const throw(message);
-        void print_segment(std::ostream& out,slice* game_items::*segment_position,const std::string& name,messages_container& msg)const throw(message);
         std::string parse_name(messages_container& msg)const throw(message);
         std::set<token> parse_declaration_set(
             slice* game_items::*segment_position,
@@ -58,7 +58,9 @@ class game_items{
             const std::string& name,
             messages_container& msg)const throw(message);
         declarations parse_declarations(messages_container& msg)const throw(message);
-        unchecked_graph parse_unchecked_graph(declarations& decl, messages_container& msg)const throw(message);
+        std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarations&, slice_iterator&, messages_container&)>>
+            prepare_graph_builders(void)const;
+        std::unique_ptr<graph_builder> parse_graph(declarations& decl, messages_container& msg)const throw(message);
         std::unique_ptr<game_move> parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const throw(message);
     public:
         game_items(const game_items&)=delete;
@@ -68,7 +70,6 @@ class game_items{
         ~game_items(void)noexcept;
 
         friend game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message);
-        void print_rbg(std::ostream& out,messages_container& msg)const throw(message);
         parsed_game parse_game(messages_container& msg)const throw(message);
 };
 
