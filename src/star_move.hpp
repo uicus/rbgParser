@@ -19,7 +19,6 @@ class star_move : public game_move{
         star_move& operator=(const star_move&)=default;
         star_move& operator=(star_move&&)=default;
         bool modifies(void)const override;
-        void set_lazy(void)override{contained_move->set_lazy();};
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 3;};

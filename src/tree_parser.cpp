@@ -43,9 +43,19 @@ suffix tree_parser::parse_suffix(slice_iterator& it, messages_container& msg)thr
 
 parser_result<std::unique_ptr<expression>> tree_parser::parse_infix(slice_iterator& it, messages_container& msg)throw(message){
     for(const auto& el: leaf_parsers){
+        auto beginning = it;
         auto content = el(it,msg);
-        if(content.is_success())
-            return content;
+        if(content.is_success()){
+            auto su = parse_suffix(it, msg);
+            if(su.t != no_suffix){
+                bracketed_expression* naked_result = new bracketed_expression(std::move(beginning), content.move_value(), no_brackets);
+                naked_result->s = su;
+                std::unique_ptr<expression> result(naked_result);
+                return success(std::move(result));
+            }
+            else
+                return content;
+        }
     }
     return parse_bracketed_expression(it, msg);
 }

@@ -19,7 +19,6 @@ players_segment(nullptr),
 variables_segment(nullptr),
 pieces_segment(nullptr),
 rules_segment(nullptr),
-bound_segment(nullptr),
 next_item_context_order(0){
 }
 
@@ -31,9 +30,8 @@ players_segment(src.players_segment),
 variables_segment(src.variables_segment),
 pieces_segment(src.pieces_segment),
 rules_segment(src.rules_segment),
-bound_segment(src.bound_segment),
 next_item_context_order(src.next_item_context_order){
-    src.game_segment = src.board_segment = src.players_segment = src.variables_segment = src.pieces_segment = src.rules_segment = src.bound_segment = nullptr;
+    src.game_segment = src.board_segment = src.players_segment = src.variables_segment = src.pieces_segment = src.rules_segment = nullptr;
 }
 
 game_items& game_items::operator=(game_items&& src)noexcept{
@@ -47,7 +45,6 @@ game_items& game_items::operator=(game_items&& src)noexcept{
         std::swap(variables_segment,src.variables_segment);
         std::swap(pieces_segment,src.pieces_segment);
         std::swap(rules_segment,src.rules_segment);
-        std::swap(bound_segment,src.bound_segment);
         next_item_context_order = src.next_item_context_order;
     }
     return *this;
@@ -60,7 +57,6 @@ game_items::~game_items(void)noexcept{
     delete variables_segment;
     delete pieces_segment;
     delete rules_segment;
-    delete bound_segment;
 }
 
 uint game_items::input_macro(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
@@ -136,10 +132,6 @@ uint game_items::input_rules(const std::vector<token>& input,uint current_token,
     return input_slice(input, current_token, "rules", &game_items::rules_segment,true,msg);
 }
 
-uint game_items::input_bound(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
-    return input_slice(input, current_token, "bound", &game_items::bound_segment,true,msg);
-}
-
 uint reach_end_of_directive(const std::vector<token>& input,uint current_token){
     while(current_token < input.size() && input[current_token].get_type() != hash)
         ++current_token;
@@ -194,9 +186,6 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
             case rules:
                 current_token = result.input_rules(input,current_token+1,msg);
                 break;
-            case bound:
-                current_token = result.input_bound(input,current_token+1,msg);
-                break;
             case identifier:
                 current_token = result.input_macro(input,current_token,msg);
                 break;
@@ -217,8 +206,6 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
         throw msg.build_message("No \'pieces\' directive");
     if(result.rules_segment == nullptr)
         throw msg.build_message("No \'rules\' directive");
-    if(result.bound_segment == nullptr)
-        throw msg.build_message("No \'bound\' directive");
     return result;
 }
 
@@ -274,7 +261,6 @@ void game_items::print_rbg(std::ostream& out,messages_container& msg)const throw
     print_segment(out,&game_items::pieces_segment,"pieces",msg);
     print_segment(out,&game_items::variables_segment,"variables",msg);
     print_segment(out,&game_items::rules_segment,"rules",msg);
-    print_segment(out,&game_items::bound_segment,"bound",msg);
 }
 
 std::string game_items::parse_name(messages_container& msg)const throw(message){
@@ -343,39 +329,6 @@ declarations game_items::parse_declarations(messages_container& msg)const throw(
     return result;
 }
 
-parser_result<std::vector<token>> game_items::parse_boardline(slice_iterator& it, const declarations& decl, messages_container& msg)const throw(message){
-    if(!it.has_value() || it.current(msg).get_type() != left_square_bracket)
-        return failure<std::vector<token>>();
-    it.next(msg);
-    auto result = parse_sequence(it,"board line",decl.get_legal_pieces(),true,msg);
-    if(!result.is_success())
-        throw msg.build_message(it.create_call_stack("Expected board line (comma separated pieces), encountered \'"+it.current(msg).to_string()+"\'"));
-    if(it.current(msg).get_type() != right_square_bracket)
-        throw msg.build_message(it.create_call_stack("Expected \']\', encountered \'"+it.current(msg).to_string()+"\'"));
-    it.next(msg);
-    return result;
-}
-
-game_board game_items::parse_board(const declarations& decl, messages_container& msg)const throw(message){
-    slice_iterator it(*board_segment,&macros);
-    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'board\' segment");
-    it.next(msg);
-    game_board result;
-    auto previous_position = it;
-    auto next_line = parse_boardline(it,decl,msg);
-    while(next_line.is_success()){
-        if(!result.is_initialized() || result.get_width() == next_line.get_value().size())
-            result.add_row(next_line.move_value());
-        else
-            throw msg.build_message(previous_position.create_call_stack("This line has "+std::to_string(next_line.get_value().size())+" cells while previous has "+std::to_string(result.get_width())));
-        previous_position = it;
-        next_line = parse_boardline(it,decl,msg);
-    }
-    if(it.has_value())
-        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'board\' segment"));
-    return result;
-}
-
 unchecked_graph game_items::parse_unchecked_graph(declarations& decl, messages_container& msg)const throw(message){
     slice_iterator it(*board_segment,&macros);
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'board\' segment");
@@ -402,32 +355,16 @@ std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, sli
     return res->get_game_move()->simplify()->flatten();
 }
 
-uint game_items::parse_bound(messages_container& msg)const throw(message){
-    slice_iterator it(*bound_segment,&macros);
-    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'bound\' segment");
-    it.next(msg);
-    if(it.current(msg).get_type() != number)
-        throw msg.build_message(it.create_call_stack("Segment \'bound\' should contain single positive number"));
-    uint result = it.current(msg).get_value();
-    it.next(msg);
-    if(it.has_value())
-        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'bound\' segment"));
-    return result;
-}
-
 parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     declarations decl = parse_declarations(msg);
-//    game_board brd = parse_board(decl,msg);
     unchecked_graph ug = parse_unchecked_graph(decl,msg);
     graph g = ug.check_vertices_consistency(msg);
     std::unique_ptr<game_move> moves = parse_moves(decl,&game_items::rules_segment,"rules",msg);
     return parsed_game(
         parse_name(msg),
         std::move(decl),
-//        std::move(brd),
         std::move(g),
-        std::move(moves),
-        parse_bound(msg)
+        std::move(moves)
     );
 }
 

@@ -5,7 +5,6 @@
 #include"multiply_arithmetic.hpp"
 #include"sum.hpp"
 #include"concatenation.hpp"
-#include"conditional_sum.hpp"
 #include"arithmetic_comparison.hpp"
 #include"player_check.hpp"
 
@@ -41,11 +40,6 @@ void internal_node::type(const typing_machine& m, messages_container& msg)throw(
         throw msg.build_message(beginning_position.create_call_stack(error_message));
     }
     t = result;
-}
-
-std::pair<int, int> internal_node::get_integer_pair(void)const{
-    assert(t == shift_values);
-    return std::make_pair(elements[0]->get_int(), elements[1]->get_int());
 }
 
 std::vector<token> internal_node::get_identifiers_sequence(void)const{
@@ -103,11 +97,10 @@ std::unique_ptr<game_move> internal_node::get_game_move(void)const{
         result.push_back(el->get_game_move());
     switch(op){
         case add:
+        case no_operator:
             return std::unique_ptr<game_move>(new sum(std::move(result)));
         case concatenate:
             return std::unique_ptr<game_move>(new concatenation(std::move(result)));
-        case conditionally_add:
-            return std::unique_ptr<game_move>(new conditional_sum(std::move(result)));
         default:
             assert(false);
     }

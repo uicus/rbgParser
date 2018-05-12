@@ -6,6 +6,7 @@
 #include"integer_leaf.hpp"
 #include"identifier_leaf.hpp"
 #include"arrow_leaf.hpp"
+#include"sloth_leaf.hpp"
 
 namespace rbg_parser{
 
@@ -17,8 +18,6 @@ parser_result<suffix> parse_power(slice_iterator& it, messages_container& msg)th
         suffix result;
         if(it.current(msg).get_type() == star)
             result = suffix{star_power,0};
-        else if(it.current(msg).get_type() == greater_star)
-            result = suffix{conditional_star_power,0};
         else if(it.current(msg).get_type() == number)
             result = suffix{number_power, it.current(msg).get_value()};
         else
@@ -37,10 +36,9 @@ std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& 
     p.add_leaf_parser(parse_variable_leaf);
     p.add_leaf_parser(parse_identifier_leaf);
     p.add_leaf_parser(parse_arrow_leaf);
+    p.add_leaf_parser(parse_sloth_leaf);
 
-    p.add_operator(greater_plus, operator_info{conditionally_add, 50, false});
     p.add_operator(plus, operator_info{add, 51, false});
-    //p.add_operator(minus, operator_info{subtract, 52, false});
     p.add_operator(star, operator_info{multiply, 53, false});
 
     p.add_operator(comma, operator_info{separate, 30, false});
@@ -56,7 +54,7 @@ std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& 
     p.add_bracket(left_question_bracket, bracket_info{right_round_bracket, ")", condition_bracket});
     p.add_bracket(left_exclamation_bracket, bracket_info{right_round_bracket, ")", negated_condition_bracket});
     p.add_bracket(left_square_bracket, bracket_info{right_square_bracket, "]", modifier_bracket});
-    p.add_bracket(left_lazy_bracket, bracket_info{right_square_bracket, "]", modifier_lazy_bracket});
+    p.add_bracket(left_curly_bracket, bracket_info{right_curly_bracket, "}", on_bracket});
     return p.parse_naked_expression(it, msg);
 }
 

@@ -31,7 +31,7 @@
 
 #players = white, black
 #pieces = allPieces, empty
-#variables = pawnDoubleMove, whiteKingMoved, blackKingMoved, turn // not used yet
+#variables = pawnDoubleMove, whiteKingMoved, blackKingMoved, turn
 #bound = 2
 
 

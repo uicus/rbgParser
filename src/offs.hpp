@@ -11,8 +11,7 @@ namespace rbg_parser{
 
 class off : public game_move{
         token off_piece;
-        bool lazy;
-        off(token&& off_piece, bool lazy=false);
+        off(token&& off_piece);
         off(void)=default;
     public:
         ~off(void)override=default;
@@ -20,7 +19,6 @@ class off : public game_move{
         off(const off&)=default;
         off& operator=(const off&)=default;
         off& operator=(off&&)=default;
-        void set_lazy(void)override{lazy=true;};
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new off(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 4;};

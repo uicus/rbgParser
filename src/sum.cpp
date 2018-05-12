@@ -14,11 +14,6 @@ bool sum::modifies(void)const{
     return false;
 }
 
-void sum::set_lazy(void){
-    for(auto& el: content)
-        el->set_lazy();
-}
-
 std::unique_ptr<game_move> sum::simplify(void){
     std::vector<std::unique_ptr<game_move>> result;
     for(uint i=0;i<content.size();++i)

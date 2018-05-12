@@ -16,9 +16,9 @@ std::string ons::to_rbg(uint)const{
 }
 
 std::string ons::to_rbg()const{
-    std::string result = "(";
+    std::string result = "{";
     result += rbg_parser::to_rbg(legal_ons);
-    result += ")";
+    result += "}";
     return result;
 }
 

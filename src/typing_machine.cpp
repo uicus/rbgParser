@@ -10,6 +10,8 @@ decls(decls){
 expression_type typing_machine::evaluate_identifier(const token& t)const{
     if(t.get_type() == player)
         return current_player;
+    if(t.get_type() == star)
+        return player_name;
     const auto& pieces = decls.get_legal_pieces();
     if(pieces.find(t) != pieces.end())
         return piece_name;
@@ -18,7 +20,7 @@ expression_type typing_machine::evaluate_identifier(const token& t)const{
         return player_name;
     const auto& edges = decls.get_legal_edges();
     if(edges.find(t) != edges.end())
-        return edge_name;
+        return shift_move;
     return error_type;
 }
 
@@ -108,14 +110,11 @@ expression_type typing_machine::evaluate_brackets(bracket_type t, expression_typ
 
 typing_machine prepare_types_for_rbg(const declarations& decls){
     typing_machine result(decls);
-    result.add_operator_interpretation(no_operator, true, std::vector<expression_type>{}, pieces_sequence);
+    result.add_operator_interpretation(no_operator, true, std::vector<expression_type>{}, gmove);
     result.add_operator_interpretation(concatenate, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(add, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(add, false, std::vector<expression_type>{arithmetics}, arithmetics);
-    result.add_operator_interpretation(conditionally_add, false, std::vector<expression_type>{gmove}, gmove);
-    //result.add_operator_interpretation(subtract, false, std::vector<expression_type>{arithmetics}, arithmetics);
     result.add_operator_interpretation(multiply, false, std::vector<expression_type>{arithmetics}, arithmetics);
-    result.add_operator_interpretation(separate, true, std::vector<expression_type>{integer, integer}, shift_values);
     result.add_operator_interpretation(separate, false, std::vector<expression_type>{piece_name}, pieces_sequence);
     result.add_operator_interpretation(separate, false, std::vector<expression_type>{single_assignment}, assignments_sequence);
     result.add_operator_interpretation(assign, true, std::vector<expression_type>{variable, arithmetics}, single_assignment);
@@ -140,13 +139,10 @@ typing_machine prepare_types_for_rbg(const declarations& decls){
     result.add_bracket_interpretation(negated_condition_bracket, reversed_player_comparison, std::set<suffix_type>{no_suffix}, gcondition);
     result.add_bracket_interpretation(modifier_bracket, assignments_sequence, std::set<suffix_type>{no_suffix}, assignments_move);
     result.add_bracket_interpretation(modifier_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, offs_move);
-    result.add_bracket_interpretation(modifier_lazy_bracket, assignments_sequence, std::set<suffix_type>{no_suffix}, assignments_move);
-    result.add_bracket_interpretation(modifier_lazy_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, offs_move);
-    result.add_bracket_interpretation(standard_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, on_move);
-    result.add_bracket_interpretation(standard_bracket, edge_name, std::set<suffix_type>{no_suffix, star_power, conditional_star_power, number_power}, shift_move);
-    //result.add_bracket_interpretation(standard_bracket, shift_values, std::set<suffix_type>{no_suffix, star_power, conditional_star_power, number_power}, shift_move);
-    result.add_bracket_interpretation(standard_bracket, gmove, std::set<suffix_type>{no_suffix, star_power, conditional_star_power, number_power}, gmove);
+    result.add_bracket_interpretation(standard_bracket, gmove, std::set<suffix_type>{no_suffix, star_power, number_power}, gmove);
+    result.add_bracket_interpretation(no_brackets, gmove, std::set<suffix_type>{no_suffix, star_power, number_power}, gmove);
     result.add_bracket_interpretation(standard_bracket, arithmetics, std::set<suffix_type>{no_suffix}, arithmetics);
+    result.add_bracket_interpretation(on_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, on_move);
     return result;
 }
 

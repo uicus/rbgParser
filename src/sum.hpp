@@ -20,7 +20,6 @@ class sum : public game_move{
         sum& operator=(const sum&)=default;
         sum& operator=(sum&&)=default;
         bool modifies(void)const override;
-        void set_lazy(void)override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 1;};

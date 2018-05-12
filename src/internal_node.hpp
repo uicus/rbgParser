@@ -23,7 +23,6 @@ class internal_node : public expression{
         internal_node& operator=(const internal_node&)=default;
         virtual ~internal_node(void)=default;
         expression_type get_type(void)const override;
-        std::pair<int, int> get_integer_pair(void)const override;
         std::vector<token> get_identifiers_sequence(void)const override;
         std::vector<std::pair<token, std::unique_ptr<arithmetic_expression>>> get_assignments_sequence(void)const override;
         std::pair<token, std::unique_ptr<arithmetic_expression>> get_assignment(void)const override;

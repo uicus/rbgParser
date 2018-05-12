@@ -22,7 +22,6 @@ class power_move : public game_move{
         power_move& operator=(const power_move&)=default;
         power_move& operator=(power_move&&)=default;
         bool modifies(void)const override;
-        void set_lazy(void)override{contained_move->set_lazy();};
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 3;};

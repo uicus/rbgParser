@@ -8,7 +8,6 @@
 #include"shift.hpp"
 #include"power_move.hpp"
 #include"star_move.hpp"
-#include"conditional_star_move.hpp"
 
 namespace rbg_parser{
 
@@ -28,8 +27,6 @@ std::unique_ptr<game_move> bracketed_expression::append_suffix_if_possible(std::
             return std::unique_ptr<game_move>(new power_move(std::move(base_move), s.val));
         case star_power:
             return std::unique_ptr<game_move>(new star_move(std::move(base_move)));
-        case conditional_star_power:
-            return std::unique_ptr<game_move>(new conditional_star_move(std::move(base_move)));
         case no_suffix:
         default:
             return std::move(base_move);
@@ -72,26 +69,15 @@ std::unique_ptr<game_move> bracketed_expression::get_game_move(void)const{
         case assignments_move:
         {
             auto result = make_assignments_concatenation(element->get_assignments_sequence());
-            if(br == modifier_lazy_bracket)
-                result->set_lazy();
             return std::move(result);
         }
         case offs_move:
         {
             auto result = make_offs_sum(element->get_identifiers_sequence());
-            if(br == modifier_lazy_bracket)
-                result->set_lazy();
             return std::move(result);
         }
         case on_move:
             return std::unique_ptr<game_move>(new ons(element->get_identifiers_sequence()));
-        case shift_move:
-            return std::unique_ptr<game_move>(new shift(element->get_identifier()));
-        //{
-        //    auto shift_vals = element->get_integer_pair();
-        //    std::unique_ptr<game_move> result(new shift(shift_vals.first, shift_vals.second));
-        //    return append_suffix_if_possible(std::move(result));
-        //}
         case gmove:
             return append_suffix_if_possible(element->get_game_move());
         default:

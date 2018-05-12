@@ -3,9 +3,8 @@
 
 namespace rbg_parser{
 
-off::off(token&& off_piece, bool lazy):
-off_piece(std::move(off_piece)),
-lazy(lazy){
+off::off(token&& off_piece):
+off_piece(std::move(off_piece)){
 }
 
 void off::accept(abstract_dispatcher& dispatcher)const{
@@ -16,17 +15,13 @@ const token& off::get_piece(void)const{
     return off_piece;
 }
 
-bool off::is_lazy(void)const{
-    return lazy;
-}
-
 std::string off::to_rbg(uint)const{
     return to_rbg();
 }
 
 std::string off::to_rbg()const{
     std::string result = "";
-    result += (lazy ? "[@" : "[");
+    result += "[";
     result += off_piece.to_string();
     result += "]";
     return result;

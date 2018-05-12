@@ -17,7 +17,6 @@ class game_move : public condition{
     public:
         virtual ~game_move(void)=default;
         virtual bool modifies(void)const{return true;}
-        virtual void set_lazy(void){};
         virtual std::unique_ptr<game_move> flatten(void)=0;
         std::unique_ptr<condition> condition_flatten(void)override{return flatten();};
         virtual std::unique_ptr<game_move> simplify(void)=0;

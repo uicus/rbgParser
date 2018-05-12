@@ -12,7 +12,7 @@ class player_check : public condition{
         bool equal_check; // if false then neq
         player_check(void)=default;
     public:
-        player_check(token player_to_check, bool equal_check);
+        player_check(token player_to_check, bool equal_check); // player_to_check = star -> keeper check
         ~player_check(void)override=default;
         player_check(player_check&&)=default;
         player_check(const player_check&)=default;

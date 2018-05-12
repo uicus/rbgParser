@@ -10,8 +10,6 @@
 namespace rbg_parser{
 
 class shift : public game_move{
-        //int x;
-        //int y;
         token edge_name;
         shift(void)=default;
     public:
@@ -27,8 +25,6 @@ class shift : public game_move{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
-        //int get_x(void)const;
-        //int get_y(void)const;
         const token& get_content(void)const;
 };
 

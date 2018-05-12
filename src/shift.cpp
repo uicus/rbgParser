@@ -2,11 +2,6 @@
 
 namespace rbg_parser{
 
-/*shift::shift(int x,int y):
-x(x),
-y(y){
-}*/
-
 shift::shift(const token& edge_name):
 edge_name(edge_name){
 }
@@ -24,25 +19,14 @@ std::unique_ptr<game_move> shift::flatten(void){
 }
 
 std::string shift::to_rbg()const{
-    std::string result = "(";
-    /*result += std::to_string(x);
-    result += ",";
-    result += std::to_string(y);*/
+    std::string result = "";
     result += edge_name.to_string();
-    result += ")";
+    result += " ";
     return result;
 }
 
 const token& shift::get_content(void)const{
     return edge_name;
 }
-
-/*int shift::get_x(void)const{
-    return x;
-}
-
-int shift::get_y(void)const{
-    return y;
-}*/
 
 }

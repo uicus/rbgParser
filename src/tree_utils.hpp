@@ -18,7 +18,7 @@ enum bracket_type{
     condition_bracket,
     negated_condition_bracket,
     modifier_bracket,
-    modifier_lazy_bracket,
+    on_bracket,
 };
 
 std::string bracket_type_description(bracket_type t);
@@ -40,7 +40,6 @@ enum expression_type{
     single_assignment,
     assignments_sequence,
     pieces_sequence,
-    shift_values,
     integer_comparison,
     player_comparison,
     reversed_player_comparison,
@@ -60,8 +59,6 @@ enum operator_type{
     no_operator = 0,
     concatenate,
     add,
-    conditionally_add,
-    subtract,
     multiply,
     separate,
     assign,
@@ -90,7 +87,6 @@ struct bracket_info{
 enum suffix_type{
     no_suffix = 0,
     star_power,
-    conditional_star_power,
     number_power,
 };
 
@@ -136,7 +132,6 @@ class expression{
         virtual uint get_uint(void)const{assert(false);};
         virtual int get_int(void)const{assert(false);};
         virtual token get_identifier(void)const{assert(false);};
-        virtual std::pair<int, int> get_integer_pair(void)const{assert(false);};
         virtual std::vector<token> get_identifiers_sequence(void)const{assert(false);};
         virtual std::vector<std::pair<token, std::unique_ptr<arithmetic_expression>>> get_assignments_sequence(void)const{assert(false);};
         virtual std::pair<token, std::unique_ptr<arithmetic_expression>> get_assignment(void)const{assert(false);};

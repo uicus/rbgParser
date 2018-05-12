@@ -21,7 +21,6 @@ class concatenation : public game_move{
         concatenation& operator=(const concatenation&)=default;
         concatenation& operator=(concatenation&&)=default;
         bool modifies(void)const override;
-        void set_lazy(void)override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 2;};

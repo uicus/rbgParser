@@ -15,11 +15,6 @@ bool concatenation::modifies(void)const{
     return false;
 }
 
-void concatenation::set_lazy(void){
-    for(auto& el: content)
-        el->set_lazy();
-}
-
 std::unique_ptr<game_move> concatenation::simplify(void){
     std::vector<std::unique_ptr<game_move>> result;
     for(uint i=0;i<content.size();++i)

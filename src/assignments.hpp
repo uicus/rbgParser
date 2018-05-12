@@ -14,16 +14,14 @@ namespace rbg_parser{
 class assignment : public game_move{
         token left_side;
         std::unique_ptr<arithmetic_expression> right_side;
-        bool lazy;
         assignment(void)=default;
     public:
-        assignment(const token& left_side, std::unique_ptr<arithmetic_expression> right_side, bool lazy=false);
+        assignment(const token& left_side, std::unique_ptr<arithmetic_expression> right_side);
         ~assignment(void)override=default;
         assignment(assignment&&)=default;
         assignment(const assignment&)=default;
         assignment& operator=(const assignment&)=default;
         assignment& operator=(assignment&&)=default;
-        void set_lazy(void)override{lazy=true;};
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 4;};

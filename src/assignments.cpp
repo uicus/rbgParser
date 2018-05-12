@@ -4,10 +4,9 @@
 
 namespace rbg_parser{
 
-assignment::assignment(const token& left_side, std::unique_ptr<arithmetic_expression> right_side, bool lazy):
+assignment::assignment(const token& left_side, std::unique_ptr<arithmetic_expression> right_side):
 left_side(left_side),
-right_side(std::move(right_side)),
-lazy(lazy){
+right_side(std::move(right_side)){
 }
 
 void assignment::accept(abstract_dispatcher& dispatcher)const{
@@ -20,7 +19,7 @@ std::string assignment::to_rbg(uint)const{
 
 std::string assignment::to_rbg()const{
     std::string result = "";
-    result += (lazy ? "[@" : "[");
+    result += "[";
     result += print_variable(left_side);
     result += "=";
     result += right_side->to_rbg();
@@ -30,12 +29,12 @@ std::string assignment::to_rbg()const{
 
 std::unique_ptr<game_move> assignment::simplify(void){
     auto new_right_side = right_side->simplify();
-    return std::unique_ptr<game_move>(new assignment(std::move(left_side), std::move(new_right_side), lazy));
+    return std::unique_ptr<game_move>(new assignment(std::move(left_side), std::move(new_right_side)));
 }
 
 std::unique_ptr<game_move> assignment::flatten(void){
     auto new_right_side = right_side->flatten();
-    return std::unique_ptr<game_move>(new assignment(std::move(left_side), std::move(new_right_side), lazy));
+    return std::unique_ptr<game_move>(new assignment(std::move(left_side), std::move(new_right_side)));
 }
 
 void assignment::gather_concatenation_elements(
@@ -61,10 +60,6 @@ const token& assignment::get_left_side(void)const{
 
 const arithmetic_expression* assignment::get_right_side(void)const{
     return right_side.get();
-}
-
-bool assignment::is_lazy(void)const{
-    return lazy;
 }
 
 std::unique_ptr<game_move> make_assignments_concatenation(

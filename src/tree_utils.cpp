@@ -22,8 +22,8 @@ std::string bracket_type_description(bracket_type t){
             return "negated condtition brackets";
         case modifier_bracket:
             return "modifier bracket";
-        case modifier_lazy_bracket:
-            return "lazy modifier bracket";
+        case on_bracket:
+            return "curly on bracket";
         default:
             return "";
     }
@@ -59,8 +59,6 @@ std::string expression_type_description(expression_type t){
             return "assignments sequence";
         case pieces_sequence:
             return "pieces sequence";
-        case shift_values:
-            return "shift values";
         case integer_comparison:
             return "integer comparison";
         case player_comparison:
@@ -97,8 +95,8 @@ bool is_subtype(expression_type t, expression_type sub_t){
                 || sub_t == player_score
                 || sub_t == arithmetics;
         case variable:
-                return sub_t == player_score
-                    || sub_t == variable;
+            return sub_t == player_score
+                || sub_t == variable;
         case pieces_sequence:
             return sub_t == piece_name
                 || sub_t == pieces_sequence;
@@ -125,10 +123,6 @@ std::string operator_type_description(operator_type t){
             return "concatenation";
         case add:
             return "addition";
-        case conditionally_add:
-            return "conditional addition";
-        case subtract:
-            return "subtraction";
         case multiply:
             return "multiplication";
         case separate:
@@ -158,8 +152,6 @@ std::string suffix_type_description(suffix_type t){
             return "no suffix";
         case star_power:
             return "star";
-        case conditional_star_power:
-            return "consitional star";
         case number_power:
             return "number power";
         default:

@@ -2,6 +2,7 @@
 #include"slice_iterator.hpp"
 #include"message.hpp"
 #include"typing_machine.hpp"
+#include"shift.hpp"
 
 namespace rbg_parser{
 
@@ -33,12 +34,22 @@ std::vector<token> identifier_leaf::get_identifiers_sequence(void)const{
     return std::move(result);
 }
 
+std::unique_ptr<game_move> identifier_leaf::get_game_move(void)const{
+    assert(identifier_type == shift_move);
+    return std::unique_ptr<game_move>(new shift(name));
+}
+
+std::unique_ptr<condition> identifier_leaf::get_condition(void)const{
+    assert(identifier_type == shift_move);
+    return get_game_move();
+}
+
 parser_result<std::unique_ptr<expression>> parse_identifier_leaf(slice_iterator& it, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing identifier");
     auto beginning = it;
     if(not it.has_value())
         return failure<std::unique_ptr<expression>>();
-    else if(it.current(msg).get_type() != identifier && it.current(msg).get_type() != player)
+    else if(it.current(msg).get_type() != identifier && it.current(msg).get_type() != player && it.current(msg).get_type() != star)
         return failure<std::unique_ptr<expression>>();
     std::unique_ptr<expression> result(new identifier_leaf(std::move(beginning), it.current(msg)));
     it.next(msg);
