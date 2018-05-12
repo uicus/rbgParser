@@ -87,6 +87,7 @@ struct bracket_info{
 enum suffix_type{
     no_suffix = 0,
     star_power,
+    conditional_star_power,
     number_power,
 };
 

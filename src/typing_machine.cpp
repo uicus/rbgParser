@@ -125,8 +125,10 @@ typing_machine prepare_types_for_rbg(const declarations& decls){
     result.add_operator_interpretation(is_nequal, true, std::vector<expression_type>{current_player, player_name}, player_comparison);
     result.add_operator_interpretation(is_nequal, true, std::vector<expression_type>{player_name, current_player}, reversed_player_comparison);
     result.add_operator_interpretation(is_less, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
+    result.add_operator_interpretation(is_less, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(is_less_eq, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
     result.add_operator_interpretation(is_greater, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
+    result.add_operator_interpretation(is_greater, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(is_greater_eq, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
 
     result.add_bracket_interpretation(condition_bracket, gmove, std::set<suffix_type>{no_suffix}, gcondition);
@@ -139,8 +141,8 @@ typing_machine prepare_types_for_rbg(const declarations& decls){
     result.add_bracket_interpretation(negated_condition_bracket, reversed_player_comparison, std::set<suffix_type>{no_suffix}, gcondition);
     result.add_bracket_interpretation(modifier_bracket, assignments_sequence, std::set<suffix_type>{no_suffix}, assignments_move);
     result.add_bracket_interpretation(modifier_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, offs_move);
-    result.add_bracket_interpretation(standard_bracket, gmove, std::set<suffix_type>{no_suffix, star_power, number_power}, gmove);
-    result.add_bracket_interpretation(no_brackets, gmove, std::set<suffix_type>{no_suffix, star_power, number_power}, gmove);
+    result.add_bracket_interpretation(standard_bracket, gmove, std::set<suffix_type>{no_suffix, star_power, number_power, conditional_star_power}, gmove);
+    result.add_bracket_interpretation(no_brackets, gmove, std::set<suffix_type>{no_suffix, star_power, number_power, conditional_star_power}, gmove);
     result.add_bracket_interpretation(standard_bracket, arithmetics, std::set<suffix_type>{no_suffix}, arithmetics);
     result.add_bracket_interpretation(on_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, on_move);
     return result;

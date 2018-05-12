@@ -4,6 +4,7 @@
 #include"sum_arithmetic.hpp"
 #include"multiply_arithmetic.hpp"
 #include"sum.hpp"
+#include"conditional_sum.hpp"
 #include"concatenation.hpp"
 #include"arithmetic_comparison.hpp"
 #include"player_check.hpp"
@@ -101,6 +102,10 @@ std::unique_ptr<game_move> internal_node::get_game_move(void)const{
             return std::unique_ptr<game_move>(new sum(std::move(result)));
         case concatenate:
             return std::unique_ptr<game_move>(new concatenation(std::move(result)));
+        case is_greater:
+            return std::unique_ptr<game_move>(new conditional_sum(std::move(result)));
+        case is_less:
+            return std::unique_ptr<game_move>(new conditional_sum(std::move(result),true));
         default:
             assert(false);
     }
