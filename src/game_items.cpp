@@ -9,6 +9,7 @@
 #include"graph.hpp"
 #include"graph_builder.hpp"
 #include"unchecked_graph.hpp"
+#include"rectangle2D.hpp"
 
 namespace rbg_parser{
 
@@ -279,7 +280,8 @@ declarations game_items::parse_declarations(messages_container& msg)const throw(
 std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarations&, slice_iterator&, messages_container&)>>
     game_items::prepare_graph_builders(void)const{
     std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarations&, slice_iterator&, messages_container&)>> result;
-    result.push_back(parse_unchecked_graph);
+    result.push_back(parse_rectangle2D);
+    result.push_back(parse_unchecked_graph); // must be last
     return std::move(result);
 }
 

@@ -4,6 +4,7 @@
 // - game is limited to 200 turns
 
 
+/*
 #downLineVertex(name; leftName; rightName; upName; startPiece) = name [startPiece] {left: leftName, right: rightName, up: upName}
 #leftLineVertex(name; rightName; upName; downName; startPiece) = name [startPiece] {right: rightName, up: upName, down: downName}
 #rightLineVertex(name; leftName; upName; downName; startPiece) = name [startPiece] {left: leftName, up: upName, down: downName}
@@ -50,6 +51,26 @@
     middleLine(2; 3; 1; empty; empty; empty; empty; empty; empty; empty; empty)
     middleLine(1; 2; 0; whitePawn; whitePawn; whitePawn; whitePawn; whitePawn; whitePawn; whitePawn; whitePawn)
     downLine(0; 1; whiteRookUnmoved; whiteKnight; whiteBishop; whiteQueen; whiteKing; whiteBishop; whiteKnight; whiteRookUnmoved)
+*/
+
+#backLine(color) =
+    [color~RookUnmoved, color~Knight, color~Bishop, color~Queen, color~King, color~Bishop, color~Knight, color~RookUnmoved]
+#pawnLine(color) =
+    [color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn]
+#emptyLine =
+    [empty, empty, empty, empty, empty, empty, empty, empty]
+
+#board = rectangle2D(up,down,left,right,
+    backLine(black)
+    pawnLine(black)
+    emptyLine
+    emptyLine
+    emptyLine
+    emptyLine
+    pawnLine(white)
+    backLine(white)
+)
+
 
 #anyRook(color) = color~RookMoved, color~RookUnmoved
 #majorPieces(color) = anyRook(color), color~Knight, color~Bishop, color~Queen

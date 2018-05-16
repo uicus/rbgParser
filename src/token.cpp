@@ -170,8 +170,8 @@ std::string token::to_string(void)const{
     }
 }
 
-std::string token::get_string_content(void)const{
-    assert(type == quotation);
+const std::string& token::get_string_content(void)const{
+    assert(type == quotation or type == identifier);
     return *contained_string;
 }
 

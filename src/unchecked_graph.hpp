@@ -13,7 +13,6 @@ namespace rbg_parser{
 class declarations;
 class messages_container;
 class message;
-class slice_iterator;
 class graph;
 
 class unchecked_graph : public graph_builder{
