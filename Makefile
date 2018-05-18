@@ -1,21 +1,47 @@
-CXX = g++
-CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++11 -O3 -flto -s
-CXXFLAGSDEBUG = -Wall -Wextra -Wpedantic -std=c++11 -g
-EXEC = rbgParser
-OBJECTS = src/options.o src/token.o src/message.o src/slice.o src/macro_bank.o src/slice_iterator.o src/parser_helpers.o src/printer_helpers.o src/straightness_helpers.o src/declarations.o src/game_board.o src/shift.o src/ons.o src/offs.o src/assignments.o src/switch.o src/power_move.o src/star_move.o src/concatenation.o src/modifier_block.o src/sum.o src/conditional_sum.o src/conditional_star_move.o src/arithmetic_comparison.o src/player_check.o src/condition_check.o src/integer_arithmetic.o src/sloth.o src/variable_arithmetic.o src/multiply_arithmetic.o src/sum_arithmetic.o src/game_move.o src/unchecked_graph.o src/rectangle2D.o src/graph.o src/parsed_game.o src/game_items.o src/tree_utils.o src/integer_leaf.o src/identifier_leaf.o src/variable_leaf.o src/arrow_leaf.o src/sloth_leaf.o src/internal_node.o src/bracketed_expression.o src/tree_parser.o src/typing_machine.o src/rules_parser.o
+SUFFIXES += .d
+NODEPS := clean distclean
 
-all: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(EXEC) src/main.cpp $(OBJECTS)
+TARGET := rbgParser
+SRC_DIR := src
+INC_DIR := src
+OBJ_DIR := obj
+BIN_DIR := bin
+DEP_DIR := dep
 
-lib: $(OBJECTS)
-	$(CXX) -shared -fPIC $(CXXFLAGS) -o $(EXEC).so $(OBJECTS)
+C := g++
+INCLUDE := -I$(INC_DIR)
+CFLAGS := -Wall -Wextra -Wpedantic -O3 -flto -std=c++11 -s $(INCLUDE)
 
+OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
+DEPFILES := $(patsubst $(SRC_DIR)/%.cpp, $(DEP_DIR)/%.d, $(wildcard $(SRC_DIR)/*.cpp))
 
-debug: $(OBJECTS)
-	$(CXX) $(CXXFLAGSDEBUG) -o $(EXEC) src/main.cpp $(OBJECTS)
+all: $(TARGET)
+
+ifeq (0, $(words $(findstring $(MAKECMDGOALS), $(NODEPS))))
+    -include $(DEPFILES)
+endif
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(DEP_DIR)/%.d | $(OBJ_DIR)
+	$(C) $(CFLAGS) -c $< -o $@
+
+$(DEP_DIR)/%.d: $(SRC_DIR)/%.cpp | $(DEP_DIR)
+	$(C) $(CFLAGS) -MM -MT '$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$<) $@' $< -MF $@
+
+$(TARGET): $(OBJECTS) | $(BIN_DIR)
+	$(C) $(CFLAGS) $(OBJECTS) -o $(BIN_DIR)/$@
+
+$(DEP_DIR):
+	mkdir -p $(DEP_DIR)
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
 
 clean:
-	rm -f $(OBJECTS)
+	rm -rf $(OBJ_DIR)
+	rm -rf $(DEP_DIR)
 
 distclean: clean
-	rm -f $(EXEC)
+	rm -rf $(BIN_DIR)

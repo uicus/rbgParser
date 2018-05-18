@@ -63,9 +63,9 @@ std::unique_ptr<game_move> bracketed_expression::get_game_move(void)const{
         case gcondition:
         switch(br){
             case condition_bracket:
-                return std::unique_ptr<game_move>(new condition_check(element->get_condition(), true));
-            case negated_condition_bracket:
                 return std::unique_ptr<game_move>(new condition_check(element->get_condition(), false));
+            case negated_condition_bracket:
+                return std::unique_ptr<game_move>(new condition_check(element->get_condition(), true));
             default:
                 assert(false);
         }

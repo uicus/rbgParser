@@ -30,6 +30,10 @@ std::unique_ptr<game_move> arrow_leaf::get_game_move(void)const{
         return std::unique_ptr<game_move>(new keeper_switch(true));
 }
 
+std::unique_ptr<condition> arrow_leaf::get_condition(void)const{
+    return get_game_move();
+}
+
 parser_result<std::unique_ptr<expression>> parse_arrow_leaf(slice_iterator& it, messages_container& msg)throw(message){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing arrow expression");
     auto beginning = it;
