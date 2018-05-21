@@ -1,0 +1,25 @@
+#board = rectangle2D(up,down,left,right,
+         [b, b, b, b, b, b, b, b]
+         [b, b, b, b, b, b, b, b]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [w, w, w, w, w, w, w, w]
+         [w, w, w, w, w, w, w, w])
+
+#players = wPlayer(100), bPlayer(100)
+#pieces = e, w, b
+#variables = 
+
+#anySquare = ((up^*+down^*)(left^*+right^*))
+
+#move(me; opp; forward) =
+    anySquare
+    {me} [e] (forward {e} + left forward {e,opp} + right forward {e,opp})
+    ->
+    [me~Player=100] [opp~Player=0]
+    ((? forward) [me] + (! forward) -> {})
+    ->opp~Player
+
+#rules = ->wPlayer (move(w;b;up) move(b;w;down))^*
