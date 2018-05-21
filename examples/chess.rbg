@@ -1,4 +1,3 @@
-#game = "Chess"
 // notes:
 // - no rules about repeating states or tie after given number of turns without pawn moves
 // - game is limited to 200 turns

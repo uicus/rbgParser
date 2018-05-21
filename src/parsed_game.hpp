@@ -12,14 +12,12 @@
 namespace rbg_parser{
 
 class parsed_game{
-        std::string name;
         declarations decl;
         graph g;
         std::unique_ptr<game_move> moves;
         int straightness;
     public:
         parsed_game(
-            std::string&& name,
             declarations&& decl,
             graph&& g,
             std::unique_ptr<game_move> moves);

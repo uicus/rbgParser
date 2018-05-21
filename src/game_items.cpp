@@ -15,7 +15,6 @@ namespace rbg_parser{
 
 game_items::game_items(void)noexcept:
 macros(),
-game_segment(nullptr),
 board_segment(nullptr),
 players_segment(nullptr),
 variables_segment(nullptr),
@@ -26,14 +25,13 @@ next_item_context_order(0){
 
 game_items::game_items(game_items&& src)noexcept:
 macros(std::move(src.macros)),
-game_segment(src.game_segment),
 board_segment(src.board_segment),
 players_segment(src.players_segment),
 variables_segment(src.variables_segment),
 pieces_segment(src.pieces_segment),
 rules_segment(src.rules_segment),
 next_item_context_order(src.next_item_context_order){
-    src.game_segment = src.board_segment = src.players_segment = src.variables_segment = src.pieces_segment = src.rules_segment = nullptr;
+    src.board_segment = src.players_segment = src.variables_segment = src.pieces_segment = src.rules_segment = nullptr;
 }
 
 game_items& game_items::operator=(game_items&& src)noexcept{
@@ -41,7 +39,6 @@ game_items& game_items::operator=(game_items&& src)noexcept{
         macro_bank temp(std::move(src.macros));
         src.macros = std::move(macros);
         macros = std::move(temp);
-        std::swap(game_segment,src.game_segment);
         std::swap(board_segment,src.board_segment);
         std::swap(players_segment,src.players_segment);
         std::swap(variables_segment,src.variables_segment);
@@ -53,7 +50,6 @@ game_items& game_items::operator=(game_items&& src)noexcept{
 }
 
 game_items::~game_items(void)noexcept{
-    delete game_segment;
     delete board_segment;
     delete players_segment;
     delete variables_segment;
@@ -108,10 +104,6 @@ messages_container& msg)throw(message){
     delete (this->*segment_position);
     this->*segment_position = s;
     return end;
-}
-
-uint game_items::input_game(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
-    return input_slice(input, current_token, "game", &game_items::game_segment,true,msg);
 }
 
 uint game_items::input_board(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
@@ -170,9 +162,6 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
         ++current_token;
         if(current_token < input.size()){
             switch(input[current_token].get_type()){
-            case game:
-                current_token = result.input_game(input,current_token+1,msg);
-                break;
             case board:
                 current_token = result.input_board(input,current_token+1,msg);
                 break;
@@ -196,8 +185,6 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
             }
         }
     }
-    if(result.game_segment == nullptr)
-        throw msg.build_message("No \'game\' directive");
     if(result.board_segment == nullptr)
         throw msg.build_message("No \'board\' directive");
     if(result.players_segment == nullptr)
@@ -208,18 +195,6 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
         throw msg.build_message("No \'pieces\' directive");
     if(result.rules_segment == nullptr)
         throw msg.build_message("No \'rules\' directive");
-    return result;
-}
-
-std::string game_items::parse_name(messages_container& msg)const throw(message){
-    slice_iterator it(*game_segment,&macros);
-    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'game\' segment");
-    it.next(msg);
-    if(it.current(msg).get_type() != quotation)
-        throw msg.build_message(it.create_call_stack("Expected quotes surrounded game name, encountered \'"+it.current(msg).to_string()+"\'"));
-    std::string result = it.current(msg).to_string();
-    if(it.next(msg))
-        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'game\' segment"));
     return result;
 }
 
@@ -317,7 +292,6 @@ parsed_game game_items::parse_game(messages_container& msg)const throw(message){
     graph g = parsed_graph_builder->build_graph(msg);
     std::unique_ptr<game_move> moves = parse_moves(decl,&game_items::rules_segment,"rules",msg);
     return parsed_game(
-        parse_name(msg),
         std::move(decl),
         std::move(g),
         std::move(moves)

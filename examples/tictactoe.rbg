@@ -1,6 +1,3 @@
-#game = "Tic-Tac-Toe"
-
-
 #board =
     rectangle2D(up,down,left,right,
         [empty, empty, empty]

@@ -1,4 +1,3 @@
-#game = "Checkers"
 // notes:
 // - 8x8
 // - only the first capture (with man or king) is mandatory

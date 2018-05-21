@@ -1,4 +1,3 @@
-#game = "Paper Soccer"
 // notes:
 // - 10x10 pitch + 2x1 goals
 // - being unable to move ball means a defeat

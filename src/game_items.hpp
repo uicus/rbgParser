@@ -25,7 +25,6 @@ class graph_builder;
 
 class game_items{
         macro_bank macros;
-        slice* game_segment;
         slice* board_segment;
         slice* players_segment;
         slice* variables_segment;
@@ -35,7 +34,6 @@ class game_items{
         game_items(void)noexcept;
 
         uint input_macro(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
-        uint input_game(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
         uint input_board(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
         uint input_players(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
         uint input_variables(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
@@ -48,7 +46,6 @@ class game_items{
             slice* game_items::*segment_position,
             bool should_be_nonempty,
             messages_container& msg)throw(message);
-        std::string parse_name(messages_container& msg)const throw(message);
         std::set<token> parse_declaration_set(
             slice* game_items::*segment_position,
             const std::string& name,
