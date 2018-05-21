@@ -97,7 +97,6 @@ std::string tokens_table[] = {
 ",",
 ";",
 ":",
-"$",
 "@",
 "=",
 "->",
@@ -137,7 +136,6 @@ std::string token::to_string(void)const{
         case comma:
         case semicolon:
         case colon:
-        case dollar:
         case at_sign:
         case equal:
         case arrow:

@@ -2,7 +2,6 @@
 #include"tree_utils.hpp"
 #include"tree_parser.hpp"
 #include"slice_iterator.hpp"
-#include"variable_leaf.hpp"
 #include"integer_leaf.hpp"
 #include"identifier_leaf.hpp"
 #include"arrow_leaf.hpp"
@@ -35,7 +34,6 @@ std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& 
 
     p.add_suffix_parser(parse_power);
     p.add_leaf_parser(parse_integer_leaf);
-    p.add_leaf_parser(parse_variable_leaf);
     p.add_leaf_parser(parse_identifier_leaf);
     p.add_leaf_parser(parse_arrow_leaf);
     p.add_leaf_parser(parse_sloth_leaf);

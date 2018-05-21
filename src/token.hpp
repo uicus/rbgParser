@@ -27,7 +27,6 @@ enum token_type{
     comma,
     semicolon,
     colon,
-    dollar,
     at_sign,
     equal,
     arrow,

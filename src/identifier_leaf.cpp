@@ -3,6 +3,7 @@
 #include"message.hpp"
 #include"typing_machine.hpp"
 #include"shift.hpp"
+#include"variable_arithmetic.hpp"
 
 namespace rbg_parser{
 
@@ -37,6 +38,11 @@ std::vector<token> identifier_leaf::get_identifiers_sequence(void)const{
 std::unique_ptr<game_move> identifier_leaf::get_game_move(void)const{
     assert(identifier_type == shift_move);
     return std::unique_ptr<game_move>(new shift(name));
+}
+
+std::unique_ptr<arithmetic_expression> identifier_leaf::get_arithmetic_expression(void)const{
+    assert(identifier_type != current_player);
+    return std::unique_ptr<arithmetic_expression>(new variable_arithmetic(name));
 }
 
 std::unique_ptr<condition> identifier_leaf::get_condition(void)const{

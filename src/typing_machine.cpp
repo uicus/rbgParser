@@ -18,22 +18,12 @@ expression_type typing_machine::evaluate_identifier(const token& t)const{
     const auto& players = decls.get_legal_players();
     if(players.find(t) != players.end())
         return player_name;
-    const auto& edges = decls.get_legal_edges();
-    if(edges.find(t) != edges.end())
-        return shift_move;
-    return error_type;
-}
-
-expression_type typing_machine::evaluate_variable_identifier(const token& t)const{
     const auto& vars = decls.get_legal_variables();
     if(vars.find(t) != vars.end())
         return variable;
-    const auto& pieces = decls.get_legal_pieces();
-    if(pieces.find(t) != pieces.end())
-        return piece_count;
-    const auto& players = decls.get_legal_players();
-    if(players.find(t) != players.end())
-        return player_score;
+    const auto& edges = decls.get_legal_edges();
+    if(edges.find(t) != edges.end())
+        return shift_move;
     return error_type;
 }
 
@@ -110,7 +100,7 @@ expression_type typing_machine::evaluate_brackets(bracket_type t, expression_typ
 
 typing_machine prepare_types_for_rbg(const declarations& decls){
     typing_machine result(decls);
-    result.add_operator_interpretation(no_operator, true, std::vector<expression_type>{}, gmove);
+    result.add_operator_interpretation(no_operator, true, std::vector<expression_type>{}, pieces_sequence);
     result.add_operator_interpretation(concatenate, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(add, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(add, false, std::vector<expression_type>{arithmetics}, arithmetics);

@@ -54,77 +54,74 @@
     lineTemplate(  empty; notVisited;      empty;      empty; notVisited;      empty)
 
 #board =
-    whiteGoalLine
-    whiteFirstNonGoalLine
-    whiteRegularLine
-    whiteRegularLine
-    whiteRegularLine
-    whiteRegularLine
-    lineTemplate(empty; notVisited; empty; empty; notVisited; ball)
-    blackRegularLine
-    blackRegularLine
-    blackRegularLine
-    blackRegularLine
-    blackFirstNonGoalLine
-    blackGoalLine
+    rectangle2D(up,down,left,right,
+        whiteGoalLine
+        whiteFirstNonGoalLine
+        whiteRegularLine
+        whiteRegularLine
+        whiteRegularLine
+        whiteRegularLine
+        lineTemplate(empty; notVisited; empty; empty; notVisited; ball)
+        blackRegularLine
+        blackRegularLine
+        blackRegularLine
+        blackRegularLine
+        blackFirstNonGoalLine
+        blackGoalLine
+    )
 
 
-#players = white, black
+#players = white (1), black (1)
 #pieces = ball, whiteGoal, blackGoal, empty, visited, notVisited, justArrived
 #variables =
-#bound = 0
 
 
-#findBall = ((1,0)+(1,0)+(-1,0)+(0,-1))^*(ball)[@empty]
+#findBall = (up+down+left+right)^*{ball}[empty]
 
 #canMoveFurther =
-    ( 1, 0)(visited)
-  + ( 0, 1)(visited)
-  + (-1, 0)(visited)
-  + ( 0,-1)(visited)
-  + ( 1, 1)(visited)
-  + (-1, 1)(visited)
-  + ( 1,-1)(visited)
-  + (-1,-1)(visited)
+    up{visited}
+  + down{visited}
+  + left{visited}
+  + right{visited}
+  + up left{visited}
+  + up right{visited}
+  + down left{visited}
+  + down right{visited}
 
 #changeNeighbor(from; to) =
     (
-        ( 1, 0)(from)[@to](-1, 0)
-      + ( 0, 1)(from)[@to]( 0,-1)
-      + (-1, 0)(from)[@to]( 1, 0)
-      + ( 0,-1)(from)[@to]( 0, 1)
-      + ( 1, 1)(from)[@to](-1,-1)
-      + (-1, 1)(from)[@to]( 1,-1)
-      + ( 1,-1)(from)[@to](-1, 1)
-      + (-1,-1)(from)[@to]( 1, 1)
+        up{from}[to]down
+      + down{from}[to]up
+      + right{from}[to]left
+      + left{from}[to]right
+      + down left{from}[to]up right
+      + down right{from}[to]up left
+      + up left{from}[to]down right
+      + up right{from}[to]down left
     )
 
 #changeJustArrivedIntoVisited =
     changeNeighbor(justArrived; visited)
 
-#endMove =
-    (! canMoveFurther)
-    changeJustArrivedIntoVisited
+#visitAuxilialrySquare(direction; how) =
+    direction{notVisited}[how]
 
-#visitAuxilialrySquare(x; y; how) =
-    (x, y)(notVisited)[@how]
-
-#jumpInGivenDirection(x; y) =
-    (empty)
-    visitAuxilialrySquare(x; y; visited)
-    visitAuxilialrySquare(x; y; justArrived)
-    (x, y)(empty, whiteGoal, blackGoal)
+#jumpInGivenDirection(direction) =
+    {empty}
+    visitAuxilialrySquare(direction; visited)
+    visitAuxilialrySquare(direction; justArrived)
+    direction{empty, whiteGoal, blackGoal}
 
 #singleJump =
     (
-        jumpInGivenDirection( 1; 0)
-      + jumpInGivenDirection( 0; 1)
-      + jumpInGivenDirection(-1; 0)
-      + jumpInGivenDirection( 0;-1)
-      + jumpInGivenDirection( 1; 1)
-      + jumpInGivenDirection(-1; 1)
-      + jumpInGivenDirection( 1;-1)
-      + jumpInGivenDirection(-1;-1)
+        jumpInGivenDirection(up)
+      + jumpInGivenDirection(down)
+      + jumpInGivenDirection(left)
+      + jumpInGivenDirection(right)
+      + jumpInGivenDirection(up left)
+      + jumpInGivenDirection(up right)
+      + jumpInGivenDirection(down left)
+      + jumpInGivenDirection(down right)
     )
 
 #wholeMove =
@@ -133,20 +130,20 @@
         (? canMoveFurther)
         changeJustArrivedIntoVisited
         singleJump->
-    )^*
-    endMove
+    )^>
+    changeJustArrivedIntoVisited
     (
-        (whiteGoal)[@$black=1]->()
-      + (blackGoal)[@$white=1]->()
-      + (empty)[@$black=0, $white=0]
+        {whiteGoal}[black=1]->{}
+      + {blackGoal}[white=1]->{}
+      + {empty}[black=0, white=0]
     )
 
 #rules =
     findBall
     (
-        [@$white=1]
+        [white=1]
         wholeMove->black
-        [@$black=1]
+        [black=1]
         wholeMove->white
     )^*
 

@@ -1,50 +1,48 @@
 #game = "Tic-Tac-Toe"
 
 
-#board = [empty, empty, empty]
-         [empty, empty, empty]
-         [empty, empty, empty]
+#board =
+    rectangle2D(up,down,left,right,
+        [empty, empty, empty]
+        [empty, empty, empty]
+        [empty, empty, empty]
+    )
 
 
-#players = xplayer, oplayer
+#players = xplayer (2), oplayer (2)
 #pieces = empty, xpiece, opiece
 #variables =
-#bound = 0
+
 
 #anySquare =
-    (
-        ( 1, 0)
-      + ( 0, 1)
-      + (-1, 0)
-      + ( 0,-1)
-    )^*
+    (up+down+left+right)^*
 
 #move(piece) = 
     (
         anySquare
-        (empty)
-        [@piece]
+        {empty}
+        [piece]
     )
 
 #winLine(piece) =
     anySquare
-    (piece)
+    {piece}
     (
-        (1,0)(piece)(1,0)(piece)
-      + (0,1)(piece)(0,1)(piece)
-      + (1,1)(piece)(1,1)(piece)
-      + (1,-1)(piece)(1,-1)(piece)
+        up{piece}up{piece}
+      + right{piece}right{piece}
+      + up right{piece}up right{piece}
+      + up left{piece}up left{piece}
     )
 
 #moveAndWinCheck(me; opp) =
     (
-        (? winLine(opp~piece)) [@ $me~player=0, $opp~player=10]->()
+        (? winLine(opp~piece)) [me~player=0, opp~player=2]->{}
       + (! winLine(opp~piece))
     )
     move(me~piece)->opp~player
 
 #rules =
-    [@ $xplayer=5, $oplayer=5]
+    [xplayer=1,oplayer=1]
     (
         moveAndWinCheck(x; o)
         moveAndWinCheck(o; x)

@@ -7,6 +7,7 @@ INC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
 DEP_DIR := dep
+EXAMPLES_DIR := examples
 
 C := g++
 INCLUDE := -I$(INC_DIR)
@@ -14,6 +15,7 @@ CFLAGS := -Wall -Wextra -Wpedantic -O3 -flto -std=c++11 -s $(INCLUDE)
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
 DEPFILES := $(patsubst $(SRC_DIR)/%.cpp, $(DEP_DIR)/%.d, $(wildcard $(SRC_DIR)/*.cpp))
+EXAMPLES := $(wildcard $(EXAMPLES_DIR)/*.rbg)
 
 all: $(TARGET)
 
@@ -38,6 +40,9 @@ $(OBJ_DIR):
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
+
+verify: $(EXAMPLES)
+	@$(foreach game,$(EXAMPLES),echo 'Verifying $(game)...';$(BIN_DIR)/$(TARGET) $(game);echo "";)
 
 clean:
 	rm -rf $(OBJ_DIR)

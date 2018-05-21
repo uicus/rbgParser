@@ -41,12 +41,8 @@ std::string expression_type_description(expression_type t){
             return "unsigned integer";
         case variable:
             return "variable";
-        case piece_count:
-            return "piece count";
         case piece_name:
             return "piece name";
-        case player_score:
-            return "player score";
         case player_name:
             return "player name";
         case current_player:
@@ -91,11 +87,11 @@ bool is_subtype(expression_type t, expression_type sub_t){
         case arithmetics:
             return sub_t == unsigned_integer
                 || sub_t == variable
-                || sub_t == piece_count
-                || sub_t == player_score
+                || sub_t == piece_name
+                || sub_t == player_name
                 || sub_t == arithmetics;
         case variable:
-            return sub_t == player_score
+            return sub_t == player_name
                 || sub_t == variable;
         case pieces_sequence:
             return sub_t == piece_name
