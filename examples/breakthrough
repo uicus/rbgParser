@@ -7,7 +7,6 @@
          [e, e, e, e, e, e, e, e]
          [w, w, w, w, w, w, w, w]
          [w, w, w, w, w, w, w, w])
-
 #players = wPlayer(100), bPlayer(100)
 #pieces = e, w, b
 #variables = 
@@ -19,7 +18,7 @@
     {me} [e] (forward {e} + left forward {e,opp} + right forward {e,opp})
     ->
     [me~Player=100] [opp~Player=0]
-    ((? forward) [me] + (! forward) -> {})
+    ({? forward} [me] + {! forward} -> {})
     ->opp~Player
 
 #rules = ->wPlayer (move(w;b;up) move(b;w;down))^*
