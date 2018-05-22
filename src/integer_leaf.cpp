@@ -15,7 +15,7 @@ expression_type integer_leaf::get_type(void)const{
     return value < 0 ? integer : unsigned_integer;
 }
 
-void integer_leaf::type(const typing_machine&, messages_container&)throw(message){
+void integer_leaf::type(const typing_machine&, messages_container&){
 }
 
 uint integer_leaf::get_uint(void)const{
@@ -32,7 +32,7 @@ std::unique_ptr<arithmetic_expression> integer_leaf::get_arithmetic_expression(v
     return std::unique_ptr<arithmetic_expression>(new integer_arithmetic(value));
 }
 
-parser_result<std::unique_ptr<expression>> parse_integer_leaf(slice_iterator& it, messages_container& msg)throw(message){
+parser_result<std::unique_ptr<expression>> parse_integer_leaf(slice_iterator& it, messages_container& msg){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing integer");
     auto beginning = it;
     if(not it.has_value())

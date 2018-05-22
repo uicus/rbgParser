@@ -25,7 +25,7 @@ expression_type internal_node::get_type(void)const{
     return t;
 }
 
-void internal_node::type(const typing_machine& m, messages_container& msg)throw(message){
+void internal_node::type(const typing_machine& m, messages_container& msg){
     std::vector<expression_type> elements_types;
     for(const auto& el: elements){
         el->type(m, msg);

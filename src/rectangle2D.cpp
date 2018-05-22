@@ -3,7 +3,7 @@
 
 namespace rbg_parser{
 
-token parse_edge_name(declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+token parse_edge_name(declarations& decl, slice_iterator& it, messages_container& msg){
     if(it.current(msg).get_type() != identifier)
         throw msg.build_message(it.create_call_stack("Expected edge label, encountered \'"+it.current(msg).to_string()+"\'"));
     auto label_name = it.current(msg);
@@ -20,7 +20,7 @@ token parse_edge_name(declarations& decl, slice_iterator& it, messages_container
     return label_name;
 }
 
-void rectangle2D::parse_edge_argument(token rectangle2D::*direction, declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+void rectangle2D::parse_edge_argument(token rectangle2D::*direction, declarations& decl, slice_iterator& it, messages_container& msg){
     this->*direction = parse_edge_name(decl,it,msg);
     if(it.current(msg).get_type() != comma)
         throw msg.build_message(it.create_call_stack("Expected \',\', encountered \'"+it.current(msg).to_string()+"\'"));
@@ -42,7 +42,7 @@ bool rectangle2D::add_line_if_aligned(std::vector<token>&& line){
     }
 }
 
-bool rectangle2D::parse_boardline(declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+bool rectangle2D::parse_boardline(declarations& decl, slice_iterator& it, messages_container& msg){
     if(not it.has_value() or it.current(msg).get_type() != left_square_bracket)
         return false;
     auto beginning = it;
@@ -77,7 +77,7 @@ std::tuple<token,token,edges> rectangle2D::transform_square(uint line_number, ui
     return std::make_tuple(std::move(vertex_name),std::move(starting_piece),std::move(outgoing_edges));
 }
 
-graph rectangle2D::build_graph(messages_container&)const throw(message){
+graph rectangle2D::build_graph(messages_container&)const{
     std::vector<std::tuple<token,token,edges>> vertices;
     for(uint i=0;i<starting_pieces.size();++i)
         for(uint j=0;j<starting_pieces[i].size();++j)
@@ -85,7 +85,7 @@ graph rectangle2D::build_graph(messages_container&)const throw(message){
     return graph(std::move(vertices));
 }
 
-parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& decl, slice_iterator& it, messages_container& msg){
     if(not it.has_value() or it.current(msg).get_type() != identifier or it.current(msg).get_string_content() != "rectangle2D")
         return failure<std::unique_ptr<graph_builder>>();
     it.next(msg);

@@ -20,7 +20,7 @@ class clipboard{
     public:
         clipboard(void)noexcept;
 
-        void paste(const token& t)throw(std::string);
+        void paste(const token& t);
         void report_end(void);
         void report_next_token(void);
         void paste_null_token(void);
@@ -44,7 +44,7 @@ class backtrace_info{
         backtrace_info& operator=(backtrace_info&&)=delete;
         ~backtrace_info(void)noexcept;
 
-        std::vector<slice> parse_arguments(messages_container& msg,uint current_begin,uint& current_end)throw(message);
+        std::vector<slice> parse_arguments(messages_container& msg,uint current_begin,uint& current_end);
         std::shared_ptr<backtrace_info> get_parent(void)const;
         backtrace_info* get_pointer(void)const;
         uint get_begin(void)const;
@@ -72,15 +72,15 @@ class slice_iterator{
         const macro_bank* macros;
         void push_next_slice(const slice& s);
         void pop_slice(void);
-        bool handle_standard_token(messages_container& msg)throw(message);
+        bool handle_standard_token(messages_container& msg);
         void move_cursor(void);
     public:
         slice_iterator(const slice& s, const macro_bank* macros)noexcept;
 
         std::vector<std::pair<uint,std::string>> create_call_stack(const std::string& details)const;
         bool has_value(void)const;
-        const token& current(messages_container& msg)const throw(message);
-        bool next(messages_container& msg)throw(message); // true -> moved forward, false -> end of iterator
+        const token& current(messages_container& msg)const;
+        bool next(messages_container& msg); // true -> moved forward, false -> end of iterator
         void swap_parsing_context_string(std::string& context_string);
 };
 

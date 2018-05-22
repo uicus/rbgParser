@@ -32,7 +32,7 @@ void tree_parser::add_bracket(token_type opening, bracket_info&& br){
     brackets.insert(std::make_pair(opening, std::move(br)));
 }
 
-suffix tree_parser::parse_suffix(slice_iterator& it, messages_container& msg)throw(message){
+suffix tree_parser::parse_suffix(slice_iterator& it, messages_container& msg){
     for(const auto& el: suffix_parsers){
         auto result = el(it, msg);
         if(result.is_success())
@@ -41,7 +41,7 @@ suffix tree_parser::parse_suffix(slice_iterator& it, messages_container& msg)thr
     return {no_suffix,0};
 }
 
-parser_result<std::unique_ptr<expression>> tree_parser::parse_infix(slice_iterator& it, messages_container& msg)throw(message){
+parser_result<std::unique_ptr<expression>> tree_parser::parse_infix(slice_iterator& it, messages_container& msg){
     for(const auto& el: leaf_parsers){
         auto beginning = it;
         auto content = el(it,msg);
@@ -60,7 +60,7 @@ parser_result<std::unique_ptr<expression>> tree_parser::parse_infix(slice_iterat
     return parse_bracketed_expression(it, msg);
 }
 
-parser_result<std::unique_ptr<expression>> tree_parser::parse_bracketed_expression(slice_iterator& it, messages_container& msg)throw(message){
+parser_result<std::unique_ptr<expression>> tree_parser::parse_bracketed_expression(slice_iterator& it, messages_container& msg){
     if(not it.has_value())
         return failure<std::unique_ptr<expression>>();
     auto br = it.current(msg).get_type();
@@ -81,7 +81,7 @@ parser_result<std::unique_ptr<expression>> tree_parser::parse_bracketed_expressi
     return success(std::move(result));
 }
 
-std::pair<bool,operator_info> tree_parser::parse_operator(slice_iterator& it, messages_container& msg)throw(message){
+std::pair<bool,operator_info> tree_parser::parse_operator(slice_iterator& it, messages_container& msg){
     if(not it.has_value())
         return std::make_pair(false, fallback_operator);
     auto next_token_type = it.current(msg).get_type();
@@ -96,7 +96,7 @@ std::pair<bool,operator_info> tree_parser::parse_operator(slice_iterator& it, me
 
 bool tree_parser::append_one_element(
     std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>>& expressions_stack,
-    slice_iterator& it, messages_container& msg)throw(message){
+    slice_iterator& it, messages_container& msg){
     auto next_operator = parse_operator(it, msg);
     if(next_is_prefixable(it, msg)){
         prepare_for_prefixable(expressions_stack, it, msg);
@@ -156,7 +156,7 @@ std::unique_ptr<expression> tree_parser::flatten_stack(
             std::get<0>(expressions_stack.back()).op));
 }
 
-bool tree_parser::next_is_prefixable(slice_iterator& it, messages_container& msg)throw(message){
+bool tree_parser::next_is_prefixable(slice_iterator& it, messages_container& msg){
     if(not it.has_value())
         return false;
     auto next_token_type = it.current(msg).get_type();
@@ -168,7 +168,7 @@ bool tree_parser::next_is_prefixable(slice_iterator& it, messages_container& msg
 
 void tree_parser::prepare_for_prefixable(
     std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>>& expressions_stack,
-    slice_iterator& it, messages_container& msg)throw(message){
+    slice_iterator& it, messages_container& msg){
     auto next_token_type = it.current(msg).get_type();
     auto beginning = it;
     auto found_info = operators.find(next_token_type)->second;
@@ -190,7 +190,7 @@ void tree_parser::end_operators_with_higher_priority(
     }
 }
 
-std::unique_ptr<expression> tree_parser::parse_naked_expression(slice_iterator& it, messages_container& msg)throw(message){
+std::unique_ptr<expression> tree_parser::parse_naked_expression(slice_iterator& it, messages_container& msg){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing expression");
     std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>> expressions_stack;
     auto beginning = it;

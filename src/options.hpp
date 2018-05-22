@@ -31,7 +31,7 @@ class options{
         std::string output_name;
     public:
         options(void);
-        options(uint number_of_args, const char** args)throw(wrong_argument_error);
+        options(uint number_of_args, const char** args);
 
         bool verifying(void)const;
         bool showing_warnings(void)const;

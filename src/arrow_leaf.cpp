@@ -16,7 +16,7 @@ expression_type arrow_leaf::get_type(void)const{
     return gmove;
 }
 
-void arrow_leaf::type(const typing_machine&, messages_container&)throw(message){
+void arrow_leaf::type(const typing_machine&, messages_container&){
 }
 
 std::unique_ptr<game_move> arrow_leaf::get_game_move(void)const{
@@ -34,7 +34,7 @@ std::unique_ptr<condition> arrow_leaf::get_condition(void)const{
     return get_game_move();
 }
 
-parser_result<std::unique_ptr<expression>> parse_arrow_leaf(slice_iterator& it, messages_container& msg)throw(message){
+parser_result<std::unique_ptr<expression>> parse_arrow_leaf(slice_iterator& it, messages_container& msg){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing arrow expression");
     auto beginning = it;
     if(not it.has_value())

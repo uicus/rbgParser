@@ -23,7 +23,7 @@ class bracketed_expression : public expression{
         bracketed_expression& operator=(const bracketed_expression&)=default;
         virtual ~bracketed_expression(void)=default;
         expression_type get_type(void)const override;
-        void type(const typing_machine& m, messages_container& msg)throw(message)override;
+        void type(const typing_machine& m, messages_container& msg)override;
         std::unique_ptr<arithmetic_expression> get_arithmetic_expression(void)const override;
         std::unique_ptr<game_move> get_game_move(void)const override;
         std::unique_ptr<condition> get_condition(void)const override;

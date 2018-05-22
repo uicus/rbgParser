@@ -20,25 +20,25 @@ class tree_parser{
         std::map<token_type, operator_info> operators;
         operator_info fallback_operator;
         std::map<token_type, bracket_info> brackets;
-        suffix parse_suffix(slice_iterator& it, messages_container& msg)throw(message);
-        parser_result<std::unique_ptr<expression>> parse_infix(slice_iterator& it, messages_container& msg)throw(message);
-        parser_result<std::unique_ptr<expression>> parse_bracketed_expression(slice_iterator& it, messages_container& msg)throw(message);
-        std::pair<bool, operator_info> parse_operator(slice_iterator& it, messages_container& msg)throw(message);
+        suffix parse_suffix(slice_iterator& it, messages_container& msg);
+        parser_result<std::unique_ptr<expression>> parse_infix(slice_iterator& it, messages_container& msg);
+        parser_result<std::unique_ptr<expression>> parse_bracketed_expression(slice_iterator& it, messages_container& msg);
+        std::pair<bool, operator_info> parse_operator(slice_iterator& it, messages_container& msg);
         bool append_one_element(
             std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>>& expressions_stack,
-            slice_iterator& it, messages_container& msg)throw(message);
+            slice_iterator& it, messages_container& msg);
         std::unique_ptr<expression> flatten_stack(
             std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>>& expressions_stack);
-        bool next_is_prefixable(slice_iterator& it, messages_container& msg)throw(message);
+        bool next_is_prefixable(slice_iterator& it, messages_container& msg);
         void prepare_for_prefixable_operator(
             std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>>& expressions_stack,
-            slice_iterator& it, messages_container& msg)throw(message);
+            slice_iterator& it, messages_container& msg);
         void end_operators_with_higher_priority(
             std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>>& expressions_stack,
             uint priority);
         void prepare_for_prefixable(
             std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>>& expressions_stack,
-            slice_iterator& it, messages_container& msg)throw(message);
+            slice_iterator& it, messages_container& msg);
     public:
         tree_parser(operator_info fallback_operator);
         tree_parser(void)=delete;
@@ -51,7 +51,7 @@ class tree_parser{
         void add_suffix_parser(parser_result<suffix>(*p)(slice_iterator& it, messages_container& msg));
         void add_operator(token_type representation, operator_info meaning);
         void add_bracket(token_type opening, bracket_info&& br);
-        std::unique_ptr<expression> parse_naked_expression(slice_iterator& it, messages_container& msg)throw(message);
+        std::unique_ptr<expression> parse_naked_expression(slice_iterator& it, messages_container& msg);
 };
 
 }

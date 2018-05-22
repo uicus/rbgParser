@@ -23,13 +23,13 @@ class arrow_leaf : public expression{
         arrow_leaf& operator=(const arrow_leaf&)=default;
         virtual ~arrow_leaf(void)=default;
         expression_type get_type(void)const override;
-        void type(const typing_machine&, messages_container&)throw(message)override;
+        void type(const typing_machine&, messages_container&)override;
         std::unique_ptr<game_move> get_game_move(void)const override;
         std::unique_ptr<condition> get_condition(void)const override;
-        friend parser_result<std::unique_ptr<expression>> parse_arrow_leaf(slice_iterator& it, messages_container& msg)throw(message);
+        friend parser_result<std::unique_ptr<expression>> parse_arrow_leaf(slice_iterator& it, messages_container& msg);
 };
 
-parser_result<std::unique_ptr<expression>> parse_arrow_leaf(slice_iterator& it, messages_container& msg)throw(message);
+parser_result<std::unique_ptr<expression>> parse_arrow_leaf(slice_iterator& it, messages_container& msg);
 
 }
 

@@ -10,7 +10,7 @@ up_to_date(false),
 frozen(true){
 }
 
-void clipboard::paste(const token& t)throw(std::string){
+void clipboard::paste(const token& t){
     if(up_to_date){
         stored+=(t);
         frozen=false;
@@ -80,7 +80,7 @@ last_should_be_pasted(src.last_should_be_pasted){
 backtrace_info::~backtrace_info(void)noexcept{
 }
 
-std::vector<slice> backtrace_info::parse_arguments(messages_container& msg,uint current_begin,uint& current_end)throw(message){
+std::vector<slice> backtrace_info::parse_arguments(messages_container& msg,uint current_begin,uint& current_end){
     std::vector<slice> result;
     current_end=current_begin+1;
     if(current_slice.is_end(current_end))
@@ -212,7 +212,7 @@ bool slice_iterator::has_value(void)const{
     return top || c.contains_full_token();
 }
 
-const token& slice_iterator::current(messages_container& msg)const throw(message){
+const token& slice_iterator::current(messages_container& msg)const{
     if(!has_value())
         throw msg.build_message(create_call_stack(error_if_end_of_input));
     if(c.contains_full_token())
@@ -244,7 +244,7 @@ void slice_iterator::pop_slice(void){
         move_cursor();
 }
 
-bool slice_iterator::handle_standard_token(messages_container& msg)throw(message){
+bool slice_iterator::handle_standard_token(messages_container& msg){
     try{
         if(top->is_last_token_in_slice(current_end) && top->get_last_should_be_pasted()){
             c.paste(top->current(current_end));
@@ -271,7 +271,7 @@ bool slice_iterator::handle_standard_token(messages_container& msg)throw(message
     }
 }
 
-bool slice_iterator::next(messages_container& msg)throw(message){
+bool slice_iterator::next(messages_container& msg){
     if(has_value() && started)
         last_position = current(msg).get_position();
     c.report_next_token();

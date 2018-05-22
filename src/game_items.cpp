@@ -57,7 +57,7 @@ game_items::~game_items(void)noexcept{
     delete rules_segment;
 }
 
-uint game_items::input_macro(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+uint game_items::input_macro(const std::vector<token>& input,uint current_token,messages_container& msg){
     if(current_token >= input.size() || input[current_token].get_type() == hash)
         throw msg.build_message(input[current_token-1].get_position(),"Empty macro directive");
     if(input[current_token].get_type() != identifier)
@@ -88,7 +88,7 @@ uint current_token,
 const std::string& segment_name,
 slice* game_items::*segment_position,
 bool should_be_nonempty,
-messages_container& msg)throw(message){
+messages_container& msg){
     if(current_token >= input.size())
         throw msg.build_message(input[current_token-1].get_position(),"Unexpected end of \'"+segment_name+"\' segment");
     if(input[current_token].get_type() != equal)
@@ -106,23 +106,23 @@ messages_container& msg)throw(message){
     return end;
 }
 
-uint game_items::input_board(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+uint game_items::input_board(const std::vector<token>& input,uint current_token,messages_container& msg){
     return input_slice(input, current_token, "board", &game_items::board_segment,true,msg);
 }
 
-uint game_items::input_players(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+uint game_items::input_players(const std::vector<token>& input,uint current_token,messages_container& msg){
     return input_slice(input, current_token, "players", &game_items::players_segment,true,msg);
 }
 
-uint game_items::input_variables(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+uint game_items::input_variables(const std::vector<token>& input,uint current_token,messages_container& msg){
     return input_slice(input, current_token, "variables", &game_items::variables_segment,false,msg);
 }
 
-uint game_items::input_pieces(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+uint game_items::input_pieces(const std::vector<token>& input,uint current_token,messages_container& msg){
     return input_slice(input, current_token, "pieces", &game_items::pieces_segment,true,msg);
 }
 
-uint game_items::input_rules(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message){
+uint game_items::input_rules(const std::vector<token>& input,uint current_token,messages_container& msg){
     return input_slice(input, current_token, "rules", &game_items::rules_segment,true,msg);
 }
 
@@ -132,7 +132,7 @@ uint reach_end_of_directive(const std::vector<token>& input,uint current_token){
     return current_token;
 }
 
-uint parse_arguments(const std::vector<token>& input,uint current_token,std::vector<token>& args,messages_container& msg)throw(message){
+uint parse_arguments(const std::vector<token>& input,uint current_token,std::vector<token>& args,messages_container& msg){
     if(input[current_token].get_type() != left_round_bracket || current_token >= input.size())
         return current_token;
     while(true){
@@ -151,7 +151,7 @@ uint parse_arguments(const std::vector<token>& input,uint current_token,std::vec
     }
 }
 
-game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message){
+game_items input_tokens(const std::vector<token>& input,messages_container& msg){
     game_items result;
     if(input.empty())
         throw msg.build_message("No tokens in file");
@@ -201,7 +201,7 @@ game_items input_tokens(const std::vector<token>& input,messages_container& msg)
 std::set<token> game_items::parse_declaration_set(
     slice* game_items::*segment_position,
     const std::string& name,
-    messages_container& msg)const throw(message){
+    messages_container& msg)const{
     slice_iterator it(*(this->*segment_position),&macros);
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'"+name+"\' segment");
     it.next(msg);
@@ -218,7 +218,7 @@ std::set<token> game_items::parse_declaration_set(
 std::map<token, uint> game_items::parse_bounded_declaration_set(
     slice* game_items::*segment_position,
     const std::string& name,
-    messages_container& msg)const throw(message){
+    messages_container& msg)const{
     slice_iterator it(*(this->*segment_position),&macros);
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'"+name+"\' segment");
     it.next(msg);
@@ -231,7 +231,7 @@ std::map<token, uint> game_items::parse_bounded_declaration_set(
     return result;
 }
 
-declarations game_items::parse_declarations(messages_container& msg)const throw(message){
+declarations game_items::parse_declarations(messages_container& msg)const{
     declarations result(
         parse_bounded_declaration_set(&game_items::players_segment,"players",msg),
         parse_declaration_set(&game_items::pieces_segment,"pieces",msg),
@@ -260,7 +260,7 @@ std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarat
     return std::move(result);
 }
 
-std::unique_ptr<graph_builder> game_items::parse_graph(declarations& decl, messages_container& msg)const throw(message){
+std::unique_ptr<graph_builder> game_items::parse_graph(declarations& decl, messages_container& msg)const{
     slice_iterator it(*board_segment,&macros);
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'board\' segment");
     it.next(msg);
@@ -273,7 +273,7 @@ std::unique_ptr<graph_builder> game_items::parse_graph(declarations& decl, messa
     throw msg.build_message(it.create_call_stack("Couldn't interpret this as board game"));
 }
 
-std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const throw(message){
+std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const{
     slice_iterator it(*(this->*segment_position),&macros);
     it.next(msg);
     auto res = parse_rules(it, msg);
@@ -286,7 +286,7 @@ std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, sli
     return res->get_game_move()->simplify()->flatten();
 }
 
-parsed_game game_items::parse_game(messages_container& msg)const throw(message){
+parsed_game game_items::parse_game(messages_container& msg)const{
     declarations decl = parse_declarations(msg);
     auto parsed_graph_builder = parse_graph(decl,msg);
     graph g = parsed_graph_builder->build_graph(msg);

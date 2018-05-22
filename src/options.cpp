@@ -34,7 +34,7 @@ to_stage(2),
 output_name("a.gdl"){
 }
 
-options::options(uint number_of_args, const char** args)throw(wrong_argument_error):
+options::options(uint number_of_args, const char** args):
 just_verify(false),
 show_warnings(true),
 warnings_as_errors(false),

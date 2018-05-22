@@ -17,7 +17,7 @@ expression_type identifier_leaf::get_type(void)const{
     return identifier_type;
 }
 
-void identifier_leaf::type(const typing_machine& m, messages_container& msg)throw(message){
+void identifier_leaf::type(const typing_machine& m, messages_container& msg){
     auto result = m.evaluate_identifier(name);
     if(result == error_type)
         throw msg.build_message(beginning_position.create_call_stack("Identifier \'"+name.to_string()+"\' not declared"));
@@ -50,7 +50,7 @@ std::unique_ptr<condition> identifier_leaf::get_condition(void)const{
     return get_game_move();
 }
 
-parser_result<std::unique_ptr<expression>> parse_identifier_leaf(slice_iterator& it, messages_container& msg)throw(message){
+parser_result<std::unique_ptr<expression>> parse_identifier_leaf(slice_iterator& it, messages_container& msg){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing identifier");
     auto beginning = it;
     if(not it.has_value())

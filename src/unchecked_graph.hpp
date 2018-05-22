@@ -24,7 +24,7 @@ class unchecked_graph : public graph_builder{
         std::map<token, uint> check_and_transform_edges(
             const neighbors& n,
             const std::map<token, uint>& name_number_correspondence,
-            messages_container& msg)const throw(message);
+            messages_container& msg)const;
     public:
         unchecked_graph(void)=default;
         unchecked_graph(const unchecked_graph&)=delete;
@@ -36,10 +36,10 @@ class unchecked_graph : public graph_builder{
         bool vertex_exists(const token& name)const;
         void add_edge(const token& source_vertex, const token& target_vertex, const slice_iterator& target_position, const token& edge_label);
         bool edge_exists(const token& source_vertex, const token& edge_label)const;
-        graph build_graph(messages_container& msg)const throw(message) override;
+        graph build_graph(messages_container& msg)const override;
 };
 
-parser_result<std::unique_ptr<graph_builder>> parse_unchecked_graph(declarations& decl, slice_iterator& it, messages_container& msg)throw(message);
+parser_result<std::unique_ptr<graph_builder>> parse_unchecked_graph(declarations& decl, slice_iterator& it, messages_container& msg);
 
 }
 

@@ -211,7 +211,7 @@ bool token::contains_exactly_n_chars(uint n)const{
         return n == tokens_table[type].size();
 }
 
-void token::take_next_character(char next_character, messages_container& msg)throw(message){
+void token::take_next_character(char next_character, messages_container& msg){
     if(type == number){
         if((UINT_MAX-(next_character-'0'))/10<=number_value)
             throw msg.build_message(position_in_file,"Too large integer");
@@ -247,7 +247,7 @@ void token::reverse_comparison(void){
     }
 }
 
-token& token::operator+=(const token& t)throw(std::string){
+token& token::operator+=(const token& t){
     if(type == minus && t.type == greater)
         type = arrow;
     else if(type == left_round_bracket && t.type == question)
@@ -338,7 +338,7 @@ token create_quotation(uint position){
     return token(position,quotation);
 }
 
-bool filter_set_with_character(std::set<token>& current_set, char next_character, uint position, messages_container& msg)throw(message){
+bool filter_set_with_character(std::set<token>& current_set, char next_character, uint position, messages_container& msg){
     std::set<token> result;
     for(const auto& el: current_set){
         if(el.could_be_next_character(next_character, position)){
@@ -420,7 +420,7 @@ uint skip_whitespace(const std::string& input, uint current_char, messages_conta
     return current_char;
 }
 
-std::vector<token> tokenize(const std::string& input, messages_container& msg)throw(message){
+std::vector<token> tokenize(const std::string& input, messages_container& msg){
     std::vector<token> result;
     uint current_char = 0;
     while(current_char < input.size()){

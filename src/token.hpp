@@ -77,10 +77,10 @@ class token{
         token_type get_type(void)const;
         bool could_be_next_character(char next_character, uint position)const;
         bool contains_exactly_n_chars(uint n)const;
-        void take_next_character(char next_character, messages_container& msg)throw(message);
+        void take_next_character(char next_character, messages_container& msg);
         uint get_position(void)const;
         void reverse_comparison(void);
-        token& operator+=(const token& t)throw(std::string);
+        token& operator+=(const token& t);
 
         bool operator==(const token& t)const;
         bool operator<(const token& t)const;
@@ -92,8 +92,8 @@ uint seek_end_of_quotation(const std::string& input, uint current_char, token& q
 uint seek_end_of_singleline_comment(const std::string& input, uint current_char, messages_container& msg);
 uint seek_end_of_multiline_comment(const std::string& input, uint current_char, messages_container& msg);
 uint skip_whitespace(const std::string& input, uint current_char, messages_container& msg);
-bool filter_set_with_character(std::set<token>& current_set, char next_character, uint position, messages_container& msg)throw(message); // returns whether char should be re-parsed and current_set contains full parsed token
-std::vector<token> tokenize(const std::string& input, messages_container& msg)throw(message);
+bool filter_set_with_character(std::set<token>& current_set, char next_character, uint position, messages_container& msg); // returns whether char should be re-parsed and current_set contains full parsed token
+std::vector<token> tokenize(const std::string& input, messages_container& msg);
 
 }
 

@@ -9,7 +9,7 @@
 
 namespace rbg_parser{
 
-parser_result<suffix> parse_power(slice_iterator& it, messages_container& msg)throw(message){
+parser_result<suffix> parse_power(slice_iterator& it, messages_container& msg){
     if(not it.has_value())
         return failure<suffix>();
     if(it.current(msg).get_type() == caret){
@@ -29,7 +29,7 @@ parser_result<suffix> parse_power(slice_iterator& it, messages_container& msg)th
     return failure<suffix>();
 }
 
-std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& msg)throw(message){
+std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& msg){
     tree_parser p(operator_info{concatenate, 90, false});
 
     p.add_suffix_parser(parse_power);

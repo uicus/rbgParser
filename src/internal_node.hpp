@@ -29,7 +29,7 @@ class internal_node : public expression{
         std::unique_ptr<arithmetic_expression> get_arithmetic_expression(void)const override;
         std::unique_ptr<game_move> get_game_move(void)const override;
         std::unique_ptr<condition> get_condition(void)const override;
-        void type(const typing_machine& m, messages_container& msg)throw(message)override;
+        void type(const typing_machine& m, messages_container& msg)override;
 };
 
 }

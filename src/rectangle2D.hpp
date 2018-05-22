@@ -20,8 +20,8 @@ class rectangle2D : public graph_builder{
         token right;
         std::vector<std::vector<token>> starting_pieces;
         bool add_line_if_aligned(std::vector<token>&& line);
-        void parse_edge_argument(token rectangle2D::*direction, declarations& decl, slice_iterator& it, messages_container& msg)throw(message);
-        bool parse_boardline(declarations& decl, slice_iterator& it, messages_container& msg)throw(message);
+        void parse_edge_argument(token rectangle2D::*direction, declarations& decl, slice_iterator& it, messages_container& msg);
+        bool parse_boardline(declarations& decl, slice_iterator& it, messages_container& msg);
         std::tuple<token,token,edges> transform_square(uint line_number,uint column_number)const;
         uint compute_index(uint line_number, uint column_number)const;
     public:
@@ -31,11 +31,11 @@ class rectangle2D : public graph_builder{
         rectangle2D(rectangle2D&&)=default;
         rectangle2D& operator=(rectangle2D&&)=default;
         ~rectangle2D(void)override=default;
-        graph build_graph(messages_container&)const throw(message) override;
-        friend parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& decl, slice_iterator& it, messages_container& msg)throw(message);
+        graph build_graph(messages_container&)const override;
+        friend parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& decl, slice_iterator& it, messages_container& msg);
 };
 
-parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& decl, slice_iterator& it, messages_container& msg)throw(message);
+parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& decl, slice_iterator& it, messages_container& msg);
 
 }
 

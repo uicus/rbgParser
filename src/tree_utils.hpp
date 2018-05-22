@@ -127,7 +127,7 @@ class expression{
         virtual ~expression(void)=default;
         virtual expression_type get_type(void)const=0;
         virtual const slice_iterator& get_beginning(void)const;
-        virtual void type(const typing_machine&, messages_container&)throw(message)=0;
+        virtual void type(const typing_machine&, messages_container&)=0;
         virtual uint get_uint(void)const{assert(false);};
         virtual int get_int(void)const{assert(false);};
         virtual token get_identifier(void)const{assert(false);};

@@ -14,14 +14,14 @@ expression_type sloth_leaf::get_type(void)const{
     return gmove;
 }
 
-void sloth_leaf::type(const typing_machine&, messages_container&)throw(message){
+void sloth_leaf::type(const typing_machine&, messages_container&){
 }
 
 std::unique_ptr<game_move> sloth_leaf::get_game_move(void)const{
     return std::unique_ptr<game_move>(new sloth);
 }
 
-parser_result<std::unique_ptr<expression>> parse_sloth_leaf(slice_iterator& it, messages_container& msg)throw(message){
+parser_result<std::unique_ptr<expression>> parse_sloth_leaf(slice_iterator& it, messages_container& msg){
     if(not it.has_value() || it.current(msg).get_type() != at_sign)
         return failure<std::unique_ptr<expression>>();
     auto beginning = it;

@@ -47,7 +47,7 @@ std::map<token, uint> unchecked_graph::create_name_number_correspondence(void)co
 std::map<token, uint> unchecked_graph::check_and_transform_edges(
     const neighbors& n,
     const std::map<token, uint>& name_number_correspondence,
-    messages_container& msg)const throw(message){
+    messages_container& msg)const{
     std::map<token, uint> result;
     for(const auto& el: n){
         if(name_number_correspondence.find(el.second.second) == name_number_correspondence.end())
@@ -57,7 +57,7 @@ std::map<token, uint> unchecked_graph::check_and_transform_edges(
     return result;
 }
 
-graph unchecked_graph::build_graph(messages_container& msg)const throw(message){
+graph unchecked_graph::build_graph(messages_container& msg)const{
     const std::map<token, uint> name_to_number_correspondence = create_name_number_correspondence();
     std::vector<std::tuple<token, token, edges>> checked_vertices;
     checked_vertices.resize(name_to_number_correspondence.size());
@@ -68,7 +68,7 @@ graph unchecked_graph::build_graph(messages_container& msg)const throw(message){
     return graph(std::move(checked_vertices));
 }
 
-token parse_starting_piece(const declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+token parse_starting_piece(const declarations& decl, slice_iterator& it, messages_container& msg){
     if(it.current(msg).get_type() != left_square_bracket)
         throw msg.build_message(it.create_call_stack("Expected \'[\', encountered \'"+it.current(msg).to_string()+"\'"));
     it.next(msg);
@@ -85,7 +85,7 @@ token parse_starting_piece(const declarations& decl, slice_iterator& it, message
     return piece_name;
 }
 
-bool parse_single_edge(unchecked_graph& g, const token& vertex_name, declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+bool parse_single_edge(unchecked_graph& g, const token& vertex_name, declarations& decl, slice_iterator& it, messages_container& msg){
     if(it.current(msg).get_type() != identifier)
         throw msg.build_message(it.create_call_stack("Expected edge label, encountered \'"+it.current(msg).to_string()+"\'"));
     auto label_name = it.current(msg);
@@ -115,14 +115,14 @@ bool parse_single_edge(unchecked_graph& g, const token& vertex_name, declaration
     return not end_of_edges_list;
 }
 
-void parse_edges(unchecked_graph& g, const token& vertex_name, declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+void parse_edges(unchecked_graph& g, const token& vertex_name, declarations& decl, slice_iterator& it, messages_container& msg){
     if(it.current(msg).get_type() != left_curly_bracket)
         throw msg.build_message(it.create_call_stack("Expected \'{\', encountered \'"+it.current(msg).to_string()+"\'"));
     it.next(msg);
     while(parse_single_edge(g,vertex_name,decl,it,msg));
 }
 
-bool parse_vertex(unchecked_graph& g, declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+bool parse_vertex(unchecked_graph& g, declarations& decl, slice_iterator& it, messages_container& msg){
     if(not it.has_value())
         return false;
     if(it.current(msg).get_type() != identifier)
@@ -137,7 +137,7 @@ bool parse_vertex(unchecked_graph& g, declarations& decl, slice_iterator& it, me
     return true;
 }
 
-parser_result<std::unique_ptr<graph_builder>> parse_unchecked_graph(declarations& decl, slice_iterator& it, messages_container& msg)throw(message){
+parser_result<std::unique_ptr<graph_builder>> parse_unchecked_graph(declarations& decl, slice_iterator& it, messages_container& msg){
     unchecked_graph result;
     if(not parse_vertex(result,decl,it,msg))
         return failure<std::unique_ptr<graph_builder>>();

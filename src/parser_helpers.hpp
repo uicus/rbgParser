@@ -48,14 +48,12 @@ parser_result<std::vector<token>> parse_sequence(
     const std::string& purpose_name,
     const std::set<token>& verification_set,
     bool should_verify,
-    messages_container& msg
-    )throw(message);
+    messages_container& msg);
 
 parser_result<std::map<token, uint>> parse_bounded_sequence(
     slice_iterator& it,
     const std::string& purpose_name,
-    messages_container& msg
-    )throw(message);
+    messages_container& msg);
 
 }
 

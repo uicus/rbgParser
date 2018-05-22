@@ -33,32 +33,32 @@ class game_items{
         uint next_item_context_order;
         game_items(void)noexcept;
 
-        uint input_macro(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
-        uint input_board(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
-        uint input_players(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
-        uint input_variables(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
-        uint input_pieces(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
-        uint input_rules(const std::vector<token>& input,uint current_token,messages_container& msg)throw(message);
+        uint input_macro(const std::vector<token>& input,uint current_token,messages_container& msg);
+        uint input_board(const std::vector<token>& input,uint current_token,messages_container& msg);
+        uint input_players(const std::vector<token>& input,uint current_token,messages_container& msg);
+        uint input_variables(const std::vector<token>& input,uint current_token,messages_container& msg);
+        uint input_pieces(const std::vector<token>& input,uint current_token,messages_container& msg);
+        uint input_rules(const std::vector<token>& input,uint current_token,messages_container& msg);
         uint input_slice(
             const std::vector<token>& input,
             uint current_token,
             const std::string& segment_name,
             slice* game_items::*segment_position,
             bool should_be_nonempty,
-            messages_container& msg)throw(message);
+            messages_container& msg);
         std::set<token> parse_declaration_set(
             slice* game_items::*segment_position,
             const std::string& name,
-            messages_container& msg)const throw(message);
+            messages_container& msg)const;
         std::map<token, uint> parse_bounded_declaration_set(
             slice* game_items::*segment_position,
             const std::string& name,
-            messages_container& msg)const throw(message);
-        declarations parse_declarations(messages_container& msg)const throw(message);
+            messages_container& msg)const;
+        declarations parse_declarations(messages_container& msg)const;
         std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarations&, slice_iterator&, messages_container&)>>
             prepare_graph_builders(void)const;
-        std::unique_ptr<graph_builder> parse_graph(declarations& decl, messages_container& msg)const throw(message);
-        std::unique_ptr<game_move> parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const throw(message);
+        std::unique_ptr<graph_builder> parse_graph(declarations& decl, messages_container& msg)const;
+        std::unique_ptr<game_move> parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const;
     public:
         game_items(const game_items&)=delete;
         game_items(game_items&& src)noexcept;
@@ -66,13 +66,13 @@ class game_items{
         game_items& operator=(game_items&& src)noexcept;
         ~game_items(void)noexcept;
 
-        friend game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message);
-        parsed_game parse_game(messages_container& msg)const throw(message);
+        friend game_items input_tokens(const std::vector<token>& input,messages_container& msg);
+        parsed_game parse_game(messages_container& msg)const;
 };
 
 uint reach_end_of_directive(const std::vector<token>& input,uint current_token);
-uint parse_arguments(const std::vector<token>& input,uint current_token,std::vector<token>& args,messages_container& msg)throw(message);
-game_items input_tokens(const std::vector<token>& input,messages_container& msg)throw(message);
+uint parse_arguments(const std::vector<token>& input,uint current_token,std::vector<token>& args,messages_container& msg);
+game_items input_tokens(const std::vector<token>& input,messages_container& msg);
 void print_spaces(std::ostream& out, uint n);
 
 }

@@ -40,7 +40,7 @@ expression_type bracketed_expression::get_type(void)const{
     return t;
 }
 
-void bracketed_expression::type(const typing_machine& m, messages_container& msg)throw(message){
+void bracketed_expression::type(const typing_machine& m, messages_container& msg){
     element->type(m, msg);
     auto result = m.evaluate_brackets(br, element->get_type(), s.t);
     if(result == error_type){

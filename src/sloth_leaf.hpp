@@ -21,12 +21,12 @@ class sloth_leaf : public expression{
         sloth_leaf& operator=(const sloth_leaf&)=default;
         virtual ~sloth_leaf(void)=default;
         expression_type get_type(void)const override;
-        void type(const typing_machine&, messages_container&)throw(message)override;
+        void type(const typing_machine&, messages_container&)override;
         virtual std::unique_ptr<game_move> get_game_move(void)const;
-        friend parser_result<std::unique_ptr<expression>> parse_sloth_leaf(slice_iterator& it, messages_container& msg)throw(message);
+        friend parser_result<std::unique_ptr<expression>> parse_sloth_leaf(slice_iterator& it, messages_container& msg);
 };
 
-parser_result<std::unique_ptr<expression>> parse_sloth_leaf(slice_iterator& it, messages_container& msg)throw(message);
+parser_result<std::unique_ptr<expression>> parse_sloth_leaf(slice_iterator& it, messages_container& msg);
 
 }
 

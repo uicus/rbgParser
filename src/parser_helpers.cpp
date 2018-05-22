@@ -8,7 +8,7 @@ slice_iterator& it,
 const std::string& purpose_name,
 const std::set<token>& verification_set,
 bool should_verify,
-messages_container& msg)throw(message){
+messages_container& msg){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing "+purpose_name);
     std::vector<token> result;
     if(!it.has_value())
@@ -34,8 +34,7 @@ messages_container& msg)throw(message){
 parser_result<std::map<token, uint>> parse_bounded_sequence(
     slice_iterator& it,
     const std::string& purpose_name,
-    messages_container& msg
-    )throw(message){
+    messages_container& msg){
     parsing_context_string_guard g(&it, "Unexpected end of input while parsing "+purpose_name);
     std::map<token, uint> result;
     if(!it.has_value())

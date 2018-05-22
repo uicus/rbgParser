@@ -9,7 +9,7 @@ namespace rbg_parser{
 class expression;
 class slice_iterator;
 
-std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& msg)throw(message);
+std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& msg);
 
 }
 
