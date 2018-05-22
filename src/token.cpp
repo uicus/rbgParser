@@ -81,8 +81,8 @@ token::~token(void)noexcept{
 
 std::string tokens_table[] = {
 "(",
-"(?",
-"(!",
+"{?",
+"{!",
 ")",
 "[",
 "]",
@@ -250,9 +250,9 @@ void token::reverse_comparison(void){
 token& token::operator+=(const token& t){
     if(type == minus && t.type == greater)
         type = arrow;
-    else if(type == left_round_bracket && t.type == question)
+    else if(type == left_curly_bracket && t.type == question)
         type = left_question_bracket;
-    else if(type == left_round_bracket && t.type == exclamation)
+    else if(type == left_curly_bracket && t.type == exclamation)
         type = left_exclamation_bracket;
     else if(type == less && t.type == equal)
         type = less_equal;

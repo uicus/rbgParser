@@ -25,17 +25,17 @@ std::unique_ptr<game_move> condition_check::simplify(void){
 
 std::string condition_check::to_rbg(uint indent)const{
     std::string result = "";
-    result += negated ? "(?" : "(!";
+    result += negated ? "{!" : "{?";
     result += content->to_rbg(indent);
-    result += ")";
+    result += "}";
     return result;
 }
 
 std::string condition_check::to_rbg()const{
     std::string result = "";
-    result += negated ? "(?" : "(!";
+    result += negated ? "{!" : "{?";
     result += content->to_rbg();
-    result += ")";
+    result += "}";
     return result;
 }
 

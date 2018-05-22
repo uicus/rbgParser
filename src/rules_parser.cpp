@@ -51,8 +51,8 @@ std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& 
     p.add_operator(not_equal, operator_info{is_nequal, 46, false});
 
     p.add_bracket(left_round_bracket, bracket_info{right_round_bracket, ")", standard_bracket});
-    p.add_bracket(left_question_bracket, bracket_info{right_round_bracket, ")", condition_bracket});
-    p.add_bracket(left_exclamation_bracket, bracket_info{right_round_bracket, ")", negated_condition_bracket});
+    p.add_bracket(left_question_bracket, bracket_info{right_curly_bracket, "}", condition_bracket});
+    p.add_bracket(left_exclamation_bracket, bracket_info{right_curly_bracket, "}", negated_condition_bracket});
     p.add_bracket(left_square_bracket, bracket_info{right_square_bracket, "]", modifier_bracket});
     p.add_bracket(left_curly_bracket, bracket_info{right_curly_bracket, "}", on_bracket});
     return p.parse_naked_expression(it, msg);

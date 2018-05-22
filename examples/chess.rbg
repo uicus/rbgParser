@@ -123,14 +123,14 @@
     (right forwardDirection + left forwardDirection){opponentColor~Pawn}
 
 #isNotAttackedBy(opponentColor; forwardDirection) =
-    (!
+    {!
         isAttackedByBishop(opponentColor)
       + isAttackedByRook(opponentColor)
       + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
       + isAttackedByPawn(opponentColor; forwardDirection)
-    )
+    }
 
 #checked(color; opponentColor; forwardDirection) =
     anySquare
@@ -145,7 +145,7 @@
     )
 
 #castlingKingMove(forwardDirection; color; opponentColor) =
-    (? color~KingMoved==0)
+    {? color~KingMoved==0}
     pickUpPiece(color~King)
     (
         (right{empty}isNotAttackedBy(opponentColor; forwardDirection))^2
@@ -170,15 +170,15 @@
 
 #checkForPromotion(forwardDirection; color) =
     (
-        (? forwardDirection)[color~Pawn]
-      + (! forwardDirection)[majorPieces(color)]
+        {? forwardDirection}[color~Pawn]
+      + {! forwardDirection}[majorPieces(color)]
     )
 
 #standardPawnMove(forwardDirection; backDirection; color; opponentColor) =
     pickUpPiece(color~Pawn)
     (
         // promotion cannot occur
-        (! backDirection^2)
+        {! backDirection^2}
         (forwardDirection{empty})^2
         [color~Pawn]
         [pawnDoubleMove=1]
@@ -190,7 +190,7 @@
     )
 
 #enPassantPawnMove(forwardDirection; color) =
-    (? pawnDoubleMove==1)
+    {? pawnDoubleMove==1}
     (
         // we are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so don't check it
         right pickUpPiece(color~Pawn)
@@ -216,13 +216,13 @@
           + standardPawnMove(forwardDirection; backDirection; color; opponentColor)
         )
       + enPassantPawnMove(forwardDirection; color)
-    )(! checked(color; opponentColor; forwardDirection))
+    ){! checked(color; opponentColor; forwardDirection)}
     (
-        (? checked(opponentColor; color; backDirection))[opponentColor=0,color=10]
+        {? checked(opponentColor; color; backDirection)}[opponentColor=0,color=10]
       > [color=5,opponentColor=5]
     )
     (
-        (? turn>200)->{}
+        {? turn>200}->{}
       > [turn=turn+1]->opponentColor
     )
 

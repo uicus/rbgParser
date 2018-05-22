@@ -54,10 +54,7 @@ std::string close_bracket_if_necessary(uint current_priority,uint lower_priority
 }
 
 std::string print_variable(const token& v){
-    if(v.get_type() == number)
-        return v.to_string();
-    else
-        return "$"+v.to_string();
+    return v.to_string();
 }
 
 }

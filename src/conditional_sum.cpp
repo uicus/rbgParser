@@ -34,7 +34,7 @@ void conditional_sum::accept(abstract_dispatcher& dispatcher)const{
 std::string conditional_sum::to_rbg(uint indent)const{
     std::string result = "";
     for(uint i=0;i<content.size();++i){
-        result += "\n"+(i==0 ? print_tabs(indent+1) : print_tabs(indent)+" >+ ");
+        result += "\n"+(i==0 ? print_tabs(indent+1) : print_tabs(indent)+"  > ");
         result += open_bracket_if_necessary(priority(),content[i]->priority());
         result += content[i]->to_rbg(indent+1);
         result += close_bracket_if_necessary(priority(),content[i]->priority());

@@ -24,7 +24,7 @@ std::string variable_arithmetic::to_rbg(uint)const{
 }
 
 std::string variable_arithmetic::to_rbg()const{
-    return "$"+content.to_string();
+    return content.to_string();
 }
 
 const token& variable_arithmetic::get_content(void)const{

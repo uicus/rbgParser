@@ -33,8 +33,8 @@
 
 #moveAndWinCheck(me; opp) =
     (
-        (? winLine(opp~piece)) [me~player=0, opp~player=2]->{}
-      + (! winLine(opp~piece))
+        {? winLine(opp~piece)} [me~player=0, opp~player=2]->{}
+      + {! winLine(opp~piece)}
     )
     move(me~piece)->opp~player
 

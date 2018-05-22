@@ -71,7 +71,7 @@
 
 #checkForPromotion(color; forwardDirection) =
     (
-        (? forwardDirection)[color~Man]
+        {? forwardDirection}[color~Man]
       > [color~King]
     )
 
@@ -125,7 +125,7 @@
 
 #gameContinues =
     [white=0, black=0]
-    (? turn<=180)
+    {? turn<=180}
 
 #rules =
     (
