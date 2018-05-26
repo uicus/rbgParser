@@ -276,10 +276,10 @@ std::unique_ptr<graph_builder> game_items::parse_graph(declarations& decl, messa
 std::unique_ptr<game_move> game_items::parse_moves(const declarations& decl, slice* game_items::*segment_position, const std::string& name, messages_container& msg)const{
     slice_iterator it(*(this->*segment_position),&macros);
     it.next(msg);
-    auto res = parse_rules(it, msg);
+    auto typer = prepare_types_for_rbg(decl);
+    auto res = parse_rules(it, typer, msg);
     if(it.has_value())
         msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'"+name+"\' segment"));
-    auto typer = prepare_types_for_rbg(decl);
     res->type(typer, msg);
     if(not is_subtype(gmove, res->get_type()))
         throw msg.build_message("Segment \'"+name+"\' is of type \'"+expression_type_description(res->get_type())+"\' (should be move  expression)");

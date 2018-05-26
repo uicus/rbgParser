@@ -37,7 +37,7 @@
 
 
 #anySquare =
-    (up+down+left+right)^*
+    (up+down+left+right)*
 
 #pickUpPiece(piece) =
     {piece}[empty]
@@ -133,5 +133,5 @@
         allMoves(down;black;white)
         gameContinues
         allMoves(up;white;black)
-    )^*
+    )*
 

@@ -11,7 +11,7 @@
 #pieces = e, w, b
 #variables = 
 
-#anySquare = ((up^*+down^*)(left^*+right^*))
+#anySquare = ((up*+down*)(left*+right*))
 
 #move(me; opp; forward) =
     anySquare
@@ -21,4 +21,4 @@
     ({? forward} [me] + {! forward} -> {})
     ->opp~Player
 
-#rules = ->wPlayer (move(w;b;up) move(b;w;down))^*
+#rules = ->wPlayer (move(w;b;up) move(b;w;down))*

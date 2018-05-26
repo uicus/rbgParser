@@ -13,12 +13,14 @@ namespace rbg_parser{
 class slice_iterator;
 class messages_container;
 class token;
+class typing_machine;
 
 class tree_parser{
         std::vector<std::function<parser_result<std::unique_ptr<expression>>(slice_iterator& it, messages_container& msg)>> leaf_parsers;
         std::vector<std::function<parser_result<suffix>(slice_iterator& it, messages_container& msg)>> suffix_parsers;
         std::map<token_type, operator_info> operators;
         operator_info fallback_operator;
+        const typing_machine& t;
         std::map<token_type, bracket_info> brackets;
         suffix parse_suffix(slice_iterator& it, messages_container& msg);
         parser_result<std::unique_ptr<expression>> parse_infix(slice_iterator& it, messages_container& msg);
@@ -40,7 +42,7 @@ class tree_parser{
             std::vector<std::tuple<operator_info, slice_iterator, std::vector<std::unique_ptr<expression>>>>& expressions_stack,
             slice_iterator& it, messages_container& msg);
     public:
-        tree_parser(operator_info fallback_operator);
+        tree_parser(operator_info fallback_operator, const typing_machine& t);
         tree_parser(void)=delete;
         tree_parser(const tree_parser&)=delete;
         tree_parser& operator=(const tree_parser&)=delete;

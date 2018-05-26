@@ -41,6 +41,8 @@ expression_type bracketed_expression::get_type(void)const{
 }
 
 void bracketed_expression::type(const typing_machine& m, messages_container& msg){
+    if(t != not_typed_yet)
+        return;
     element->type(m, msg);
     auto result = m.evaluate_brackets(br, element->get_type(), s.t);
     if(result == error_type){

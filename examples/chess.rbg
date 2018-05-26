@@ -41,7 +41,7 @@
       + left
       + up
       + down
-    )^*
+    )*
 
 #anyNeighborSquare =
     (
@@ -57,18 +57,18 @@
 
 #diagonalLine =
     (
-        (up left{empty})^*up left
-      + (up right{empty})^*up right
-      + (down left{empty})^*down left
-      + (down right{empty})^*down right
+        (up left{empty})*up left
+      + (up right{empty})*up right
+      + (down left{empty})*down left
+      + (down right{empty})*down right
     )
 
 #parallelLine =
     (
-        (up{empty})^* up
-      + (down{empty})^* down
-      + (right{empty})^* right
-      + (left{empty})^* left
+        (up{empty})* up
+      + (down{empty})* down
+      + (right{empty})* right
+      + (left{empty})* left
     )
 
 #anyDirectionLine =
@@ -230,5 +230,5 @@
     (
         allMoves(up;down;white;black)
         allMoves(down;up;black;white)
-    )^*
+    )*
 

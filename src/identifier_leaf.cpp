@@ -18,6 +18,8 @@ expression_type identifier_leaf::get_type(void)const{
 }
 
 void identifier_leaf::type(const typing_machine& m, messages_container& msg){
+    if(identifier_type != not_typed_yet)
+        return;
     auto result = m.evaluate_identifier(name);
     if(result == error_type)
         throw msg.build_message(beginning_position.create_call_stack("Identifier \'"+name.to_string()+"\' not declared"));

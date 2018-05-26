@@ -12,7 +12,7 @@
 
 
 #anySquare =
-    (up+down+left+right)^*
+    (up+down+left+right)*
 
 #move(piece) = 
     (
@@ -43,5 +43,5 @@
     (
         moveAndWinCheck(x; o)
         moveAndWinCheck(o; x)
-    )^*
+    )*
 

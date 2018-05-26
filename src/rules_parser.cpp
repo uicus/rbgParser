@@ -6,31 +6,34 @@
 #include"identifier_leaf.hpp"
 #include"arrow_leaf.hpp"
 #include"sloth_leaf.hpp"
+#include"typing_machine.hpp"
 
 namespace rbg_parser{
 
 parser_result<suffix> parse_power(slice_iterator& it, messages_container& msg){
     if(not it.has_value())
         return failure<suffix>();
-    if(it.current(msg).get_type() == caret){
+    if(it.current(msg).get_type() == star){
+        it.next(msg);
+        return success(suffix{star_power,0});
+    }
+    else if(it.current(msg).get_type() == caret){
         it.next(msg);
         suffix result;
-        if(it.current(msg).get_type() == star)
-            result = suffix{star_power,0};
-        else if(it.current(msg).get_type() == number)
+        if(it.current(msg).get_type() == number)
             result = suffix{number_power, it.current(msg).get_value()};
         else if(it.current(msg).get_type() == greater)
             result = suffix{conditional_star_power, 0};
         else
-            throw msg.build_message(it.create_call_stack("Expected number, \'*\' or \'>\', encountered \'"+it.current(msg).to_string()+"\'"));
+            throw msg.build_message(it.create_call_stack("Expected number or \'>\', encountered \'"+it.current(msg).to_string()+"\'"));
         it.next(msg);
         return success(std::move(result));
     }
     return failure<suffix>();
 }
 
-std::unique_ptr<expression> parse_rules(slice_iterator& it, messages_container& msg){
-    tree_parser p(operator_info{concatenate, 90, false});
+std::unique_ptr<expression> parse_rules(slice_iterator& it, const typing_machine& t, messages_container& msg){
+    tree_parser p(operator_info{concatenate, 90, false}, t);
 
     p.add_suffix_parser(parse_power);
     p.add_leaf_parser(parse_integer_leaf);

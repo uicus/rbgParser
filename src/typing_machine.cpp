@@ -53,6 +53,17 @@ void typing_machine::add_bracket_interpretation(
         it->second.push_back(br_int);
 }
 
+void typing_machine::set_as_suffixable(expression_type t){
+    suffixable_types.insert(t);
+}
+
+bool typing_machine::can_have_suffix(expression_type t)const{
+    for(const auto el: suffixable_types)
+        if(is_subtype(el, t))
+            return true;
+    return false;
+}
+
 bool typing_machine::operator_types_match(const std::vector<expression_type>& elements, const possible_operator_interpretation& op_int)const{
     if(op_int.arity_matters){
         if(elements.size() != op_int.types_to_match.size())
@@ -100,6 +111,9 @@ expression_type typing_machine::evaluate_brackets(bracket_type t, expression_typ
 
 typing_machine prepare_types_for_rbg(const declarations& decls){
     typing_machine result(decls);
+
+    result.set_as_suffixable(gmove);
+
     result.add_operator_interpretation(no_operator, true, std::vector<expression_type>{}, pieces_sequence);
     result.add_operator_interpretation(concatenate, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(add, false, std::vector<expression_type>{gmove}, gmove);

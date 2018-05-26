@@ -11,6 +11,7 @@ class declarations;
 class typing_machine{
         std::map<operator_type, std::vector<possible_operator_interpretation>> operator_meanings;
         std::map<bracket_type, std::vector<possible_bracket_interpretation>> bracket_meanings;
+        std::set<expression_type> suffixable_types;
         const declarations& decls;
         bool operator_types_match(const std::vector<expression_type>& elements, const possible_operator_interpretation& op_int)const;
         bool bracket_types_match(expression_type element, suffix_type s, const possible_bracket_interpretation& br_int)const;
@@ -32,6 +33,8 @@ class typing_machine{
             expression_type type_to_match,
             std::set<suffix_type>&& suffixes_to_match,
             expression_type result);
+        void set_as_suffixable(expression_type t);
+        bool can_have_suffix(expression_type t)const;
         expression_type evaluate_operator_sequence(operator_type t, const std::vector<expression_type>& elements)const;
         expression_type evaluate_brackets(bracket_type t, expression_type element, suffix_type s)const;
 };

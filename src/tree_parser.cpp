@@ -4,15 +4,17 @@
 #include"token.hpp"
 #include"internal_node.hpp"
 #include"bracketed_expression.hpp"
+#include"typing_machine.hpp"
 #include<cassert>
 
 namespace rbg_parser{
 
-tree_parser::tree_parser(operator_info fallback_operator):
+tree_parser::tree_parser(operator_info fallback_operator, const typing_machine& t):
 leaf_parsers(),
 suffix_parsers(),
 operators(),
 fallback_operator(fallback_operator),
+t(t),
 brackets(){
 }
 
@@ -46,12 +48,17 @@ parser_result<std::unique_ptr<expression>> tree_parser::parse_infix(slice_iterat
         auto beginning = it;
         auto content = el(it,msg);
         if(content.is_success()){
-            auto su = parse_suffix(it, msg);
-            if(su.t != no_suffix){
-                bracketed_expression* naked_result = new bracketed_expression(std::move(beginning), content.move_value(), no_brackets);
-                naked_result->s = su;
-                std::unique_ptr<expression> result(naked_result);
-                return success(std::move(result));
+            content.get_value()->type(t, msg);
+            if(t.can_have_suffix(content.get_value()->get_type())){
+                auto su = parse_suffix(it, msg);
+                if(su.t != no_suffix){
+                    bracketed_expression* naked_result = new bracketed_expression(std::move(beginning), content.move_value(), no_brackets);
+                    naked_result->s = su;
+                    std::unique_ptr<expression> result(naked_result);
+                    return success(std::move(result));
+                }
+                else
+                    return content;
             }
             else
                 return content;
@@ -74,9 +81,13 @@ parser_result<std::unique_ptr<expression>> tree_parser::parse_bracketed_expressi
     if(it.current(msg).get_type() != info.ending)
         throw msg.build_message(it.create_call_stack("Expected corresponding \'"+info.expected_string+"\', encountered \'"+it.current(msg).to_string()+"\'"));
     it.next(msg);
-    auto su = parse_suffix(it,msg);
+    inside_expression->type(t, msg);
+    bool can_add_suffix = t.can_have_suffix(inside_expression->get_type());
     bracketed_expression* naked_result = new bracketed_expression(std::move(beginning), std::move(inside_expression), info.meaning);
-    naked_result->s = su;
+    if(can_add_suffix){
+        auto su = parse_suffix(it,msg);
+        naked_result->s = su;
+    }
     std::unique_ptr<expression> result(naked_result);
     return success(std::move(result));
 }

@@ -30,7 +30,7 @@ std::string star_move::to_rbg(uint indent)const{
     result += open_bracket_if_necessary(priority(),contained_move->priority());
     result += contained_move->to_rbg(indent);
     result += close_bracket_if_necessary(priority(),contained_move->priority());
-    result += "^*";
+    result += "*";
     return result;
 }
 
@@ -39,7 +39,7 @@ std::string star_move::to_rbg()const{
     result += open_bracket_if_necessary(priority(),contained_move->priority());
     result += contained_move->to_rbg();
     result += close_bracket_if_necessary(priority(),contained_move->priority());
-    result += "^*";
+    result += "*";
     return result;
 }
 
