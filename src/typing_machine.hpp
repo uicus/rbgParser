@@ -23,6 +23,7 @@ class typing_machine{
         typing_machine& operator=(typing_machine&&)=default;
         ~typing_machine(void)=default;
         expression_type evaluate_identifier(const token& t)const;
+        bool can_be_switch(const token& t)const;
         void add_operator_interpretation(
             operator_type t,
             bool arity_matters,

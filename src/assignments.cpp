@@ -19,7 +19,7 @@ std::string assignment::to_rbg(uint)const{
 
 std::string assignment::to_rbg()const{
     std::string result = "";
-    result += "[";
+    result += "[$ ";
     result += print_variable(left_side);
     result += "=";
     result += right_side->to_rbg();

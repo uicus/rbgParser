@@ -55,7 +55,7 @@ std::string keeper_switch::to_rbg(uint)const{
 }
 
 std::string keeper_switch::to_rbg()const{
-    return is_deterministic() ? "->" : "->*";
+    return is_deterministic() ? "->>" : "->*";
 }
 
 std::unique_ptr<game_move> keeper_switch::flatten(void){

@@ -1,14 +1,13 @@
 #include"bracketed_expression.hpp"
 #include"typing_machine.hpp"
 #include"arithmetic_expression.hpp"
-#include"condition_check.hpp"
+#include"move_check.hpp"
 #include"assignments.hpp"
 #include"offs.hpp"
 #include"ons.hpp"
 #include"shift.hpp"
 #include"power_move.hpp"
 #include"star_move.hpp"
-#include"conditional_star_move.hpp"
 
 namespace rbg_parser{
 
@@ -28,8 +27,6 @@ std::unique_ptr<game_move> bracketed_expression::append_suffix_if_possible(std::
             return std::unique_ptr<game_move>(new power_move(std::move(base_move), s.val));
         case star_power:
             return std::unique_ptr<game_move>(new star_move(std::move(base_move)));
-        case conditional_star_power:
-            return std::unique_ptr<game_move>(new conditional_star_move(std::move(base_move)));
         case no_suffix:
         default:
             return std::move(base_move);
@@ -62,14 +59,18 @@ std::unique_ptr<arithmetic_expression> bracketed_expression::get_arithmetic_expr
 
 std::unique_ptr<game_move> bracketed_expression::get_game_move(void)const{
     switch(t){
-        case gcondition:
+        case mcheck:
         switch(br){
             case condition_bracket:
-                return std::unique_ptr<game_move>(new condition_check(element->get_condition(), false));
+                return std::unique_ptr<game_move>(new move_check(element->get_game_move(), false));
             case negated_condition_bracket:
-                return std::unique_ptr<game_move>(new condition_check(element->get_condition(), true));
+                return std::unique_ptr<game_move>(new move_check(element->get_game_move(), true));
             default:
                 assert(false);
+        }
+        case arithmetic_check:
+        {
+            return element->get_game_move();
         }
         case assignments_move:
         {
@@ -88,10 +89,6 @@ std::unique_ptr<game_move> bracketed_expression::get_game_move(void)const{
         default:
             assert(false);
     }
-}
-
-std::unique_ptr<condition> bracketed_expression::get_condition(void)const{
-    return get_game_move();
 }
 
 }

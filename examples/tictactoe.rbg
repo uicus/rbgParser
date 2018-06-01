@@ -1,5 +1,5 @@
 #board =
-    rectangle2D(up,down,left,right,
+    rectangle(up,down,left,right,
         [empty, empty, empty]
         [empty, empty, empty]
         [empty, empty, empty]
@@ -33,13 +33,13 @@
 
 #moveAndWinCheck(me; opp) =
     (
-        {? winLine(opp~piece)} [me~player=0, opp~player=2]->{}
+        {? winLine(opp~piece)} [$ me~player=0, opp~player=2]->>{}
       + {! winLine(opp~piece)}
     )
     move(me~piece)->opp~player
 
-#rules =
-    [xplayer=1,oplayer=1]
+#rules = ->oplayer
+    [$ xplayer=1,oplayer=1]
     (
         moveAndWinCheck(x; o)
         moveAndWinCheck(o; x)

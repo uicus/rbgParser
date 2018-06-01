@@ -27,7 +27,6 @@ class identifier_leaf : public expression{
         token get_identifier(void)const override;
         std::vector<token> get_identifiers_sequence(void)const override;
         std::unique_ptr<game_move> get_game_move(void)const override;
-        std::unique_ptr<condition> get_condition(void)const override;
         std::unique_ptr<arithmetic_expression> get_arithmetic_expression(void)const override;
         friend parser_result<std::unique_ptr<expression>> parse_identifier_leaf(slice_iterator& it, messages_container& msg);
 };

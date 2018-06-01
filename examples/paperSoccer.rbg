@@ -53,7 +53,7 @@
     lineTemplate(  empty; notVisited;      empty;      empty; notVisited;      empty)
 
 #board =
-    rectangle2D(up,down,left,right,
+    rectangle(up,down,left,right,
         whiteGoalLine
         whiteFirstNonGoalLine
         whiteRegularLine
@@ -126,23 +126,23 @@
 #wholeMove =
     singleJump
     (
-        {? canMoveFurther}
         changeJustArrivedIntoVisited
-        singleJump->
-    )^>
+        singleJump->>
+    )*
+    {! canMoveFurther}
     changeJustArrivedIntoVisited
     (
-        {whiteGoal}[black=1]->{}
-      + {blackGoal}[white=1]->{}
-      + {empty}[black=0, white=0]
+        {whiteGoal}[$ black=1]->>{}
+      + {blackGoal}[$ white=1]->>{}
+      + {empty}[$ black=0, white=0]
     )
 
 #rules =
-    findBall
+    findBall ->white
     (
-        [white=1]
+        [$ white=1]
         wholeMove->black
-        [black=1]
+        [$ black=1]
         wholeMove->white
     )*
 

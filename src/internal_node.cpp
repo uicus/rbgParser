@@ -4,10 +4,8 @@
 #include"sum_arithmetic.hpp"
 #include"multiply_arithmetic.hpp"
 #include"sum.hpp"
-#include"conditional_sum.hpp"
 #include"concatenation.hpp"
 #include"arithmetic_comparison.hpp"
-#include"player_check.hpp"
 
 namespace rbg_parser{
 
@@ -94,7 +92,36 @@ std::unique_ptr<arithmetic_expression> internal_node::get_arithmetic_expression(
 }
 
 std::unique_ptr<game_move> internal_node::get_game_move(void)const{
-    assert(t == gmove);
+    assert(t == gmove || t == integer_comparison);
+    if(t == integer_comparison){
+        kind kind_of_comparison = eq;
+        switch(op){
+            case is_equal:
+                kind_of_comparison = eq;
+                break;
+            case is_nequal:
+                kind_of_comparison = neq;
+                break;
+            case is_less:
+                kind_of_comparison = le;
+                break;
+            case is_less_eq:
+                kind_of_comparison = leq;
+                break;
+            case is_greater:
+                kind_of_comparison = ge;
+                break;
+            case is_greater_eq:
+                kind_of_comparison = geq;
+                break;
+            default:
+                break;
+        }
+        return std::unique_ptr<game_move>(new arithmetic_comparison(
+            elements[0]->get_arithmetic_expression(),
+            kind_of_comparison,
+            elements[1]->get_arithmetic_expression()));
+    }
     std::vector<std::unique_ptr<game_move>> result;
     for(const auto& el: elements)
         result.push_back(el->get_game_move());
@@ -104,53 +131,6 @@ std::unique_ptr<game_move> internal_node::get_game_move(void)const{
             return std::unique_ptr<game_move>(new sum(std::move(result)));
         case concatenate:
             return std::unique_ptr<game_move>(new concatenation(std::move(result)));
-        case is_greater:
-            return std::unique_ptr<game_move>(new conditional_sum(std::move(result)));
-        case is_less:
-            return std::unique_ptr<game_move>(new conditional_sum(std::move(result),true));
-        default:
-            assert(false);
-    }
-}
-
-std::unique_ptr<condition> internal_node::get_condition(void)const{
-    switch(t){
-        case gmove:
-            return get_game_move();
-        case integer_comparison:
-        {
-            kind kind_of_comparison = eq;
-            switch(op){
-                case is_equal:
-                    kind_of_comparison = eq;
-                    break;
-                case is_nequal:
-                    kind_of_comparison = neq;
-                    break;
-                case is_less:
-                    kind_of_comparison = le;
-                    break;
-                case is_less_eq:
-                    kind_of_comparison = leq;
-                    break;
-                case is_greater:
-                    kind_of_comparison = ge;
-                    break;
-                case is_greater_eq:
-                    kind_of_comparison = geq;
-                    break;
-                default:
-                    break;
-            }
-            return std::unique_ptr<condition>(new arithmetic_comparison(
-                elements[0]->get_arithmetic_expression(),
-                kind_of_comparison,
-                elements[1]->get_arithmetic_expression()));
-        }
-        case player_comparison:
-            return std::unique_ptr<condition>(new player_check(elements[1]->get_identifier(), op==is_equal));
-        case reversed_player_comparison:
-            return std::unique_ptr<condition>(new player_check(elements[0]->get_identifier(), op==is_equal));
         default:
             assert(false);
     }

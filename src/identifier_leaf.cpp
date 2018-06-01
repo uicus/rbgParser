@@ -27,12 +27,10 @@ void identifier_leaf::type(const typing_machine& m, messages_container& msg){
 }
 
 token identifier_leaf::get_identifier(void)const{
-    assert(identifier_type != current_player);
     return name;
 }
 
 std::vector<token> identifier_leaf::get_identifiers_sequence(void)const{
-    assert(identifier_type != current_player);
     std::vector<token> result{name};
     return std::move(result);
 }
@@ -43,13 +41,7 @@ std::unique_ptr<game_move> identifier_leaf::get_game_move(void)const{
 }
 
 std::unique_ptr<arithmetic_expression> identifier_leaf::get_arithmetic_expression(void)const{
-    assert(identifier_type != current_player);
     return std::unique_ptr<arithmetic_expression>(new variable_arithmetic(name));
-}
-
-std::unique_ptr<condition> identifier_leaf::get_condition(void)const{
-    assert(identifier_type == shift_move);
-    return get_game_move();
 }
 
 parser_result<std::unique_ptr<expression>> parse_identifier_leaf(slice_iterator& it, messages_container& msg){
@@ -57,7 +49,7 @@ parser_result<std::unique_ptr<expression>> parse_identifier_leaf(slice_iterator&
     auto beginning = it;
     if(not it.has_value())
         return failure<std::unique_ptr<expression>>();
-    else if(it.current(msg).get_type() != identifier && it.current(msg).get_type() != player && it.current(msg).get_type() != star)
+    else if(it.current(msg).get_type() != identifier && it.current(msg).get_type() != player)
         return failure<std::unique_ptr<expression>>();
     std::unique_ptr<expression> result(new identifier_leaf(std::move(beginning), it.current(msg)));
     it.next(msg);

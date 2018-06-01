@@ -18,6 +18,8 @@ enum bracket_type{
     condition_bracket,
     negated_condition_bracket,
     modifier_bracket,
+    assignment_bracket,
+    comparison_bracket,
     on_bracket,
 };
 
@@ -32,17 +34,15 @@ enum expression_type{
     variable,
     piece_name,
     player_name,
-    current_player,
     edge_name,
     // compund:
     single_assignment,
     assignments_sequence,
     pieces_sequence,
     integer_comparison,
-    player_comparison,
-    reversed_player_comparison,
     arithmetics,
-    gcondition,
+    mcheck,
+    arithmetic_check,
     shift_move,
     offs_move,
     on_move,
@@ -85,7 +85,6 @@ struct bracket_info{
 enum suffix_type{
     no_suffix = 0,
     star_power,
-    conditional_star_power,
     number_power,
 };
 
@@ -111,7 +110,6 @@ struct possible_bracket_interpretation{
 class typing_machine;
 class messages_container;
 class message;
-class condition;
 class game_move;
 class arithmetic_expression;
 
@@ -136,7 +134,6 @@ class expression{
         virtual std::pair<token, std::unique_ptr<arithmetic_expression>> get_assignment(void)const{assert(false);};
         virtual std::unique_ptr<arithmetic_expression> get_arithmetic_expression(void)const{assert(false);};
         virtual std::unique_ptr<game_move> get_game_move(void)const{assert(false);};
-        virtual std::unique_ptr<condition> get_condition(void)const{assert(false);};
 };
 
 }

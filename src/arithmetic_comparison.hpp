@@ -1,7 +1,7 @@
 #ifndef ARITHMETIC_COMPARISON
 #define ARITHMETIC_COMPARISON
 
-#include"condition.hpp"
+#include"game_move.hpp"
 #include"token.hpp"
 #include"abstract_dispatcher.hpp"
 #include"arithmetic_expression.hpp"
@@ -18,7 +18,7 @@ enum kind{
     geq
 };
 
-class arithmetic_comparison : public condition{
+class arithmetic_comparison : public game_move{
         std::unique_ptr<arithmetic_expression> left_side;
         kind kind_of_comparison;
         std::unique_ptr<arithmetic_expression> right_side;
@@ -37,11 +37,11 @@ class arithmetic_comparison : public condition{
         const arithmetic_expression* get_left_side(void)const;
         kind get_kind_of_comparison(void)const;
         const arithmetic_expression* get_right_side(void)const;
-        std::unique_ptr<condition> condition_simplify(void)override;
+        std::unique_ptr<game_move> simplify(void)override;
         uint priority(void)const override{return 3;};
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
-        std::unique_ptr<condition> condition_flatten(void)override;
+        std::unique_ptr<game_move> flatten(void)override;
 };
 
 }

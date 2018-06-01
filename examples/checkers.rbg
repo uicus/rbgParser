@@ -15,7 +15,7 @@
     [empty, piece, empty, piece, empty, piece, empty, piece]
 
 #board =
-    rectangle2D(up,down,left,right,
+    rectangle(up,down,left,right,
         line(blackMan)
         offsetLine(blackMan)
         line(blackMan)
@@ -72,13 +72,14 @@
 #checkForPromotion(color; forwardDirection) =
     (
         {? forwardDirection}[color~Man]
-      > [color~King]
+      + {! forwardDirection}[color~King]
     )
 
 #capturingManMove(color; opponentColor; forwardDirection) =
     pickUpPiece(color~Man)
-    potentialJump(opponentColor; [empty]; forwardDirection)->
-    (potentialJump(opponentColor; [empty]; forwardDirection)->)^>
+    potentialJump(opponentColor; [empty]; forwardDirection)->>
+    (potentialJump(opponentColor; [empty]; forwardDirection)->>)*
+    {! potentialJump(opponentColor;;forwardDirection)}
     {empty}
 
 #nonCapturingKingMove(color) =
@@ -93,8 +94,9 @@
 
 #capturingKingMove(color; opponentColor) =
     pickUpPiece(color~King)
-    potentialJumpAround(opponentColor; [empty])->
-    (potentialJumpAround(opponentColor; [empty])->)^>
+    potentialJumpAround(opponentColor; [empty])->>
+    (potentialJumpAround(opponentColor; [empty])->>)*
+    {! potentialJumparound(opponentColor;)}
     placePiece(color~King)
 
 #canCapture(color; opponentColor; forwardDirection) =
@@ -105,8 +107,9 @@
     )
 
 #allMoves(forwardDirection; color; opponentColor) =
-    [opponentColor=1, color=0]
+    [$ opponentColor=1, color=0]
     (
+        {! canCapture(color; opponentColor; forwardDirection)}
         (
             anySquare
             nonCapturingManMove(color; forwardDirection)
@@ -114,20 +117,20 @@
           + anySquare
             nonCapturingKingMove(color)
         )
-      > (
+      + (
             anySquare
             capturingManMove(color; opponentColor;forwardDirection)
             checkForPromotion(color; forwardDirection)
           + anySquare
             capturingKingMove(color; opponentColor)
         )
-    )[turn=turn+1]->opponentColor
+    )[$ turn=turn+1]->opponentColor
 
 #gameContinues =
-    [white=0, black=0]
-    {? turn<=180}
+    [$ white=0, black=0]
+    {$ turn<=180}
 
-#rules =
+#rules = ->black
     (
         gameContinues
         allMoves(down;black;white)

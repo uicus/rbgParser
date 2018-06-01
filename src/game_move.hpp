@@ -7,20 +7,21 @@
 
 #include"straightness_helpers.hpp"
 #include"token.hpp"
-#include"condition.hpp"
 
 namespace rbg_parser{
 
 class abstract_dispatcher;
 // interface
-class game_move : public condition{
+class game_move{
     public:
         virtual ~game_move(void)=default;
         virtual bool modifies(void)const{return true;}
         virtual std::unique_ptr<game_move> flatten(void)=0;
-        std::unique_ptr<condition> condition_flatten(void)override{return flatten();};
         virtual std::unique_ptr<game_move> simplify(void)=0;
-        std::unique_ptr<condition> condition_simplify(void)override{return simplify();};
+        virtual void accept(abstract_dispatcher& dispatcher)const=0;
+        virtual uint priority(void)const=0; // being of higher priority containg lower ones requires surrounding them with brackets
+        virtual std::string to_rbg(uint indent)const=0;
+        virtual std::string to_rbg()const=0;
         virtual void gather_concatenation_elements(
             std::vector<std::unique_ptr<game_move>>& elements,
             std::vector<std::unique_ptr<game_move>>& next_block_elements);

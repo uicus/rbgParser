@@ -83,8 +83,10 @@ std::string tokens_table[] = {
 "(",
 "{?",
 "{!",
+"{$",
 ")",
 "[",
+"[$",
 "]",
 "{",
 "}",
@@ -98,8 +100,10 @@ std::string tokens_table[] = {
 ";",
 ":",
 "@",
+"$",
 "=",
 "->",
+"->>",
 "!",
 "?",
 "!=",
@@ -122,8 +126,10 @@ std::string token::to_string(void)const{
         case left_round_bracket:
         case left_question_bracket:
         case left_exclamation_bracket:
+        case left_dollar_bracket:
         case right_round_bracket:
         case left_square_bracket:
+        case left_dollar_square_bracket:
         case right_square_bracket:
         case left_curly_bracket:
         case right_curly_bracket:
@@ -137,8 +143,10 @@ std::string token::to_string(void)const{
         case semicolon:
         case colon:
         case at_sign:
+        case dollar:
         case equal:
         case arrow:
+        case keeper_arrow:
         case exclamation:
         case question:
         case not_equal:
@@ -250,10 +258,16 @@ void token::reverse_comparison(void){
 token& token::operator+=(const token& t){
     if(type == minus && t.type == greater)
         type = arrow;
+    else if(type == arrow && t.type == greater)
+        type = keeper_arrow;
     else if(type == left_curly_bracket && t.type == question)
         type = left_question_bracket;
     else if(type == left_curly_bracket && t.type == exclamation)
         type = left_exclamation_bracket;
+    else if(type == left_curly_bracket && t.type == dollar)
+        type = left_dollar_bracket;
+    else if(type == left_square_bracket && t.type == dollar)
+        type = left_dollar_square_bracket;
     else if(type == less && t.type == equal)
         type = less_equal;
     else if(type == greater && t.type == equal)

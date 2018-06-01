@@ -8,10 +8,6 @@ decls(decls){
 }
 
 expression_type typing_machine::evaluate_identifier(const token& t)const{
-    if(t.get_type() == player)
-        return current_player;
-    if(t.get_type() == star)
-        return player_name;
     const auto& pieces = decls.get_legal_pieces();
     if(pieces.find(t) != pieces.end())
         return piece_name;
@@ -25,6 +21,11 @@ expression_type typing_machine::evaluate_identifier(const token& t)const{
     if(edges.find(t) != edges.end())
         return shift_move;
     return error_type;
+}
+
+bool typing_machine::can_be_switch(const token& t)const{
+    const auto& players = decls.get_legal_players();
+    return players.find(t) != players.end();
 }
 
 void typing_machine::add_operator_interpretation(
@@ -123,32 +124,22 @@ typing_machine prepare_types_for_rbg(const declarations& decls){
     result.add_operator_interpretation(separate, false, std::vector<expression_type>{single_assignment}, assignments_sequence);
     result.add_operator_interpretation(assign, true, std::vector<expression_type>{variable, arithmetics}, single_assignment);
     result.add_operator_interpretation(is_equal, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
-    result.add_operator_interpretation(is_equal, true, std::vector<expression_type>{current_player, player_name}, player_comparison);
-    result.add_operator_interpretation(is_equal, true, std::vector<expression_type>{player_name, current_player}, reversed_player_comparison);
     result.add_operator_interpretation(is_nequal, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
-    result.add_operator_interpretation(is_nequal, true, std::vector<expression_type>{current_player, player_name}, player_comparison);
-    result.add_operator_interpretation(is_nequal, true, std::vector<expression_type>{player_name, current_player}, reversed_player_comparison);
     result.add_operator_interpretation(is_less, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
-    result.add_operator_interpretation(is_less, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(is_less_eq, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
     result.add_operator_interpretation(is_greater, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
-    result.add_operator_interpretation(is_greater, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(is_greater_eq, true, std::vector<expression_type>{arithmetics, arithmetics}, integer_comparison);
 
-    result.add_bracket_interpretation(condition_bracket, gmove, std::set<suffix_type>{no_suffix}, gcondition);
-    result.add_bracket_interpretation(condition_bracket, integer_comparison, std::set<suffix_type>{no_suffix}, gcondition);
-    result.add_bracket_interpretation(condition_bracket, player_comparison, std::set<suffix_type>{no_suffix}, gcondition);
-    result.add_bracket_interpretation(condition_bracket, reversed_player_comparison, std::set<suffix_type>{no_suffix}, gcondition);
-    result.add_bracket_interpretation(negated_condition_bracket, gmove, std::set<suffix_type>{no_suffix}, gcondition);
-    result.add_bracket_interpretation(negated_condition_bracket, integer_comparison, std::set<suffix_type>{no_suffix}, gcondition);
-    result.add_bracket_interpretation(negated_condition_bracket, player_comparison, std::set<suffix_type>{no_suffix}, gcondition);
-    result.add_bracket_interpretation(negated_condition_bracket, reversed_player_comparison, std::set<suffix_type>{no_suffix}, gcondition);
-    result.add_bracket_interpretation(modifier_bracket, assignments_sequence, std::set<suffix_type>{no_suffix}, assignments_move);
+    result.add_bracket_interpretation(condition_bracket, gmove, std::set<suffix_type>{no_suffix}, mcheck);
+    result.add_bracket_interpretation(negated_condition_bracket, gmove, std::set<suffix_type>{no_suffix}, mcheck);
+    result.add_bracket_interpretation(comparison_bracket, integer_comparison, std::set<suffix_type>{no_suffix}, arithmetic_check);
+    result.add_bracket_interpretation(assignment_bracket, assignments_sequence, std::set<suffix_type>{no_suffix}, assignments_move);
     result.add_bracket_interpretation(modifier_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, offs_move);
-    result.add_bracket_interpretation(standard_bracket, gmove, std::set<suffix_type>{no_suffix, star_power, number_power, conditional_star_power}, gmove);
-    result.add_bracket_interpretation(no_brackets, gmove, std::set<suffix_type>{no_suffix, star_power, number_power, conditional_star_power}, gmove);
+    result.add_bracket_interpretation(standard_bracket, gmove, std::set<suffix_type>{no_suffix, star_power, number_power}, gmove);
+    result.add_bracket_interpretation(no_brackets, gmove, std::set<suffix_type>{no_suffix, star_power, number_power}, gmove);
     result.add_bracket_interpretation(standard_bracket, arithmetics, std::set<suffix_type>{no_suffix}, arithmetics);
     result.add_bracket_interpretation(on_bracket, pieces_sequence, std::set<suffix_type>{no_suffix}, on_move);
+
     return result;
 }
 

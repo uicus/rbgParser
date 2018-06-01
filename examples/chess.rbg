@@ -11,7 +11,7 @@
     [empty, empty, empty, empty, empty, empty, empty, empty]
 
 #board =
-    rectangle2D(up,down,left,right,
+    rectangle(up,down,left,right,
         backLine(black)
         pawnLine(black)
         emptyLine
@@ -112,7 +112,7 @@
 
 #standardKingMove(color; opponentColor) =
     standardMove(color~King; anyNeighborSquare; opponentColor)
-    [color~KingMoved=1]
+    [$ color~KingMoved=1]
 
 #isAttackedByBishop(opponentColor) = diagonalLine{opponentColor~Bishop}
 #isAttackedByRook(opponentColor) = parallelLine{anyRook(opponentColor)}
@@ -145,7 +145,7 @@
     )
 
 #castlingKingMove(forwardDirection; color; opponentColor) =
-    {? color~KingMoved==0}
+    {$ color~KingMoved==0}
     pickUpPiece(color~King)
     (
         (right{empty}isNotAttackedBy(opponentColor; forwardDirection))^2
@@ -159,7 +159,7 @@
         right^3
     )
     [color~RookMoved]
-    [color~KingMoved=1]
+    [$ color~KingMoved=1]
 
 #kingMove(forwardDirection; color; opponentColor) =
     (
@@ -181,7 +181,7 @@
         {! backDirection^2}
         (forwardDirection{empty})^2
         [color~Pawn]
-        [pawnDoubleMove=1]
+        [$ pawnDoubleMove=1]
       + (
             forwardDirection{empty}
           + (right forwardDirection+left forwardDirection){singleColorPieces(opponentColor)}
@@ -190,7 +190,7 @@
     )
 
 #enPassantPawnMove(forwardDirection; color) =
-    {? pawnDoubleMove==1}
+    {$ pawnDoubleMove==1}
     (
         // we are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so don't check it
         right pickUpPiece(color~Pawn)
@@ -200,13 +200,13 @@
     )
     [empty]
     forwardDirection
-    [pawnDoubleMove=0]
+    [$ pawnDoubleMove=0]
     [color~Pawn]
 
 #allMoves(forwardDirection; backDirection; color; opponentColor) =
     (
         anySquare
-        [pawnDoubleMove=0]
+        [$ pawnDoubleMove=0]
         (
             bishopMove(color; opponentColor)
           + rookMove(color; opponentColor)
@@ -218,12 +218,12 @@
       + enPassantPawnMove(forwardDirection; color)
     ){! checked(color; opponentColor; forwardDirection)}
     (
-        {? checked(opponentColor; color; backDirection)}[opponentColor=0,color=10]
-      > [color=5,opponentColor=5]
+        {? checked(opponentColor; color; backDirection)}[$ opponentColor=0,color=10]
+      + {! checked(opponentColor; color; backDirection)}[$ color=5,opponentColor=5]
     )
     (
-        {? turn>200}->{}
-      > [turn=turn+1]->opponentColor
+        {$ turn>200}->>{}
+      + {$ turn<=200}[$ turn=turn+1]->opponentColor
     )
 
 #rules = ->white

@@ -22,6 +22,10 @@ std::string bracket_type_description(bracket_type t){
             return "negated condtition brackets";
         case modifier_bracket:
             return "modifier bracket";
+        case assignment_bracket:
+            return "assignment bracket";
+        case comparison_bracket:
+            return "comparison bracket";
         case on_bracket:
             return "curly on bracket";
         default:
@@ -45,8 +49,6 @@ std::string expression_type_description(expression_type t){
             return "piece name";
         case player_name:
             return "player name";
-        case current_player:
-            return "current player variable";
         case edge_name:
             return "edge name";
         case single_assignment:
@@ -57,13 +59,12 @@ std::string expression_type_description(expression_type t){
             return "pieces sequence";
         case integer_comparison:
             return "integer comparison";
-        case player_comparison:
-        case reversed_player_comparison:
-            return "player comparison";
         case arithmetics:
             return "arithmetic expression";
-        case gcondition:
-            return "condition expression";
+        case mcheck:
+            return "move check";
+        case arithmetic_check:
+            return "arithmetic check";
         case shift_move:
             return "shift move";
         case offs_move:
@@ -100,7 +101,8 @@ bool is_subtype(expression_type t, expression_type sub_t){
             return sub_t == single_assignment
                 || sub_t == assignments_sequence;
         case gmove:
-            return sub_t == gcondition
+            return sub_t == mcheck
+                || sub_t == arithmetic_check
                 || sub_t == shift_move
                 || sub_t == on_move
                 || sub_t == offs_move
@@ -148,8 +150,6 @@ std::string suffix_type_description(suffix_type t){
             return "no suffix";
         case star_power:
             return "star";
-        case conditional_star_power:
-            return "conditional star";
         case number_power:
             return "number power";
         default:

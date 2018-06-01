@@ -21,7 +21,7 @@ std::string arithmetic_comparison::to_rbg(uint)const{
 }
 
 std::string arithmetic_comparison::to_rbg()const{
-    std::string result = "";
+    std::string result = "{$ ";
     result += left_side->to_rbg();
     switch(kind_of_comparison){
         case eq:
@@ -46,19 +46,20 @@ std::string arithmetic_comparison::to_rbg()const{
             break;
     }
     result += right_side->to_rbg();
+    result += "}";
     return result;
 }
 
-std::unique_ptr<condition> arithmetic_comparison::condition_simplify(void){
+std::unique_ptr<game_move> arithmetic_comparison::simplify(void){
     auto new_left_side = left_side->simplify();
     auto new_right_side = right_side->simplify();
-    return std::unique_ptr<condition>(new arithmetic_comparison(std::move(new_left_side), kind_of_comparison, std::move(new_right_side)));
+    return std::unique_ptr<game_move>(new arithmetic_comparison(std::move(new_left_side), kind_of_comparison, std::move(new_right_side)));
 }
 
-std::unique_ptr<condition> arithmetic_comparison::condition_flatten(void){
-    auto new_left_side = left_side->simplify();
-    auto new_right_side = right_side->simplify();
-    return std::unique_ptr<condition>(new arithmetic_comparison(std::move(new_left_side), kind_of_comparison, std::move(new_right_side)));
+std::unique_ptr<game_move> arithmetic_comparison::flatten(void){
+    auto new_left_side = left_side->flatten();
+    auto new_right_side = right_side->flatten();
+    return std::unique_ptr<game_move>(new arithmetic_comparison(std::move(new_left_side), kind_of_comparison, std::move(new_right_side)));
 }
 
 const arithmetic_expression* arithmetic_comparison::get_left_side(void)const{
