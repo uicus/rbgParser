@@ -119,7 +119,9 @@ typing_machine prepare_types_for_rbg(const declarations& decls){
     result.add_operator_interpretation(concatenate, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(add, false, std::vector<expression_type>{gmove}, gmove);
     result.add_operator_interpretation(add, false, std::vector<expression_type>{arithmetics}, arithmetics);
+    result.add_operator_interpretation(subtract, false, std::vector<expression_type>{arithmetics}, arithmetics);
     result.add_operator_interpretation(multiply, false, std::vector<expression_type>{arithmetics}, arithmetics);
+    result.add_operator_interpretation(divide, false, std::vector<expression_type>{arithmetics}, arithmetics);
     result.add_operator_interpretation(separate, false, std::vector<expression_type>{piece_name}, pieces_sequence);
     result.add_operator_interpretation(separate, false, std::vector<expression_type>{single_assignment}, assignments_sequence);
     result.add_operator_interpretation(assign, true, std::vector<expression_type>{variable, arithmetics}, single_assignment);

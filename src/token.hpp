@@ -25,6 +25,7 @@ enum token_type{
     minus,
     plus,
     caret,
+    slash,
     star,
     comma,
     semicolon,

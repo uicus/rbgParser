@@ -121,8 +121,12 @@ std::string operator_type_description(operator_type t){
             return "concatenation";
         case add:
             return "addition";
+        case subtract:
+            return "subtraction";
         case multiply:
             return "multiplication";
+        case divide:
+            return "division";
         case separate:
             return "comma";
         case assign:

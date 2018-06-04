@@ -1,8 +1,7 @@
 #include"internal_node.hpp"
 #include"typing_machine.hpp"
 #include"arithmetic_expression.hpp"
-#include"sum_arithmetic.hpp"
-#include"multiply_arithmetic.hpp"
+#include"arithmetic_operation.hpp"
 #include"sum.hpp"
 #include"concatenation.hpp"
 #include"arithmetic_comparison.hpp"
@@ -83,9 +82,13 @@ std::unique_ptr<arithmetic_expression> internal_node::get_arithmetic_expression(
         result.push_back(el->get_arithmetic_expression());
     switch(op){
         case add:
-            return std::unique_ptr<arithmetic_expression>(new sum_arithmetic(std::move(result)));
+            return std::unique_ptr<arithmetic_expression>(new arithmetic_operation(std::move(result), addition));
+        case subtract:
+            return std::unique_ptr<arithmetic_expression>(new arithmetic_operation(std::move(result), subtraction));
         case multiply:
-            return std::unique_ptr<arithmetic_expression>(new multiply_arithmetic(std::move(result)));
+            return std::unique_ptr<arithmetic_expression>(new arithmetic_operation(std::move(result), multiplication));
+        case divide:
+            return std::unique_ptr<arithmetic_expression>(new arithmetic_operation(std::move(result), division));
         default:
             assert(false);
     }

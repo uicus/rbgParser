@@ -18,8 +18,7 @@ class modifier_block;
 class arithmetic_comparison;
 class integer_arithmetic;
 class variable_arithmetic;
-class multiply_arithmetic;
-class sum_arithmetic;
+class arithmetic_operation;
 
 class abstract_dispatcher{
     public:
@@ -38,8 +37,7 @@ class abstract_dispatcher{
         virtual void dispatch(const arithmetic_comparison&)=0;
         virtual void dispatch(const integer_arithmetic&)=0;
         virtual void dispatch(const variable_arithmetic&)=0;
-        virtual void dispatch(const multiply_arithmetic&)=0;
-        virtual void dispatch(const sum_arithmetic&)=0;
+        virtual void dispatch(const arithmetic_operation&)=0;
         virtual ~abstract_dispatcher(void)=default;
 };
 
