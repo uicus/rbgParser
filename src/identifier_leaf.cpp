@@ -49,7 +49,7 @@ parser_result<std::unique_ptr<expression>> parse_identifier_leaf(slice_iterator&
     auto beginning = it;
     if(not it.has_value())
         return failure<std::unique_ptr<expression>>();
-    else if(it.current(msg).get_type() != identifier && it.current(msg).get_type() != player)
+    else if(it.current(msg).get_type() != identifier)
         return failure<std::unique_ptr<expression>>();
     std::unique_ptr<expression> result(new identifier_leaf(std::move(beginning), it.current(msg)));
     it.next(msg);

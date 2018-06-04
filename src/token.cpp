@@ -112,13 +112,12 @@ std::string tokens_table[] = {
 "<=",
 ">",
 ">=",
-"player",
-"game",
 "players",
 "pieces",
 "variables",
 "rules",
 "board",
+"rectangle",
 };
 
 std::string token::to_string(void)const{
@@ -155,13 +154,12 @@ std::string token::to_string(void)const{
         case less_equal:
         case greater:
         case greater_equal:
-        case player:
-        case game:
         case players:
         case pieces:
         case variables:
         case rules:
         case board:
+        case rectangle:
             return tokens_table[type];
         case number:
             return std::to_string(number_value);
@@ -276,9 +274,9 @@ token& token::operator+=(const token& t){
         type = double_equal;
     else if(type == exclamation && t.type == equal)
         type = not_equal;
-    else if(type == identifier && t.type >= player){
+    else if(type == identifier && t.type >= players){
         std::string result_string = (*contained_string) + t.to_string();
-        for(uint i=player;i<=board;++i)
+        for(uint i=players;i<=rectangle;++i)
             if(result_string == tokens_table[i]){
                 type = token_type(i);
                 delete contained_string;
@@ -286,10 +284,10 @@ token& token::operator+=(const token& t){
         if(type == identifier)
             (*contained_string) = std::move(result_string);
     }
-    else if(type >= player && type <= board){
+    else if(type >= players && type <= rectangle){
         std::string result_string = to_string() + t.to_string();
         bool not_identifier = false;
-        for(uint i=player;i<=board;++i)
+        for(uint i=players;i<=rectangle;++i)
             if(result_string == tokens_table[i]){
                 type = token_type(i);
                 not_identifier = true;

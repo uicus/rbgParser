@@ -86,7 +86,7 @@ graph rectangle2D::build_graph(messages_container&)const{
 }
 
 parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& decl, slice_iterator& it, messages_container& msg){
-    if(not it.has_value() or it.current(msg).get_type() != identifier or it.current(msg).get_string_content() != "rectangle")
+    if(not it.has_value() or it.current(msg).get_type() != rectangle)
         return failure<std::unique_ptr<graph_builder>>();
     it.next(msg);
     if(it.current(msg).get_type() != left_round_bracket)
@@ -98,7 +98,7 @@ parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& de
     result.parse_edge_argument(&rectangle2D::left,decl,it,msg);
     result.parse_edge_argument(&rectangle2D::right,decl,it,msg);
     if(not result.parse_boardline(decl,it,msg))
-        throw msg.build_message(it.create_call_stack("rectangle requires at least one boardline"));
+        throw msg.build_message(it.create_call_stack("\'rectangle\' generator requires at least one boardline"));
     while(result.parse_boardline(decl,it,msg));
     if(it.current(msg).get_type() != right_round_bracket)
         throw msg.build_message(it.create_call_stack("Expected \')\', encountered \'"+it.current(msg).to_string()+"\'"));
