@@ -3,23 +3,6 @@
 
 namespace rbg_parser{
 
-token parse_edge_name(declarations& decl, slice_iterator& it, messages_container& msg){
-    if(it.current(msg).get_type() != identifier)
-        throw msg.build_message(it.create_call_stack("Expected edge label, encountered \'"+it.current(msg).to_string()+"\'"));
-    auto label_name = it.current(msg);
-    if(decl.get_legal_pieces().find(label_name) != decl.get_legal_pieces().end())
-        throw msg.build_message(it.create_call_stack("Edge label \'"+it.current(msg).to_string()+"\' was already declared as piece"));
-    if(decl.get_legal_players().find(label_name) != decl.get_legal_players().end())
-        throw msg.build_message(it.create_call_stack("Edge label \'"+it.current(msg).to_string()+"\' was already declared as player"));
-    if(decl.get_legal_variables().find(label_name) != decl.get_legal_variables().end())
-        throw msg.build_message(it.create_call_stack("Edge label \'"+it.current(msg).to_string()+"\' was already declared as variable"));
-    if(decl.get_legal_edges().find(label_name) != decl.get_legal_edges().end())
-        throw msg.build_message(it.create_call_stack("Edge label \'"+it.current(msg).to_string()+"\' was already declared"));
-    decl.add_edge_label(label_name);
-    it.next(msg);
-    return label_name;
-}
-
 void rectangle2D::parse_edge_argument(token rectangle2D::*direction, declarations& decl, slice_iterator& it, messages_container& msg){
     this->*direction = parse_edge_name(decl,it,msg);
     if(it.current(msg).get_type() != comma)
@@ -32,13 +15,11 @@ bool rectangle2D::add_line_if_aligned(std::vector<token>&& line){
         starting_pieces.push_back(std::move(line));
         return true;
     }
+    else if(starting_pieces.back().size() != line.size())
+        return false;
     else{
-        if(starting_pieces.back().size() != line.size())
-            return false;
-        else{
-            starting_pieces.push_back(std::move(line));
-            return true;
-        }
+        starting_pieces.push_back(std::move(line));
+        return true;
     }
 }
 

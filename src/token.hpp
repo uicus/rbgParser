@@ -48,6 +48,7 @@ enum token_type{
     variables,
     rules,
     board,
+    hexagon,
     rectangle,
     number,
     identifier, // must third-to-last

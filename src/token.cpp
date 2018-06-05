@@ -118,6 +118,7 @@ std::string tokens_table[] = {
 "variables",
 "rules",
 "board",
+"hexagon",
 "rectangle",
 };
 
@@ -161,6 +162,7 @@ std::string token::to_string(void)const{
         case variables:
         case rules:
         case board:
+        case hexagon:
         case rectangle:
             return tokens_table[type];
         case number:
