@@ -147,8 +147,8 @@
     ->white
     (
         move(w;white)
-        [$white=10, $black=0] ->black
+        [$white=10, black=0] ->black
         move(b;black)
-        [$white=0, $black=10] ->white
+        [$white=0, black=10] ->white
     )*
 

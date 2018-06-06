@@ -84,16 +84,16 @@
  )
 
 #move(color; oppColor; piece) = (
-    anySquare {e} {!m0n1 {e}} ->
+    anySquare {e} {!m0n1 {e}} ->>
     (
-        {? winat(piece)}[$color=10, $oppColor=0]->{}
+        {? winat(piece)}[$color=10, oppColor=0]->>{}
       + {!winat(piece)}
     )
     [piece]
   )
 
 #rules =
-    [$red=5, $yellow=5]
+    [$red=5, yellow=5]
     ->red
     (
         move(red;yellow;r) ->yellow

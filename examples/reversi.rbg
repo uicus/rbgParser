@@ -104,8 +104,8 @@
         oppositedirection
         ({pla~piece} oppositedirection)*
         {empty}
-        >
-        {empty,wpiece,bpiece}
+        +
+        {! swapdirectionpossible(pla; opp; direction; oppositedirection)}
     )
 
 #swapdirections (pla;opp) =
@@ -123,19 +123,19 @@
 #movepossible (pla; opp) =
     (
         swapdirectionpossible(pla; opp; mn10; m10)
-        >
+        +
         swapdirectionpossible(pla;opp;m10;mn10)
-        >
+        +
         swapdirectionpossible(pla;opp;m01;m0n1)
-        >
+        +
         swapdirectionpossible(pla;opp;m0n1;m01)
-        >
+        +
         swapdirectionpossible(pla;opp;mn1n1;m11)
-        >
+        +
         swapdirectionpossible(pla;opp;m11;mn1n1)
-        >
+        +
         swapdirectionpossible(pla;opp;m1n1;mn11)
-        >
+        +
         swapdirectionpossible(pla;opp;mn11;m1n1)
     )
 
@@ -144,21 +144,21 @@
         anySquare
         {empty}
         {?  movepossible(pla;opp)}
-        ->
+        ->>
         swapdirections(pla;  opp)
         [pla~piece]
-        >
-        //{! anySquare {empty} movepossible(pla;opp)}
+        +
+        {! anySquare {empty} movepossible(pla;opp)}
         {? anySquare {empty} movepossible(opp;pla)}
     )
 
 #setpoints =
     (
-            {? $wpiece > $bpiece} [$bplayer = 0][$wplayer = 100]
-            >
-            {? $wpiece < $bpiece} [$bplayer = 100][$wplayer = 0]
-            >
-            [$bplayer = 50][$wplayer = 50]
+            {$ wpiece > bpiece} [$bplayer = 0][$wplayer = 100]
+            +
+            {$ wpiece < bpiece} [$bplayer = 100][$wplayer = 0]
+            +
+            {$ wpiece == bpiece} [$bplayer = 50][$wplayer = 50]
     )
 
 
