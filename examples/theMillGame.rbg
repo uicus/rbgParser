@@ -1,0 +1,117 @@
+#pieces = empty, whitePiece, blackPiece
+#players = white(1), black(1)
+#variables =
+
+#circleSegment(
+    v;id1;id2;id3;previousOnCircle;
+    parallelDirection1;parallelDirection2;
+    insideDirection;outsideDirection;
+    outsideCircleNeighbor;insideCircleNeighbor) =
+        v~id1 [empty] {parallelDirection1: v~id2, insideDirection: v~previousOnCircle}
+        v~id2 [empty] {parallelDirection1: v~id3, parallelDirection2: v~id1 insideCircleNeighbor outsideCircleNeighbor}
+
+#circle(
+    name;
+    outsideLeft;outsideUp;outsideRight;outsideDown;
+    insideLeft;insideUp;insideRight;insideDown) =
+        circleSegment(name;1;2;3;8;up;down;right;left;outsideLeft;insideLeft)
+        circleSegment(name;3;4;5;2;right;left;down;up;outsideUp;insideUp)
+        circleSegment(name;5;6;7;4;down;up;left;right;outsideRight;insideRight)
+        circleSegment(name;7;8;1;6;left;right;up;down;outsideDown;insideDown)
+
+#board =
+    circle(
+        outer;
+        ;;;;
+        ,right: middle2;,down: middle4;,left: middle6;,up: middle8)
+    circle(
+        middle;
+        ,right: inner2;,down: inner4;,left: inner6;,up: inner8;
+        ,left: outer2;,up: outer4;,right: outer6;,down: outer8)
+    circle(
+        inner;
+        ,left: middle2;,up: middle4;,right: middle6;,down: middle8;
+        ;;;)
+
+
+#anyNeighbor = (up+down+left+right)
+
+#anySquare = anyNeighbor*
+
+#threeInRow(piece;direction) =
+    {piece}direction{piece}direction{piece}
+
+#formedMill(player) =
+    anySquare
+    (
+        threeInRow(player~Piece;up)
+      + threeInRow(player~Piece;down)
+      + threeInRow(player~Piece;left)
+      + threeInRow(player~Piece;right)
+    )
+
+#isPartOfDirectedMill(color;direction1;direction2) =
+    (
+        {? direction1 {color~Piece}}{? direction2 {color~Piece}}
+      + threeInRow(color~Piece;direction1)
+      + threeInRow(color~Piece;direction2)
+    )
+
+#isPartOfMill(color) =
+    (
+        isPartOfDirectedMill(color;up;down)
+      + isPartOfDirectedMill(color;left;right)
+    )
+
+#placePiece(piece) = {empty}[piece]
+
+#removePiece(piece) = {piece}[empty]
+
+#findAndCaptureOpponent(color) =
+    anySquare
+    (
+        {! isPartOfMill(color)}
+      + {! anySquare isPartOfMill(color)}
+    )
+    removePiece(color~piece)
+
+#canContinueGame(color) = {$ color~Piece > 2}
+
+#handlePiecePlacement(color;opponentColor) =
+    placePiece(color~Piece)
+    (
+        {? isPartOfMill(color)}findAndCaptureOpponent(opponentColor)
+      + {! isPartOfMill(color)}
+    )->>[$ color=1,opponentColor=0]->opponentColor
+
+#firstPhaseMove(color;opponentColor) =
+    canContinueGame(color)
+    anySquare
+    handlePiecePlacement(color;opponentColor)
+
+#standardMovement(color) =
+    {$ color~Piece > 3}
+    anyNeighbor
+
+#flyingMovement(color) =
+    {$ color~Piece == 3}
+    anySquare
+
+#secondPhaseMove(color;opponentColor) =
+    canContinueGame(color)
+    {color~Piece}
+    (
+        standardMovement(color)
+      + flyingMovement(color)
+    )
+    handlePiecePlacement(color;opponentColor)
+
+#rules =
+    (
+        firstPhaseMove(white;black)
+        firstPhaseMove(black;white)
+    )^9
+    (
+        secondPhaseMove(white;black)
+      + secondPhaseMove(black;white)
+    )*
