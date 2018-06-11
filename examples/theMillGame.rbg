@@ -71,7 +71,7 @@
     anySquare
     (
         {! isPartOfMill(color)}
-      + {! anySquare isPartOfMill(color)}
+      + {! anySquare {! isPartOfMill(color)}}
     )
     removePiece(color~piece)
 
@@ -106,7 +106,7 @@
     )
     handlePiecePlacement(color;opponentColor)
 
-#rules =
+#rules = ->white
     (
         firstPhaseMove(white;black)
         firstPhaseMove(black;white)
