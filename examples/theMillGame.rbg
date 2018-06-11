@@ -71,7 +71,7 @@
     anySquare
     (
         {! isPartOfMill(color)}
-      + {! anySquare {! isPartOfMill(color)}}
+      + {! anySquare {color~Piece}{! isPartOfMill(color)}}
     )
     removePiece(color~piece)
 

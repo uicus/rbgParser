@@ -1,7 +1,12 @@
 #include"rectangle2D.hpp"
 #include"declarations.hpp"
+#include"unchecked_graph.hpp"
 
 namespace rbg_parser{
+
+rectangle2D::rectangle2D(slice_iterator&& it):
+generator_position(std::move(it)){
+}
 
 void rectangle2D::parse_edge_argument(token rectangle2D::*direction, declarations& decl, slice_iterator& it, messages_container& msg){
     this->*direction = parse_edge_name(decl,it,msg);
@@ -39,41 +44,44 @@ bool rectangle2D::parse_boardline(declarations& decl, slice_iterator& it, messag
     return true;
 }
 
-uint rectangle2D::compute_index(uint line_number, uint column_number)const{
-    return starting_pieces.back().size()*line_number+column_number;
-}
-
-std::tuple<token,token,edges> rectangle2D::transform_square(uint line_number, uint column_number)const{
+void rectangle2D::transform_square(uint line_number, uint column_number, unchecked_graph& ug)const{
     token vertex_name("x"+std::to_string(column_number)+"y"+std::to_string(line_number));
-    token starting_piece = starting_pieces[starting_pieces.size()-line_number-1][column_number];
-    edges outgoing_edges;
-    if(line_number<starting_pieces.size()-1)
-        outgoing_edges.insert(std::make_pair(up,compute_index(line_number+1,column_number)));
-    if(line_number>0)
-        outgoing_edges.insert(std::make_pair(down,compute_index(line_number-1,column_number)));
-    if(column_number<starting_pieces.back().size()-1)
-        outgoing_edges.insert(std::make_pair(right,compute_index(line_number,column_number+1)));
-    if(column_number>0)
-        outgoing_edges.insert(std::make_pair(left,compute_index(line_number,column_number-1)));
-    return std::make_tuple(std::move(vertex_name),std::move(starting_piece),std::move(outgoing_edges));
+    ug.add_vertex(vertex_name,token(starting_pieces[line_number][column_number]));
+    if(line_number<starting_pieces.size()-1){
+        token target("x"+std::to_string(column_number)+"y"+std::to_string(line_number+1));
+        ug.add_edge(vertex_name,target,generator_position,down);
+    }
+    if(line_number>0){
+        token target("x"+std::to_string(column_number)+"y"+std::to_string(line_number-1));
+        ug.add_edge(vertex_name,target,generator_position,up);
+    }
+    if(column_number<starting_pieces.back().size()-1){
+        token target("x"+std::to_string(column_number+1)+"y"+std::to_string(line_number));
+        ug.add_edge(vertex_name,target,generator_position,right);
+    }
+    if(column_number>0){
+        token target("x"+std::to_string(column_number-1)+"y"+std::to_string(line_number));
+        ug.add_edge(vertex_name,target,generator_position,left);
+    }
 }
 
-graph rectangle2D::build_graph(messages_container&)const{
-    std::vector<std::tuple<token,token,edges>> vertices;
+graph rectangle2D::build_graph(messages_container& msg)const{
+    unchecked_graph ug;
     for(uint i=0;i<starting_pieces.size();++i)
         for(uint j=0;j<starting_pieces[i].size();++j)
-            vertices.push_back(transform_square(i,j));
-    return graph(std::move(vertices));
+            transform_square(i,j,ug);
+    return ug.build_graph(msg);
 }
 
 parser_result<std::unique_ptr<graph_builder>> parse_rectangle2D(declarations& decl, slice_iterator& it, messages_container& msg){
     if(not it.has_value() or it.current(msg).get_type() != rectangle)
         return failure<std::unique_ptr<graph_builder>>();
+    auto generator_position = it;
     it.next(msg);
     if(it.current(msg).get_type() != left_round_bracket)
         throw msg.build_message(it.create_call_stack("Expected \'(\', encountered \'"+it.current(msg).to_string()+"\'"));
     it.next(msg);
-    rectangle2D result;
+    rectangle2D result(std::move(generator_position));
     result.parse_edge_argument(&rectangle2D::up,decl,it,msg);
     result.parse_edge_argument(&rectangle2D::down,decl,it,msg);
     result.parse_edge_argument(&rectangle2D::left,decl,it,msg);

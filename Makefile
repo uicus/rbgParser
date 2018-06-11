@@ -46,8 +46,7 @@ verify: $(EXAMPLES)
 		echo 'Verifying idempotency on $(game)...';  \
 		$(BIN_DIR)/$(TARGET) -o test1.rbg $(game);   \
 		$(BIN_DIR)/$(TARGET) -o test2.rbg test1.rbg; \
-		$(BIN_DIR)/$(TARGET) -o test3.rbg test2.rbg; \
-		diff test3.rbg test2.rbg;                    \
+		diff test1.rbg test2.rbg;                    \
 		rm test*.rbg;                                \
 		echo "";)
 
