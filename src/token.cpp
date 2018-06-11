@@ -16,67 +16,13 @@ type(t){
     if(type == number)
         number_value = 0;
     else if(type == identifier || type == quotation)
-        contained_string = new std::string;
-}
-
-token::token(const token& src)noexcept:
-position_in_file(src.position_in_file),
-type(src.type){
-    if(type == number)
-        number_value = src.number_value;
-    else if(type == identifier || type == quotation)
-        contained_string = new std::string(*src.contained_string);
-}
-
-token::token(token&& src)noexcept:
-position_in_file(src.position_in_file),
-type(src.type){
-    if(type == number)
-        number_value = src.number_value;
-    else if(type == identifier || type == quotation){
-        contained_string = src.contained_string;
-        src.contained_string = nullptr;
-    }
-}
-
-token& token::operator=(const token& src)noexcept{
-    if(this != &src){
-        position_in_file = src.position_in_file;
-        if(type == identifier || type == quotation)
-            delete contained_string;
-        type = src.type;
-        if(type == identifier || type == quotation)
-            contained_string = new std::string(*src.contained_string);
-        else if(type == number)
-            number_value = src.number_value;
-    }
-    return *this;
-}
-token& token::operator=(token&& src)noexcept{
-    if(this != &src){
-        position_in_file = src.position_in_file;
-        if(type == identifier || type == quotation)
-            delete contained_string;
-        type = src.type;
-        if(type == identifier || type == quotation){
-            contained_string = src.contained_string;
-            src.contained_string = nullptr;
-        }
-        else if(type == number)
-            number_value = src.number_value;
-    }
-    return *this;
+        contained_string = std::shared_ptr<std::string>(new std::string);
 }
 
 token::token(std::string&& name)noexcept:
 position_in_file(0),
 type(identifier),
 contained_string(new std::string(std::move(name))){
-}
-
-token::~token(void)noexcept{
-    if(type == identifier || type == quotation)
-        delete contained_string;
 }
 
 std::string tokens_table[] = {
@@ -283,10 +229,10 @@ token& token::operator+=(const token& t){
         for(uint i=players;i<=rectangle;++i)
             if(result_string == tokens_table[i]){
                 type = token_type(i);
-                delete contained_string;
+                contained_string.reset();
             }
         if(type == identifier)
-            (*contained_string) = std::move(result_string);
+            contained_string = std::shared_ptr<std::string>(new std::string(std::move(result_string)));
     }
     else if(type >= players && type <= rectangle){
         std::string result_string = to_string() + t.to_string();
@@ -298,7 +244,7 @@ token& token::operator+=(const token& t){
             }
         if(!not_identifier){
             type = identifier;
-            contained_string = new std::string(std::move(result_string));
+            contained_string = std::shared_ptr<std::string>(new std::string(std::move(result_string)));
         }
     }
     else if(type == number && t.type == number){
@@ -327,7 +273,7 @@ bool token::operator==(const token& t)const{
     else if(type == number)
         return number_value == t.number_value;
     else if(type == identifier || type == quotation)
-        return to_lower(*contained_string) == to_lower(*t.contained_string);
+        return *contained_string == *t.contained_string;
     else
         return true;
 }
@@ -338,7 +284,7 @@ bool token::operator<(const token& t)const{
     else if(type == number)
         return number_value < t.number_value;
     else if(type == identifier || type == quotation)
-        return to_lower(*contained_string) < to_lower(*t.contained_string);
+        return *contained_string < *t.contained_string;
     else
         return false;
 }

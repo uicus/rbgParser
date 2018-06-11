@@ -96,7 +96,7 @@
     pickUpPiece(color~King)
     potentialJumpAround(opponentColor; [empty])->>
     (potentialJumpAround(opponentColor; [empty])->>)*
-    {! potentialJumparound(opponentColor;)}
+    {! potentialJumpAround(opponentColor;)}
     placePiece(color~King)
 
 #canCapture(color; opponentColor; forwardDirection) =

@@ -4,6 +4,7 @@
 #include<string>
 #include<vector>
 #include<set>
+#include<memory>
 
 #include"message.hpp"
 
@@ -59,19 +60,17 @@ enum token_type{
 class token{
         uint position_in_file;
         token_type type;
-        union{
-            std::string* contained_string;
-            uint number_value;
-        };
+        std::shared_ptr<std::string> contained_string;
+        uint number_value;
         token(uint position, token_type type)noexcept;
     public:
         token(void)noexcept;
-        token(const token& src)noexcept;
-        token(token&& src)noexcept;
-        token& operator=(const token& src)noexcept;
-        token& operator=(token&& src)noexcept;
+        token(const token& src)=default;
+        token(token&& src)=default;
+        token& operator=(const token& src)=default;
+        token& operator=(token&& src)=default;
         token(std::string&& name)noexcept;
-        ~token(void)noexcept;
+        ~token(void)=default;
 
         friend std::set<token> create_tokens_set(uint position);
         friend token create_quotation(uint position);

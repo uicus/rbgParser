@@ -73,7 +73,7 @@
         {! isPartOfMill(color)}
       + {! anySquare {color~Piece}{! isPartOfMill(color)}}
     )
-    removePiece(color~piece)
+    removePiece(color~Piece)
 
 #canContinueGame(color) = {$ color~Piece > 2}
 
