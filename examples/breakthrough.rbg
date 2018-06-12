@@ -7,18 +7,21 @@
          [e, e, e, e, e, e, e, e]
          [w, w, w, w, w, w, w, w]
          [w, w, w, w, w, w, w, w])
-#players = wPlayer(100), bPlayer(100)
+#players = white(100), black(100) // 0-100 scores
 #pieces = e, w, b
-#variables = 
+#variables = // no variables
 
-#anySquare = ((up*+down*)(left*+right*))
+#anySquare = ((up* + down*)(left* + right*))
 
-#move(me; opp; forward) =
-    anySquare
-    {me} [e] (forward {e} + left forward {e,opp} + right forward {e,opp})
-    ->>
-    [$me~Player=100] [$opp~Player=0]
-    ({? forward} [me] + {! forward} ->> {})
-    ->opp~Player
-
-#rules = ->wPlayer (move(w;b;up) move(b;w;down))*
+#move(me; myPawn; opp; oppPawn; forward) =
+  anySquare {myPawn}
+  [e] forward ({e} + (left+right) {e,oppPawn})
+  ->>
+  [$ me=100] [$ opp=0]
+  (  {! forward} ->> {}
+   + {? forward} [myPawn])
+ ->opp
+    
+#rules = ->white (
+    move(white; w; black; b; up) move(black; b; white; w; down)
+  )*
