@@ -4,6 +4,30 @@
 
 namespace rbg_parser{
 
+
+parser_result<std::vector<token>> parse_sequence_with_holes(
+slice_iterator& it,
+const std::set<token>& verification_set,
+messages_container& msg){
+    std::vector<token> result;
+    if(!it.has_value())
+        return success(std::move(result));
+    while(it.has_value() and (it.current(msg).get_type() == comma or it.current(msg).get_type() == identifier)){
+        if(not result.empty())
+            it.next(msg);
+        if(it.current(msg).get_type() == identifier){
+            if(verification_set.find(it.current(msg)) != verification_set.end())
+                result.push_back(it.current(msg));
+            else
+                throw msg.build_message(it.create_call_stack("Identifier \'"+it.current(msg).to_string()+"\' was not declared in respective segment"));
+            it.next(msg);
+        }
+        else
+            result.push_back(token());
+    }
+    return success(std::move(result));
+}
+
 parser_result<std::vector<token>> parse_sequence(
 slice_iterator& it,
 const std::string& purpose_name,

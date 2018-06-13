@@ -31,6 +31,7 @@ class hexagon2D : public graph_builder{
         void transform_square(uint line_number,uint column_number, unchecked_graph& ug)const;
         bool below_peak_line(uint line_number)const;
         bool above_peak_line(uint line_number)const;
+        bool cell_exists(uint line_number,uint column_number)const;
     public:
         hexagon2D(slice_iterator&& it);
         hexagon2D(const hexagon2D&)=delete;

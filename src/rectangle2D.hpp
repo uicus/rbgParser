@@ -25,6 +25,7 @@ class rectangle2D : public graph_builder{
         void parse_edge_argument(token rectangle2D::*direction, declarations& decl, slice_iterator& it, messages_container& msg);
         bool parse_boardline(declarations& decl, slice_iterator& it, messages_container& msg);
         void transform_square(uint line_number,uint column_number, unchecked_graph& ug)const;
+        bool cell_exists(uint line_number,uint column_number)const;
     public:
         rectangle2D(slice_iterator&& it);
         rectangle2D(const rectangle2D&)=delete;

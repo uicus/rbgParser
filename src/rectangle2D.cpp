@@ -33,7 +33,7 @@ bool rectangle2D::parse_boardline(declarations& decl, slice_iterator& it, messag
         return false;
     auto beginning = it;
     it.next(msg);
-    auto pieces_sequence = parse_sequence(it,"boardline",decl.get_legal_pieces(),true,msg);
+    auto pieces_sequence = parse_sequence_with_holes(it,decl.get_legal_pieces(),msg);
     if(not pieces_sequence.is_success())
         throw msg.build_message(it.create_call_stack("Expected pieces sequence, encountered \'"+it.current(msg).to_string()+"\'"));
     if(not add_line_if_aligned(pieces_sequence.move_value()))
@@ -47,29 +47,35 @@ bool rectangle2D::parse_boardline(declarations& decl, slice_iterator& it, messag
 void rectangle2D::transform_square(uint line_number, uint column_number, unchecked_graph& ug)const{
     token vertex_name("x"+std::to_string(column_number)+"y"+std::to_string(line_number));
     ug.add_vertex(vertex_name,token(starting_pieces[line_number][column_number]));
-    if(line_number<starting_pieces.size()-1){
+    if(line_number<starting_pieces.size()-1 and cell_exists(line_number+1,column_number)){
         token target("x"+std::to_string(column_number)+"y"+std::to_string(line_number+1));
         ug.add_edge(vertex_name,target,generator_position,down);
     }
-    if(line_number>0){
+    if(line_number>0 and cell_exists(line_number-1,column_number)){
         token target("x"+std::to_string(column_number)+"y"+std::to_string(line_number-1));
         ug.add_edge(vertex_name,target,generator_position,up);
     }
-    if(column_number<starting_pieces.back().size()-1){
+    if(column_number<starting_pieces.back().size()-1 and cell_exists(line_number,column_number+1)){
         token target("x"+std::to_string(column_number+1)+"y"+std::to_string(line_number));
         ug.add_edge(vertex_name,target,generator_position,right);
     }
-    if(column_number>0){
+    if(column_number>0 and cell_exists(line_number,column_number-1)){
         token target("x"+std::to_string(column_number-1)+"y"+std::to_string(line_number));
         ug.add_edge(vertex_name,target,generator_position,left);
     }
+}
+
+bool rectangle2D::cell_exists(uint line_number,uint column_number)const{
+    return line_number < starting_pieces.size() and column_number < starting_pieces[line_number].size()
+       and starting_pieces[line_number][column_number].get_type() == identifier;
 }
 
 graph rectangle2D::build_graph(messages_container& msg)const{
     unchecked_graph ug;
     for(uint i=0;i<starting_pieces.size();++i)
         for(uint j=0;j<starting_pieces[i].size();++j)
-            transform_square(i,j,ug);
+            if(cell_exists(i,j))
+                transform_square(i,j,ug);
     return ug.build_graph(msg);
 }
 

@@ -43,6 +43,11 @@ parser_result<T> success(T&& result){
     return parser_result<T>(std::move(result));
 }
 
+parser_result<std::vector<token>> parse_sequence_with_holes(
+    slice_iterator& it,
+    const std::set<token>& verification_set,
+    messages_container& msg);
+
 parser_result<std::vector<token>> parse_sequence(
     slice_iterator& it,
     const std::string& purpose_name,
