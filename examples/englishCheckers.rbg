@@ -90,7 +90,7 @@
     ->>
     [$ me=50] [$ opp=50] [$ stagnation = stagnation+1]
     [$ me=100] [$ opp=0] ->opp
-    
+
 #rules = ->black (
       move(black; white; down)
       move(white; black; up)

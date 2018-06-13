@@ -12,7 +12,7 @@
 
 #winIn(dir; piece) = (dir {piece})^2
 #win(piece) =
-    winIn(up left; piece) + winIn(up; piece) + winIn(up right; piece) + 
+    winIn(up left; piece) + winIn(up; piece) + winIn(up right; piece) +
     winIn(left; piece) + winIn(right; piece) +
     winIn(down left; piece) + winIn(down; piece) + winIn(down right; piece)
 

@@ -68,7 +68,7 @@
             {$ w == b} [$ black = 50] [$ white = 50]
           )
           ->>
-          {? anySquare {e} movePossible(opp; me)} 
+          {? anySquare {e} movePossible(opp; me)}
         )
     )->oppPlayer
 

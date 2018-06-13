@@ -4,7 +4,13 @@
 // - game is limited to 200 turns
 
 
-#players = white (10), black (10)
+#anyRook(color) = color~RookMoved, color~RookUnmoved
+#majorPieces(color) = anyRook(color), color~Knight, color~Bishop, color~Queen
+#singleColorPieces(color) = color~Pawn, color~King, majorPieces(color)
+#emptyOrColor(color) = singleColorPieces(color), empty
+#allPieces = singleColorPieces(white), singleColorPieces(black)
+
+#players = white (100), black (100)
 #pieces = allPieces, empty
 #variables = pawnDoubleMove (1), whiteKingMoved (1), blackKingMoved (1), turn (201)
 
@@ -27,14 +33,6 @@
         pawnLine(white)
         backLine(white)
     )
-
-
-#anyRook(color) = color~RookMoved, color~RookUnmoved
-#majorPieces(color) = anyRook(color), color~Knight, color~Bishop, color~Queen
-#singleColorPieces(color) = color~Pawn, color~King, majorPieces(color)
-#emptyOrColor(color) = singleColorPieces(color), empty
-#allPieces = singleColorPieces(white), singleColorPieces(black)
-
 
 
 #anySquare = (left* + right*)(up* + down*)
@@ -214,8 +212,8 @@
       + enPassantPawnMove(forwardDirection; color)
     ){! checked(color; opponentColor; forwardDirection)}
     (
-        {? checked(opponentColor; color; backDirection)}[$ opponentColor=0,color=10]
-      + {! checked(opponentColor; color; backDirection)}[$ color=5,opponentColor=5]
+        {? checked(opponentColor; color; backDirection)}[$ opponentColor=0,color=100]
+      + {! checked(opponentColor; color; backDirection)}[$ color=50,opponentColor=50]
     )->>[$ turn=turn+1]->opponentColor
 
 #rules = ->white

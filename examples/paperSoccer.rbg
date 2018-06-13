@@ -7,7 +7,7 @@
 // - empty squares are always empty, their purpose is to place ball (i.e. current square) at them
 
 
-#players = white (1), black (1)
+#players = white (100), black (100)
 #pieces = ball, whiteGoal, blackGoal, empty, visited, notVisited, justArrived
 #variables =
 
@@ -76,7 +76,7 @@
     )
 
 
-#findBall = ((up* + down*)(left* + right*){ball}[empty]
+#findBall = (up* + down*)(left* + right*){ball}[empty]
 
 #canMoveFurther =
     up{visited}
@@ -133,17 +133,17 @@
     {! canMoveFurther}
     changeJustArrivedIntoVisited
     (
-        {whiteGoal}[$ black=1]->>{}
-      + {blackGoal}[$ white=1]->>{}
+        {whiteGoal}[$ black=100]->>{}
+      + {blackGoal}[$ white=100]->>{}
       + {empty}[$ black=0, white=0]
     )
 
 #rules =
     findBall ->white
     (
-        [$ white=1]
+        [$ white=100]
         wholeMove->black
-        [$ black=1]
+        [$ black=100]
         wholeMove->white
     )*
 
