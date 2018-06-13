@@ -15,23 +15,16 @@
 #variables = pawnDoubleMove (1), whiteKingMoved (1), blackKingMoved (1), turn (200)
 
 
-#backLine(color) =
-    [color~RookUnmoved, color~Knight, color~Bishop, color~Queen, color~King, color~Bishop, color~Knight, color~RookUnmoved]
-#pawnLine(color) =
-    [color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn, color~Pawn]
-#emptyLine =
-    [empty, empty, empty, empty, empty, empty, empty, empty]
-
 #board =
     rectangle(up,down,left,right,
-        backLine(black)
-        pawnLine(black)
-        emptyLine
-        emptyLine
-        emptyLine
-        emptyLine
-        pawnLine(white)
-        backLine(white)
+        [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
+        [blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn, blackPawn  , blackPawn  , blackPawn       ]
+        [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+        [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+        [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+        [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+        [whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn, whitePawn  , whitePawn  , whitePawn       ]
+        [whiteRookUnmoved, whiteKnight, whiteBishop, whiteQueen, whiteKing, whiteBishop, whiteKnight, whiteRookUnmoved]
     )
 
 

@@ -103,7 +103,7 @@
 #secondPhaseMove(color;opponentColor) =
     canContinueGame(color)
     anySquare
-    {color~Piece}
+    removePiece(color~Piece)
     (
         standardMovement(color)
       + flyingMovement(color)
