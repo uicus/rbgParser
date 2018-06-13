@@ -1,154 +1,40 @@
-// #game = "Amazons"
+// Amazons
 
-// #board = [e, e, e, b, e, e, b, e, e, e]
-//          [e, e, e, e, e, e, e, e, e, e]
-//          [e, e, e, e, e, e, e, e, e, e]
-//          [b, e, e, e, e, e, e, e, e, b]
-//          [e, e, e, e, e, e, e, e, e, e]
-//          [e, e, e, e, e, e, e, e, e, e]
-//          [w, e, e, e, e, e, e, e, e, w]
-//          [e, e, e, e, e, e, e, e, e, e]
-//          [e, e, e, e, e, e, e, e, e, e]
-//          [e, e, e, w, e, e, w, e, e, e]
-
-#board = v00 [e] { m01 : v01, m10 : v10, m11 : v11 }
-         v10 [e] { mn10 : v00, mn11 : v01, m01 : v11, m10 : v20, m11 : v21 }
-         v20 [e] { mn10 : v10, mn11 : v11, m01 : v21, m10 : v30, m11 : v31 }
-         v30 [b] { mn10 : v20, mn11 : v21, m01 : v31, m10 : v40, m11 : v41 }
-         v40 [e] { mn10 : v30, mn11 : v31, m01 : v41, m10 : v50, m11 : v51 }
-         v50 [e] { mn10 : v40, mn11 : v41, m01 : v51, m10 : v60, m11 : v61 }
-         v60 [b] { mn10 : v50, mn11 : v51, m01 : v61, m10 : v70, m11 : v71 }
-         v70 [e] { mn10 : v60, mn11 : v61, m01 : v71, m10 : v80, m11 : v81 }
-         v80 [e] { mn10 : v70, mn11 : v71, m01 : v81, m10 : v90, m11 : v91 }
-         v90 [e] { mn10 : v80, mn11 : v81, m01 : v91 }
-         v01 [e] { m0n1 : v00, m01 : v02, m1n1 : v10, m10 : v11, m11 : v12 }
-         v11 [e] { mn1n1 : v00, mn10 : v01, mn11 : v02, m0n1 : v10, m01 : v12, m1n1 : v20, m10 : v21, m11 : v22 }
-         v21 [e] { mn1n1 : v10, mn10 : v11, mn11 : v12, m0n1 : v20, m01 : v22, m1n1 : v30, m10 : v31, m11 : v32 }
-         v31 [e] { mn1n1 : v20, mn10 : v21, mn11 : v22, m0n1 : v30, m01 : v32, m1n1 : v40, m10 : v41, m11 : v42 }
-         v41 [e] { mn1n1 : v30, mn10 : v31, mn11 : v32, m0n1 : v40, m01 : v42, m1n1 : v50, m10 : v51, m11 : v52 }
-         v51 [e] { mn1n1 : v40, mn10 : v41, mn11 : v42, m0n1 : v50, m01 : v52, m1n1 : v60, m10 : v61, m11 : v62 }
-         v61 [e] { mn1n1 : v50, mn10 : v51, mn11 : v52, m0n1 : v60, m01 : v62, m1n1 : v70, m10 : v71, m11 : v72 }
-         v71 [e] { mn1n1 : v60, mn10 : v61, mn11 : v62, m0n1 : v70, m01 : v72, m1n1 : v80, m10 : v81, m11 : v82 }
-         v81 [e] { mn1n1 : v70, mn10 : v71, mn11 : v72, m0n1 : v80, m01 : v82, m1n1 : v90, m10 : v91, m11 : v92 }
-         v91 [e] { mn1n1 : v80, mn10 : v81, mn11 : v82, m0n1 : v90, m01 : v92 }
-         v02 [e] { m0n1 : v01, m01 : v03, m1n1 : v11, m10 : v12, m11 : v13 }
-         v12 [e] { mn1n1 : v01, mn10 : v02, mn11 : v03, m0n1 : v11, m01 : v13, m1n1 : v21, m10 : v22, m11 : v23 }
-         v22 [e] { mn1n1 : v11, mn10 : v12, mn11 : v13, m0n1 : v21, m01 : v23, m1n1 : v31, m10 : v32, m11 : v33 }
-         v32 [e] { mn1n1 : v21, mn10 : v22, mn11 : v23, m0n1 : v31, m01 : v33, m1n1 : v41, m10 : v42, m11 : v43 }
-         v42 [e] { mn1n1 : v31, mn10 : v32, mn11 : v33, m0n1 : v41, m01 : v43, m1n1 : v51, m10 : v52, m11 : v53 }
-         v52 [e] { mn1n1 : v41, mn10 : v42, mn11 : v43, m0n1 : v51, m01 : v53, m1n1 : v61, m10 : v62, m11 : v63 }
-         v62 [e] { mn1n1 : v51, mn10 : v52, mn11 : v53, m0n1 : v61, m01 : v63, m1n1 : v71, m10 : v72, m11 : v73 }
-         v72 [e] { mn1n1 : v61, mn10 : v62, mn11 : v63, m0n1 : v71, m01 : v73, m1n1 : v81, m10 : v82, m11 : v83 }
-         v82 [e] { mn1n1 : v71, mn10 : v72, mn11 : v73, m0n1 : v81, m01 : v83, m1n1 : v91, m10 : v92, m11 : v93 }
-         v92 [e] { mn1n1 : v81, mn10 : v82, mn11 : v83, m0n1 : v91, m01 : v93 }
-         v03 [b] { m0n1 : v02, m01 : v04, m1n1 : v12, m10 : v13, m11 : v14 }
-         v13 [e] { mn1n1 : v02, mn10 : v03, mn11 : v04, m0n1 : v12, m01 : v14, m1n1 : v22, m10 : v23, m11 : v24 }
-         v23 [e] { mn1n1 : v12, mn10 : v13, mn11 : v14, m0n1 : v22, m01 : v24, m1n1 : v32, m10 : v33, m11 : v34 }
-         v33 [e] { mn1n1 : v22, mn10 : v23, mn11 : v24, m0n1 : v32, m01 : v34, m1n1 : v42, m10 : v43, m11 : v44 }
-         v43 [e] { mn1n1 : v32, mn10 : v33, mn11 : v34, m0n1 : v42, m01 : v44, m1n1 : v52, m10 : v53, m11 : v54 }
-         v53 [e] { mn1n1 : v42, mn10 : v43, mn11 : v44, m0n1 : v52, m01 : v54, m1n1 : v62, m10 : v63, m11 : v64 }
-         v63 [e] { mn1n1 : v52, mn10 : v53, mn11 : v54, m0n1 : v62, m01 : v64, m1n1 : v72, m10 : v73, m11 : v74 }
-         v73 [e] { mn1n1 : v62, mn10 : v63, mn11 : v64, m0n1 : v72, m01 : v74, m1n1 : v82, m10 : v83, m11 : v84 }
-         v83 [e] { mn1n1 : v72, mn10 : v73, mn11 : v74, m0n1 : v82, m01 : v84, m1n1 : v92, m10 : v93, m11 : v94 }
-         v93 [b] { mn1n1 : v82, mn10 : v83, mn11 : v84, m0n1 : v92, m01 : v94 }
-         v04 [e] { m0n1 : v03, m01 : v05, m1n1 : v13, m10 : v14, m11 : v15 }
-         v14 [e] { mn1n1 : v03, mn10 : v04, mn11 : v05, m0n1 : v13, m01 : v15, m1n1 : v23, m10 : v24, m11 : v25 }
-         v24 [e] { mn1n1 : v13, mn10 : v14, mn11 : v15, m0n1 : v23, m01 : v25, m1n1 : v33, m10 : v34, m11 : v35 }
-         v34 [e] { mn1n1 : v23, mn10 : v24, mn11 : v25, m0n1 : v33, m01 : v35, m1n1 : v43, m10 : v44, m11 : v45 }
-         v44 [e] { mn1n1 : v33, mn10 : v34, mn11 : v35, m0n1 : v43, m01 : v45, m1n1 : v53, m10 : v54, m11 : v55 }
-         v54 [e] { mn1n1 : v43, mn10 : v44, mn11 : v45, m0n1 : v53, m01 : v55, m1n1 : v63, m10 : v64, m11 : v65 }
-         v64 [e] { mn1n1 : v53, mn10 : v54, mn11 : v55, m0n1 : v63, m01 : v65, m1n1 : v73, m10 : v74, m11 : v75 }
-         v74 [e] { mn1n1 : v63, mn10 : v64, mn11 : v65, m0n1 : v73, m01 : v75, m1n1 : v83, m10 : v84, m11 : v85 }
-         v84 [e] { mn1n1 : v73, mn10 : v74, mn11 : v75, m0n1 : v83, m01 : v85, m1n1 : v93, m10 : v94, m11 : v95 }
-         v94 [e] { mn1n1 : v83, mn10 : v84, mn11 : v85, m0n1 : v93, m01 : v95 }
-         v05 [e] { m0n1 : v04, m01 : v06, m1n1 : v14, m10 : v15, m11 : v16 }
-         v15 [e] { mn1n1 : v04, mn10 : v05, mn11 : v06, m0n1 : v14, m01 : v16, m1n1 : v24, m10 : v25, m11 : v26 }
-         v25 [e] { mn1n1 : v14, mn10 : v15, mn11 : v16, m0n1 : v24, m01 : v26, m1n1 : v34, m10 : v35, m11 : v36 }
-         v35 [e] { mn1n1 : v24, mn10 : v25, mn11 : v26, m0n1 : v34, m01 : v36, m1n1 : v44, m10 : v45, m11 : v46 }
-         v45 [e] { mn1n1 : v34, mn10 : v35, mn11 : v36, m0n1 : v44, m01 : v46, m1n1 : v54, m10 : v55, m11 : v56 }
-         v55 [e] { mn1n1 : v44, mn10 : v45, mn11 : v46, m0n1 : v54, m01 : v56, m1n1 : v64, m10 : v65, m11 : v66 }
-         v65 [e] { mn1n1 : v54, mn10 : v55, mn11 : v56, m0n1 : v64, m01 : v66, m1n1 : v74, m10 : v75, m11 : v76 }
-         v75 [e] { mn1n1 : v64, mn10 : v65, mn11 : v66, m0n1 : v74, m01 : v76, m1n1 : v84, m10 : v85, m11 : v86 }
-         v85 [e] { mn1n1 : v74, mn10 : v75, mn11 : v76, m0n1 : v84, m01 : v86, m1n1 : v94, m10 : v95, m11 : v96 }
-         v95 [e] { mn1n1 : v84, mn10 : v85, mn11 : v86, m0n1 : v94, m01 : v96 }
-         v06 [w] { m0n1 : v05, m01 : v07, m1n1 : v15, m10 : v16, m11 : v17 }
-         v16 [e] { mn1n1 : v05, mn10 : v06, mn11 : v07, m0n1 : v15, m01 : v17, m1n1 : v25, m10 : v26, m11 : v27 }
-         v26 [e] { mn1n1 : v15, mn10 : v16, mn11 : v17, m0n1 : v25, m01 : v27, m1n1 : v35, m10 : v36, m11 : v37 }
-         v36 [e] { mn1n1 : v25, mn10 : v26, mn11 : v27, m0n1 : v35, m01 : v37, m1n1 : v45, m10 : v46, m11 : v47 }
-         v46 [e] { mn1n1 : v35, mn10 : v36, mn11 : v37, m0n1 : v45, m01 : v47, m1n1 : v55, m10 : v56, m11 : v57 }
-         v56 [e] { mn1n1 : v45, mn10 : v46, mn11 : v47, m0n1 : v55, m01 : v57, m1n1 : v65, m10 : v66, m11 : v67 }
-         v66 [e] { mn1n1 : v55, mn10 : v56, mn11 : v57, m0n1 : v65, m01 : v67, m1n1 : v75, m10 : v76, m11 : v77 }
-         v76 [e] { mn1n1 : v65, mn10 : v66, mn11 : v67, m0n1 : v75, m01 : v77, m1n1 : v85, m10 : v86, m11 : v87 }
-         v86 [e] { mn1n1 : v75, mn10 : v76, mn11 : v77, m0n1 : v85, m01 : v87, m1n1 : v95, m10 : v96, m11 : v97 }
-         v96 [w] { mn1n1 : v85, mn10 : v86, mn11 : v87, m0n1 : v95, m01 : v97 }
-         v07 [e] { m0n1 : v06, m01 : v08, m1n1 : v16, m10 : v17, m11 : v18 }
-         v17 [e] { mn1n1 : v06, mn10 : v07, mn11 : v08, m0n1 : v16, m01 : v18, m1n1 : v26, m10 : v27, m11 : v28 }
-         v27 [e] { mn1n1 : v16, mn10 : v17, mn11 : v18, m0n1 : v26, m01 : v28, m1n1 : v36, m10 : v37, m11 : v38 }
-         v37 [e] { mn1n1 : v26, mn10 : v27, mn11 : v28, m0n1 : v36, m01 : v38, m1n1 : v46, m10 : v47, m11 : v48 }
-         v47 [e] { mn1n1 : v36, mn10 : v37, mn11 : v38, m0n1 : v46, m01 : v48, m1n1 : v56, m10 : v57, m11 : v58 }
-         v57 [e] { mn1n1 : v46, mn10 : v47, mn11 : v48, m0n1 : v56, m01 : v58, m1n1 : v66, m10 : v67, m11 : v68 }
-         v67 [e] { mn1n1 : v56, mn10 : v57, mn11 : v58, m0n1 : v66, m01 : v68, m1n1 : v76, m10 : v77, m11 : v78 }
-         v77 [e] { mn1n1 : v66, mn10 : v67, mn11 : v68, m0n1 : v76, m01 : v78, m1n1 : v86, m10 : v87, m11 : v88 }
-         v87 [e] { mn1n1 : v76, mn10 : v77, mn11 : v78, m0n1 : v86, m01 : v88, m1n1 : v96, m10 : v97, m11 : v98 }
-         v97 [e] { mn1n1 : v86, mn10 : v87, mn11 : v88, m0n1 : v96, m01 : v98 }
-         v08 [e] { m0n1 : v07, m01 : v09, m1n1 : v17, m10 : v18, m11 : v19 }
-         v18 [e] { mn1n1 : v07, mn10 : v08, mn11 : v09, m0n1 : v17, m01 : v19, m1n1 : v27, m10 : v28, m11 : v29 }
-         v28 [e] { mn1n1 : v17, mn10 : v18, mn11 : v19, m0n1 : v27, m01 : v29, m1n1 : v37, m10 : v38, m11 : v39 }
-         v38 [e] { mn1n1 : v27, mn10 : v28, mn11 : v29, m0n1 : v37, m01 : v39, m1n1 : v47, m10 : v48, m11 : v49 }
-         v48 [e] { mn1n1 : v37, mn10 : v38, mn11 : v39, m0n1 : v47, m01 : v49, m1n1 : v57, m10 : v58, m11 : v59 }
-         v58 [e] { mn1n1 : v47, mn10 : v48, mn11 : v49, m0n1 : v57, m01 : v59, m1n1 : v67, m10 : v68, m11 : v69 }
-         v68 [e] { mn1n1 : v57, mn10 : v58, mn11 : v59, m0n1 : v67, m01 : v69, m1n1 : v77, m10 : v78, m11 : v79 }
-         v78 [e] { mn1n1 : v67, mn10 : v68, mn11 : v69, m0n1 : v77, m01 : v79, m1n1 : v87, m10 : v88, m11 : v89 }
-         v88 [e] { mn1n1 : v77, mn10 : v78, mn11 : v79, m0n1 : v87, m01 : v89, m1n1 : v97, m10 : v98, m11 : v99 }
-         v98 [e] { mn1n1 : v87, mn10 : v88, mn11 : v89, m0n1 : v97, m01 : v99 }
-         v09 [e] { m0n1 : v08, m1n1 : v18, m10 : v19 }
-         v19 [e] { mn1n1 : v08, mn10 : v09, m0n1 : v18, m1n1 : v28, m10 : v29 }
-         v29 [e] { mn1n1 : v18, mn10 : v19, m0n1 : v28, m1n1 : v38, m10 : v39 }
-         v39 [w] { mn1n1 : v28, mn10 : v29, m0n1 : v38, m1n1 : v48, m10 : v49 }
-         v49 [e] { mn1n1 : v38, mn10 : v39, m0n1 : v48, m1n1 : v58, m10 : v59 }
-         v59 [e] { mn1n1 : v48, mn10 : v49, m0n1 : v58, m1n1 : v68, m10 : v69 }
-         v69 [w] { mn1n1 : v58, mn10 : v59, m0n1 : v68, m1n1 : v78, m10 : v79 }
-         v79 [e] { mn1n1 : v68, mn10 : v69, m0n1 : v78, m1n1 : v88, m10 : v89 }
-         v89 [e] { mn1n1 : v78, mn10 : v79, m0n1 : v88, m1n1 : v98, m10 : v99 }
-         v99 [e] { mn1n1 : v88, mn10 : v89, m0n1 : v98 }
-
-        
-#players = white(11), black(11)
+#players = white(100), black(100)
 #pieces = e, w, b, x
 #variables =
+#board = rectangle(up,down,left,right,
+         [e, e, e, b, e, e, b, e, e, e]
+         [e, e, e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e, e, e]
+         [b, e, e, e, e, e, e, e, e, b]
+         [e, e, e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e, e, e]
+         [w, e, e, e, e, e, e, e, e, w]
+         [e, e, e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e, e, e]
+         [e, e, e, w, e, e, w, e, e, e])
 
-#anySquare = ((m10*+mn10*)(m01*+m0n1*))
-//#anySquare = (m10*m01*(-9,-9)m10*m01*)
+#anySquare = ((up* + down*)(left* + right*))
 
-#queenMove =
-    (
-       (m11{e}m11{e})* +
-       (m10{e}m10{e})* +
-       (m1n1{e}m1n1{e})* +
-       (m01{e}m01{e})* +
-       (m0n1{e}m0n1{e})* +
-       (mn11{e}mn11{e})* +
-       (mn10{e}mn10{e})* +
-       (mn1n1{e}mn1n1{e})*
+#queenMove = (
+      (up left {e}) (up left {e})* +
+      (up {e}) (up {e})* +
+      (up right {e}) (up right {e})* +
+      (left {e}) (left {e})* +
+      (right {e}) (right {e})* +
+      (down left {e}) (down left {e})* +
+      (down {e}) (down {e})* +
+      (down right {e}) (down right {e})*
     )
 
-#move(piece; p) = 
-    (
-        anySquare
-        {piece}
-        [e]
-        queenMove
-        [piece]
-        queenMove
-        [x]
+#move(piece) = (
+      anySquare {piece}
+      [e] queenMove
+      [piece] queenMove [x]
     )
 
-#rules =
-    ->white
-    (
-        move(w;white)
-        [$white=10, black=0] ->black
-        move(b;black)
-        [$white=0, black=10] ->white
+#rules = ->white (
+      move(w) [$ white=100] [$ black=0] ->black
+      move(b) [$ white=0] [$ black=100] ->white
     )*
-
