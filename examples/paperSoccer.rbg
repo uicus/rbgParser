@@ -131,7 +131,7 @@
         singleJump
     )*
     {! canMoveFurther}
-    changeJustArrivedIntoVisited
+    ->>changeJustArrivedIntoVisited
     (
         {whiteGoal}[$ black=100]->>{}
       + {blackGoal}[$ white=100]->>{}

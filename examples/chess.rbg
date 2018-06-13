@@ -12,7 +12,7 @@
 
 #players = white (100), black (100)
 #pieces = allPieces, empty
-#variables = pawnDoubleMove (1), whiteKingMoved (1), blackKingMoved (1), turn (201)
+#variables = pawnDoubleMove (1), whiteKingMoved (1), blackKingMoved (1), turn (200)
 
 
 #backLine(color) =
@@ -39,14 +39,8 @@
 
 #anyNeighborSquare =
     (
-        right
-      + left
-      + up
-      + down
-      + up left
-      + up right
-      + down left
-      + down right
+        left + right + up + down
+      + (left + right)(up + down)
     )
 
 #diagonalLine =
@@ -65,22 +59,10 @@
       + (left{empty})* left
     )
 
-#anyDirectionLine =
-    (
-        diagonalLine
-      + parallelLine
-    )
-
 #knightHop =
     (
-        up^2 left
-      + up^2 right
-      + down^2 left
-      + down^2 right
-      + right^2 up
-      + right^2 down
-      + left^2 up
-      + left^2 down
+        (up^2 + down^2)(left + right)
+      + (left^2 + right^2)(up + down)
     )
 
 #captureAnyBy(capturingPiece; opponentColor) =
@@ -97,7 +79,7 @@
 
 #bishopMove(color; opponentColor) = standardMove(color~Bishop; diagonalLine; opponentColor)
 #knightMove(color; opponentColor) = standardMove(color~Knight; knightHop; opponentColor)
-#queenMove(color; opponentColor) = standardMove(color~Queen; anyDirectionLine; opponentColor)
+#queenMove(color; opponentColor) = standardMove(color~Queen; (diagonalLine + parallelLine); opponentColor)
 
 #rookMove(color; opponentColor) =
     pickUpPiece(anyRook(color))
@@ -110,7 +92,7 @@
 
 #isAttackedByBishop(opponentColor) = diagonalLine{opponentColor~Bishop}
 #isAttackedByRook(opponentColor) = parallelLine{anyRook(opponentColor)}
-#isAttackedByQueen(opponentColor) = anyDirectionLine{opponentColor~Queen}
+#isAttackedByQueen(opponentColor) = (diagonalLine + parallelLine){opponentColor~Queen}
 #isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
 #isAttackedByKing(opponentColor) = anyNeighborSquare{opponentColor~King}
 #isAttackedByPawn(opponentColor; forwardDirection) =
