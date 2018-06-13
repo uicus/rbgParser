@@ -1,3 +1,8 @@
+// Breakthrough
+
+#players = white(100), black(100) // 0-100 scores
+#pieces = e, w, b
+#variables = // no variables
 #board = rectangle(up,down,left,right,
          [b, b, b, b, b, b, b, b]
          [b, b, b, b, b, b, b, b]
@@ -7,21 +12,17 @@
          [e, e, e, e, e, e, e, e]
          [w, w, w, w, w, w, w, w]
          [w, w, w, w, w, w, w, w])
-#players = white(100), black(100) // 0-100 scores
-#pieces = e, w, b
-#variables = // no variables
 
 #anySquare = ((up* + down*)(left* + right*))
 
 #move(me; myPawn; opp; oppPawn; forward) =
-  anySquare {myPawn}
-  [e] forward ({e} + (left+right) {e,oppPawn})
-  ->>
-  [$ me=100] [$ opp=0]
-  (  {! forward} ->> {}
-   + {? forward} [myPawn])
- ->opp
+    anySquare {myPawn}
+    [e] forward ({e} + (left+right) {e,oppPawn})
+    ->>
+    [$ me=100] [$ opp=0]
+    (  {! forward} ->> {}
+     + {? forward} [myPawn] ->opp)
     
 #rules = ->white (
-    move(white; w; black; b; up) move(black; b; white; w; down)
-  )*
+      move(white; w; black; b; up) move(black; b; white; w; down)
+    )*
