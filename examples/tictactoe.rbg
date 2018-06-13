@@ -1,47 +1,26 @@
-#board =
-    rectangle(up,down,left,right,
-        [empty, empty, empty]
-        [empty, empty, empty]
-        [empty, empty, empty]
-    )
+// TicTacToe
 
-
-#players = xplayer (2), oplayer (2)
-#pieces = empty, xpiece, opiece
+#players = xplayer(100), oplayer(100)
+#pieces = e, x, o
 #variables =
+#board = rectangle(up,down,left,right,
+    [e, e, e]
+    [e, e, e]
+    [e, e, e])
 
+#anySquare = ((up* + down*)(left* + right*))
 
-#anySquare =
-    (up+down+left+right)*
+#winIn(dir; piece) = (dir {piece})^2
+#win(piece) =
+    winIn(up left; piece) + winIn(up; piece) + winIn(up right; piece) + 
+    winIn(left; piece) + winIn(right; piece) +
+    winIn(down left; piece) + winIn(down; piece) + winIn(down right; piece)
 
-#move(piece) = 
+#move(me; opp) =
+    anySquare {e} ->> [me]
     (
-        anySquare
-        {empty}
-        [piece]
+        {? win(me)} [$ me~player=100] [$ opp~player=0] ->> {}
+      + {! win(me)} ->opp~player
     )
 
-#winLine(piece) =
-    anySquare
-    {piece}
-    (
-        up{piece}up{piece}
-      + right{piece}right{piece}
-      + up right{piece}up right{piece}
-      + up left{piece}up left{piece}
-    )
-
-#moveAndWinCheck(me; opp) =
-    (
-        {? winLine(opp~piece)} [$ me~player=0, opp~player=2]->>{}
-      + {! winLine(opp~piece)}
-    )
-    move(me~piece)->opp~player
-
-#rules = ->oplayer
-    [$ xplayer=1,oplayer=1]
-    (
-        moveAndWinCheck(x; o)
-        moveAndWinCheck(o; x)
-    )*
-
+#rules = [$ xplayer=50] [$ oplayer=50] ->oplayer (move(x; o) move(o; x))*
