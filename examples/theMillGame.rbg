@@ -1,3 +1,5 @@
+// The Mill Game
+
 #pieces = empty, whitePiece, blackPiece
 #players = white(1), black(1)
 #variables =
@@ -85,7 +87,6 @@
     )->>[$ color=1,opponentColor=0]->opponentColor
 
 #firstPhaseMove(color;opponentColor) =
-    canContinueGame(color)
     anySquare
     handlePiecePlacement(color;opponentColor)
 

@@ -1,6 +1,12 @@
+// Chess
 // notes:
 // - no rules about repeating states or tie after given number of turns without pawn moves
 // - game is limited to 200 turns
+
+
+#players = white (10), black (10)
+#pieces = allPieces, empty
+#variables = pawnDoubleMove (1), whiteKingMoved (1), blackKingMoved (1), turn (201)
 
 
 #backLine(color) =
@@ -30,18 +36,8 @@
 #allPieces = singleColorPieces(white), singleColorPieces(black)
 
 
-#players = white (10), black (10)
-#pieces = allPieces, empty
-#variables = pawnDoubleMove (1), whiteKingMoved (1), blackKingMoved (1), turn (201)
 
-
-#anySquare =
-    (
-        right
-      + left
-      + up
-      + down
-    )*
+#anySquare = (left* + right*)(up* + down*)
 
 #anyNeighborSquare =
     (
@@ -220,11 +216,7 @@
     (
         {? checked(opponentColor; color; backDirection)}[$ opponentColor=0,color=10]
       + {! checked(opponentColor; color; backDirection)}[$ color=5,opponentColor=5]
-    )
-    (
-        {$ turn>200}->>{}
-      + {$ turn<=200}[$ turn=turn+1]->opponentColor
-    )
+    )->>[$ turn=turn+1]->opponentColor
 
 #rules = ->white
     (

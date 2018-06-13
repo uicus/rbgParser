@@ -1,9 +1,15 @@
+// Paper soccer
 // notes:
 // - 10x10 pitch + 2x1 goals
 // - being unable to move ball means a defeat
 // - goal is single square in the center of the last/first line, you must reach this square to win
 // - edges are marked with "visited" for the sake of simplicity
 // - empty squares are always empty, their purpose is to place ball (i.e. current square) at them
+
+
+#players = white (1), black (1)
+#pieces = ball, whiteGoal, blackGoal, empty, visited, notVisited, justArrived
+#variables =
 
 
 #leftMarkedTriplet(mark; between) = mark, between, between
@@ -70,12 +76,7 @@
     )
 
 
-#players = white (1), black (1)
-#pieces = ball, whiteGoal, blackGoal, empty, visited, notVisited, justArrived
-#variables =
-
-
-#findBall = (up+down+left+right)*{ball}[empty]
+#findBall = ((up* + down*)(left* + right*){ball}[empty]
 
 #canMoveFurther =
     up{visited}
@@ -127,7 +128,7 @@
     singleJump
     (
         changeJustArrivedIntoVisited
-        singleJump->>
+        singleJump
     )*
     {! canMoveFurther}
     changeJustArrivedIntoVisited
