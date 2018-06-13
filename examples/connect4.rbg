@@ -1,103 +1,36 @@
-#m33 = m11  m11  m11
-#m30 = m10  m10  m10
-#m3n3 = m1n1  m1n1  m1n1
-#m03 = m01  m01  m01
-#m0n3 = m1n1  m0n1  mn1n1
-#mn33 = mn11  mn11  mn11
-#mn30 = mn1n1  mn10  mn11
-#mn3n3 = mn1n1  mn1n1  mn1n1
-// notes:
+// Connect4
 
-// #game = "Connect4"
-
-// #board = [e,e,e,e,e,e,e]
-//          [e,e,e,e,e,e,e]
-//          [e,e,e,e,e,e,e]
-//          [e,e,e,e,e,e,e]
-//          [e,e,e,e,e,e,e]
-//          [e,e,e,e,e,e,e]
-#board = v00 [e] { m01 : v01, m10 : v10, m11 : v11 }
-         v10 [e] { mn10 : v00, mn11 : v01, m01 : v11, m10 : v20, m11 : v21 }
-         v20 [e] { mn10 : v10, mn11 : v11, m01 : v21, m10 : v30, m11 : v31 }
-         v30 [e] { mn10 : v20, mn11 : v21, m01 : v31, m10 : v40, m11 : v41 }
-         v40 [e] { mn10 : v30, mn11 : v31, m01 : v41, m10 : v50, m11 : v51 }
-         v50 [e] { mn10 : v40, mn11 : v41, m01 : v51, m10 : v60, m11 : v61 }
-         v60 [e] { mn10 : v50, mn11 : v51, m01 : v61 }
-         v01 [e] { m0n1 : v00, m01 : v02, m1n1 : v10, m10 : v11, m11 : v12 }
-         v11 [e] { mn1n1 : v00, mn10 : v01, mn11 : v02, m0n1 : v10, m01 : v12, m1n1 : v20, m10 : v21, m11 : v22 }
-         v21 [e] { mn1n1 : v10, mn10 : v11, mn11 : v12, m0n1 : v20, m01 : v22, m1n1 : v30, m10 : v31, m11 : v32 }
-         v31 [e] { mn1n1 : v20, mn10 : v21, mn11 : v22, m0n1 : v30, m01 : v32, m1n1 : v40, m10 : v41, m11 : v42 }
-         v41 [e] { mn1n1 : v30, mn10 : v31, mn11 : v32, m0n1 : v40, m01 : v42, m1n1 : v50, m10 : v51, m11 : v52 }
-         v51 [e] { mn1n1 : v40, mn10 : v41, mn11 : v42, m0n1 : v50, m01 : v52, m1n1 : v60, m10 : v61, m11 : v62 }
-         v61 [e] { mn1n1 : v50, mn10 : v51, mn11 : v52, m0n1 : v60, m01 : v62 }
-         v02 [e] { m0n1 : v01, m01 : v03, m1n1 : v11, m10 : v12, m11 : v13 }
-         v12 [e] { mn1n1 : v01, mn10 : v02, mn11 : v03, m0n1 : v11, m01 : v13, m1n1 : v21, m10 : v22, m11 : v23 }
-         v22 [e] { mn1n1 : v11, mn10 : v12, mn11 : v13, m0n1 : v21, m01 : v23, m1n1 : v31, m10 : v32, m11 : v33 }
-         v32 [e] { mn1n1 : v21, mn10 : v22, mn11 : v23, m0n1 : v31, m01 : v33, m1n1 : v41, m10 : v42, m11 : v43 }
-         v42 [e] { mn1n1 : v31, mn10 : v32, mn11 : v33, m0n1 : v41, m01 : v43, m1n1 : v51, m10 : v52, m11 : v53 }
-         v52 [e] { mn1n1 : v41, mn10 : v42, mn11 : v43, m0n1 : v51, m01 : v53, m1n1 : v61, m10 : v62, m11 : v63 }
-         v62 [e] { mn1n1 : v51, mn10 : v52, mn11 : v53, m0n1 : v61, m01 : v63 }
-         v03 [e] { m0n1 : v02, m01 : v04, m1n1 : v12, m10 : v13, m11 : v14 }
-         v13 [e] { mn1n1 : v02, mn10 : v03, mn11 : v04, m0n1 : v12, m01 : v14, m1n1 : v22, m10 : v23, m11 : v24 }
-         v23 [e] { mn1n1 : v12, mn10 : v13, mn11 : v14, m0n1 : v22, m01 : v24, m1n1 : v32, m10 : v33, m11 : v34 }
-         v33 [e] { mn1n1 : v22, mn10 : v23, mn11 : v24, m0n1 : v32, m01 : v34, m1n1 : v42, m10 : v43, m11 : v44 }
-         v43 [e] { mn1n1 : v32, mn10 : v33, mn11 : v34, m0n1 : v42, m01 : v44, m1n1 : v52, m10 : v53, m11 : v54 }
-         v53 [e] { mn1n1 : v42, mn10 : v43, mn11 : v44, m0n1 : v52, m01 : v54, m1n1 : v62, m10 : v63, m11 : v64 }
-         v63 [e] { mn1n1 : v52, mn10 : v53, mn11 : v54, m0n1 : v62, m01 : v64 }
-         v04 [e] { m0n1 : v03, m01 : v05, m1n1 : v13, m10 : v14, m11 : v15 }
-         v14 [e] { mn1n1 : v03, mn10 : v04, mn11 : v05, m0n1 : v13, m01 : v15, m1n1 : v23, m10 : v24, m11 : v25 }
-         v24 [e] { mn1n1 : v13, mn10 : v14, mn11 : v15, m0n1 : v23, m01 : v25, m1n1 : v33, m10 : v34, m11 : v35 }
-         v34 [e] { mn1n1 : v23, mn10 : v24, mn11 : v25, m0n1 : v33, m01 : v35, m1n1 : v43, m10 : v44, m11 : v45 }
-         v44 [e] { mn1n1 : v33, mn10 : v34, mn11 : v35, m0n1 : v43, m01 : v45, m1n1 : v53, m10 : v54, m11 : v55 }
-         v54 [e] { mn1n1 : v43, mn10 : v44, mn11 : v45, m0n1 : v53, m01 : v55, m1n1 : v63, m10 : v64, m11 : v65 }
-         v64 [e] { mn1n1 : v53, mn10 : v54, mn11 : v55, m0n1 : v63, m01 : v65 }
-         v05 [e] { m0n1 : v04, m01 : v06, m1n1 : v14, m10 : v15, m11 : v16 }
-         v15 [e] { mn1n1 : v04, mn10 : v05, mn11 : v06, m0n1 : v14, m01 : v16, m1n1 : v24, m10 : v25, m11 : v26 }
-         v25 [e] { mn1n1 : v14, mn10 : v15, mn11 : v16, m0n1 : v24, m01 : v26, m1n1 : v34, m10 : v35, m11 : v36 }
-         v35 [e] { mn1n1 : v24, mn10 : v25, mn11 : v26, m0n1 : v34, m01 : v36, m1n1 : v44, m10 : v45, m11 : v46 }
-         v45 [e] { mn1n1 : v34, mn10 : v35, mn11 : v36, m0n1 : v44, m01 : v46, m1n1 : v54, m10 : v55, m11 : v56 }
-         v55 [e] { mn1n1 : v44, mn10 : v45, mn11 : v46, m0n1 : v54, m01 : v56, m1n1 : v64, m10 : v65, m11 : v66 }
-         v65 [e] { mn1n1 : v54, mn10 : v55, mn11 : v56, m0n1 : v64, m01 : v66 }
-         v06 [e] { m0n1 : v05, m1n1 : v15, m10 : v16 }
-         v16 [e] { mn1n1 : v05, mn10 : v06, m0n1 : v15, m1n1 : v25, m10 : v26 }
-         v26 [e] { mn1n1 : v15, mn10 : v16, m0n1 : v25, m1n1 : v35, m10 : v36 }
-         v36 [e] { mn1n1 : v25, mn10 : v26, m0n1 : v35, m1n1 : v45, m10 : v46 }
-         v46 [e] { mn1n1 : v35, mn10 : v36, m0n1 : v45, m1n1 : v55, m10 : v56 }
-         v56 [e] { mn1n1 : v45, mn10 : v46, m0n1 : v55, m1n1 : v65, m10 : v66 }
-         v66 [e] { mn1n1 : v55, mn10 : v56, m0n1 : v65 }
-
-#players = red(11), yellow(11)
+#players = red(100), yellow(100)
 #pieces = e, r, y
 #variables =
+#board = rectangle(up,down,left,right,
+         [e,e,e,e,e,e,e]
+         [e,e,e,e,e,e,e]
+         [e,e,e,e,e,e,e]
+         [e,e,e,e,e,e,e]
+         [e,e,e,e,e,e,e]
+         [e,e,e,e,e,e,e])
 
-#anySquare = ((m10 *+mn10 *)(m01 *+m0n1 *))
+#anySquare = ((up* + down*)(left* + right*))
 
+#winat(piece; shift1; shift2) = (((shift1) {piece})^2 ((shift1) {piece} + (shift2)^3 {piece}))
 #winat(piece) = (
-      (mn1n1 {piece})^2(mn1n1 {piece}+m33 {piece})
-     +(mn10 {piece})^2(mn10 {piece}+m30 {piece})
-     +(mn11 {piece})^2(mn11 {piece}+m3n3 {piece})
-     +(m0n1 {piece})^2(m0n1 {piece}+m03 {piece})
-     +(m01 {piece})^2(m01 {piece}+m0n3 {piece})
-     +(m1n1 {piece})^2(m1n1 {piece}+mn33 {piece})
-     +(m10 {piece})^2(m10 {piece}+mn30 {piece})
-     +(m11 {piece})^2(m11 {piece}+mn3n3 {piece})
- )
+      winat(piece; up left; down right)
+    + winat(piece; up; down)
+    + winat(piece; up right; up left)
+    + winat(piece; left; right)
+    + winat(piece; right; left)
+    + winat(piece; down left; up right)
+    + winat(piece; down; up)
+    + winat(piece; down right; up left))
 
-#move(color; oppColor; piece) = (
-    anySquare {e} {!m0n1 {e}} ->>
-    (
-        {? winat(piece)}[$color=10, oppColor=0]->>{}
-      + {!winat(piece)}
+#move(me; opp; piece) = (
+      anySquare {e} {! down {e}} ->>
+      (
+          {? winat(piece)} [$ me=100] [$ opp=0] ->> {}
+        + {! winat(piece)} [piece] ->opp
+      )
     )
-    [piece]
-  )
 
-#rules =
-    [$red=5, yellow=5]
-    ->red
-    (
-        move(red;yellow;r) ->yellow
-        move(yellow;red;y) ->red
-    )*
-
-
+#rules = [$ red=50] [$ yellow=50] ->red
+    (move(red; yellow; r) move(yellow; red; y))*
