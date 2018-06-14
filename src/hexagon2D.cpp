@@ -80,38 +80,38 @@ bool hexagon2D::cell_exists(uint line_number,uint column_number)const{
 }
 
 void hexagon2D::transform_square(uint line_number, uint column_number, unchecked_graph& ug)const{
-    token vertex_name("x"+std::to_string(column_number)+"y"+std::to_string(line_number));
+    token vertex_name("hx"+std::to_string(column_number)+"y"+std::to_string(line_number));
     ug.add_vertex(vertex_name,token(starting_pieces[line_number][column_number]));
     if(line_number>0){
         if((column_number<starting_pieces[line_number].size()-1 or below_peak_line(line_number))
         and cell_exists(line_number-1,column_number+(below_peak_line(line_number)?1:0))){
-            token target("x"+std::to_string(column_number+(below_peak_line(line_number)?1:0))+"y"+std::to_string(line_number-1));
+            token target("hx"+std::to_string(column_number+(below_peak_line(line_number)?1:0))+"y"+std::to_string(line_number-1));
             ug.add_edge(vertex_name,target,generator_position,ne);
         }
         if((column_number>0 or below_peak_line(line_number))
         and cell_exists(line_number-1,column_number-(below_peak_line(line_number)?0:1))){
-            token target("x"+std::to_string(column_number-(below_peak_line(line_number)?0:1))+"y"+std::to_string(line_number-1));
+            token target("hx"+std::to_string(column_number-(below_peak_line(line_number)?0:1))+"y"+std::to_string(line_number-1));
             ug.add_edge(vertex_name,target,generator_position,nw);
         }
     }
     if(line_number<starting_pieces.size()-1){
         if((column_number<starting_pieces[line_number].size()-1 or above_peak_line(line_number))
         and cell_exists(line_number+1,column_number+(above_peak_line(line_number)?1:0))){
-            token target("x"+std::to_string(column_number+(above_peak_line(line_number)?1:0))+"y"+std::to_string(line_number+1));
+            token target("hx"+std::to_string(column_number+(above_peak_line(line_number)?1:0))+"y"+std::to_string(line_number+1));
             ug.add_edge(vertex_name,target,generator_position,se);
         }
         if((column_number>0 or above_peak_line(line_number))
         and cell_exists(line_number+1,column_number-(above_peak_line(line_number)?0:1))){
-            token target("x"+std::to_string(column_number-(above_peak_line(line_number)?0:1))+"y"+std::to_string(line_number+1));
+            token target("hx"+std::to_string(column_number-(above_peak_line(line_number)?0:1))+"y"+std::to_string(line_number+1));
             ug.add_edge(vertex_name,target,generator_position,sw);
         }
     }
     if(column_number<starting_pieces[line_number].size()-1 and cell_exists(line_number,column_number+1)){
-        token target("x"+std::to_string(column_number+1)+"y"+std::to_string(line_number));
+        token target("hx"+std::to_string(column_number+1)+"y"+std::to_string(line_number));
         ug.add_edge(vertex_name,target,generator_position,e);
     }
     if(column_number>0 and cell_exists(line_number,column_number-1)){
-        token target("x"+std::to_string(column_number-1)+"y"+std::to_string(line_number));
+        token target("hx"+std::to_string(column_number-1)+"y"+std::to_string(line_number));
         ug.add_edge(vertex_name,target,generator_position,w);
     }
 }

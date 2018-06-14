@@ -7,7 +7,7 @@
 #variables = turn(200)
 #pieces = northPiece, northEastPiece, southEastPiece, southPiece, southWestPiece, northWestPiece, empty
 
-#E = empty
+#e = empty
 #N = northPiece
 #NE = northEastPiece
 #SE = southEastPiece
@@ -20,15 +20,15 @@
                   [   ,   ,   ,   , N , N ,   ,   ,   ,   ]
                 [   ,   ,   ,   , N , N , N ,   ,   ,   ,   ]
               [   ,   ,   ,   , N , N , N , N ,   ,   ,   ,   ]
-            [NW ,NW ,NW ,NW , E , E , E , E , E ,NE ,NE ,NE ,NE ]
-          [   ,NW ,NW ,NW , E , E , E , E , E , E ,NE ,NE ,NE ,   ]
-        [   ,   ,NW ,NW , E , E , E , E , E , E , E ,NE ,NE ,   ,   ]
-      [   ,   ,   ,NW , E , E , E , E , E , E , E , E ,NE ,   ,   ,   ]
-    [   ,   ,   ,   , E , E , E , E , E , E , E , E , E ,   ,   ,   ,   ]
-      [   ,   ,   ,SW , E , E , E , E , E , E , E , E ,SE ,   ,   ,   ]
-        [   ,   ,SW ,SW , E , E , E , E , E , E , E ,SE ,SE ,   ,   ]
-          [   ,SW ,SW ,SW , E , E , E , E , E , E ,SE ,SE ,SE ,   ]
-            [SW ,SW ,SW ,SW , E , E , E , E , E ,SE ,SE ,SE ,SE ]
+            [NW ,NW ,NW ,NW , e , e , e , e , e ,NE ,NE ,NE ,NE ]
+          [   ,NW ,NW ,NW , e , e , e , e , e , e ,NE ,NE ,NE ,   ]
+        [   ,   ,NW ,NW , e , e , e , e , e , e , e ,NE ,NE ,   ,   ]
+      [   ,   ,   ,NW , e , e , e , e , e , e , e , e ,NE ,   ,   ,   ]
+    [   ,   ,   ,   , e , e , e , e , e , e , e , e , e ,   ,   ,   ,   ]
+      [   ,   ,   ,SW , e , e , e , e , e , e , e , e ,SE ,   ,   ,   ]
+        [   ,   ,SW ,SW , e , e , e , e , e , e , e ,SE ,SE ,   ,   ]
+          [   ,SW ,SW ,SW , e , e , e , e , e , e ,SE ,SE ,SE ,   ]
+            [SW ,SW ,SW ,SW , e , e , e , e , e ,SE ,SE ,SE ,SE ]
               [   ,   ,   ,   , S , S , S , S ,   ,   ,   ,   ]
                 [   ,   ,   ,   , S , S , S ,   ,   ,   ,   ]
                   [   ,   ,   ,   , S , S ,   ,   ,   ,   ]
@@ -112,7 +112,7 @@
     (
         neighborJump
       + singleJump*
-    )->>[playerDirection~Piece][$ turn = turn+1]
+    )[playerDirection~Piece]->>[$ turn = turn+1]
     (
         {? winCondition} everybodyLooses [$ playerDirection~Player = 100]->>{}
       + {! winCondition} ->nextPlayerDirection~Player
