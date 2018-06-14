@@ -24,7 +24,7 @@ class power_move : public game_move{
         bool modifies(void)const override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
-        uint priority(void)const override{return 3;};
+        uint priority(void)const override{return 2;};
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;

@@ -43,19 +43,21 @@ std::string power_move::print_power(void)const{
 
 std::string power_move::to_rbg(uint indent)const{
     std::string result = "";
-    result += open_bracket_if_necessary(priority(),contained_move->priority());
-    result += contained_move->to_rbg(indent);
-    result += close_bracket_if_necessary(priority(),contained_move->priority());
-    result += print_power();
+    for(uint i=0;i<number_of_repetitions;++i){
+        result += open_bracket_if_necessary(priority(),contained_move->priority());
+        result += contained_move->to_rbg(indent);
+        result += close_bracket_if_necessary(priority(),contained_move->priority());
+    }
     return result;
 }
 
 std::string power_move::to_rbg()const{
     std::string result = "";
-    result += open_bracket_if_necessary(priority(),contained_move->priority());
-    result += contained_move->to_rbg();
-    result += close_bracket_if_necessary(priority(),contained_move->priority());
-    result += print_power();
+    for(uint i=0;i<number_of_repetitions;++i){
+        result += open_bracket_if_necessary(priority(),contained_move->priority());
+        result += contained_move->to_rbg();
+        result += close_bracket_if_necessary(priority(),contained_move->priority());
+    }
     return result;
 }
 
