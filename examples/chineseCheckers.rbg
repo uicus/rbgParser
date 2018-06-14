@@ -1,37 +1,38 @@
 // Chinese checkers
 // six players variant
+// no alliances
 // first win ends the game
 
 #players = northPlayer(100), northEastPlayer(100), southEastPlayer(100), southPlayer(100), southWestPlayer(100), northWestPlayer(100)
 #variables = turn(200)
 #pieces = northPiece, northEastPiece, southEastPiece, southPiece, southWestPiece, northWestPiece, empty
 
-#e = empty
-#n = northPiece
-#ne = northEastPiece
-#se = southEastPiece
-#s = southPiece
-#sw = southWestPiece
-#nw = northWestPiece
+#E = empty
+#N = northPiece
+#NE = northEastPiece
+#SE = southEastPiece
+#S = southPiece
+#SW = southWestPiece
+#NW = northWestPiece
 
 #board = hexagon(northWest, northEast, east, southEast, southWest, west,
-                    [   ,   ,   ,   , n ,   ,   ,   ,   ]
-                  [   ,   ,   ,   , n , n ,   ,   ,   ,   ]
-                [   ,   ,   ,   , n , n , n ,   ,   ,   ,   ]
-              [   ,   ,   ,   , n , n , n , n ,   ,   ,   ,   ]
-            [nw ,nw ,nw ,nw , e , e , e , e , e ,ne ,ne ,ne ,ne ]
-          [   ,nw ,nw ,nw , e , e , e , e , e , e ,ne ,ne ,ne ,   ]
-        [   ,   ,nw ,nw , e , e , e , e , e , e , e ,ne ,ne ,   ,   ]
-      [   ,   ,   ,nw , e , e , e , e , e , e , e , e ,ne ,   ,   ,   ]
-    [   ,   ,   ,   , e , e , e , e , e , e , e , e , e ,   ,   ,   ,   ]
-      [   ,   ,   ,sw , e , e , e , e , e , e , e , e ,se ,   ,   ,   ]
-        [   ,   ,sw ,sw , e , e , e , e , e , e , e ,se ,se ,   ,   ]
-          [   ,sw ,sw ,sw , e , e , e , e , e , e ,se ,se ,se ,   ]
-            [sw ,sw ,sw ,sw , e , e , e , e , e ,se ,se ,se ,se ]
-              [   ,   ,   ,   , s , s , s , s ,   ,   ,   ,   ]
-                [   ,   ,   ,   , s , s , s ,   ,   ,   ,   ]
-                  [   ,   ,   ,   , s , s ,   ,   ,   ,   ]
-                    [   ,   ,   ,   , s ,   ,   ,   ,   ])
+                    [   ,   ,   ,   , N ,   ,   ,   ,   ]
+                  [   ,   ,   ,   , N , N ,   ,   ,   ,   ]
+                [   ,   ,   ,   , N , N , N ,   ,   ,   ,   ]
+              [   ,   ,   ,   , N , N , N , N ,   ,   ,   ,   ]
+            [NW ,NW ,NW ,NW , E , E , E , E , E ,NE ,NE ,NE ,NE ]
+          [   ,NW ,NW ,NW , E , E , E , E , E , E ,NE ,NE ,NE ,   ]
+        [   ,   ,NW ,NW , E , E , E , E , E , E , E ,NE ,NE ,   ,   ]
+      [   ,   ,   ,NW , E , E , E , E , E , E , E , E ,NE ,   ,   ,   ]
+    [   ,   ,   ,   , E , E , E , E , E , E , E , E , E ,   ,   ,   ,   ]
+      [   ,   ,   ,SW , E , E , E , E , E , E , E , E ,SE ,   ,   ,   ]
+        [   ,   ,SW ,SW , E , E , E , E , E , E , E ,SE ,SE ,   ,   ]
+          [   ,SW ,SW ,SW , E , E , E , E , E , E ,SE ,SE ,SE ,   ]
+            [SW ,SW ,SW ,SW , E , E , E , E , E ,SE ,SE ,SE ,SE ]
+              [   ,   ,   ,   , S , S , S , S ,   ,   ,   ,   ]
+                [   ,   ,   ,   , S , S , S ,   ,   ,   ,   ]
+                  [   ,   ,   ,   , S , S ,   ,   ,   ,   ]
+                    [   ,   ,   ,   , S ,   ,   ,   ,   ])
 
 #anyNeighbor = (northWest + northEast + east + southEast + southWest + west)
 
@@ -106,6 +107,7 @@
     {piece}[empty]
 
 #move(playerDirection; winCondition; nextPlayerDirection) =
+    anySquare
     pickUpPiece(playerDirection~Piece)
     (
         neighborJump
