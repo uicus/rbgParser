@@ -70,12 +70,11 @@
 #removePiece(piece) = {piece}[empty]
 
 #findAndCaptureOpponent(color) =
-    anySquare
+    anySquare {color~Piece}
     (
         {! isPartOfMill(color)}
       + {! anySquare {color~Piece}{! isPartOfMill(color)}}
-    )
-    removePiece(color~Piece)
+    )->>[empty]
 
 #canContinueGame(color) = {$ color~Piece > 2}
 
@@ -85,19 +84,19 @@
         {? isPartOfMill(color)}findAndCaptureOpponent(opponentColor)
       + {! isPartOfMill(color)}
     )
-    ->>[$ color=50, opponentColor=50, turn=turn+1]
-    ->>[$ color=100, opponentColor=0]->opponentColor
+    ->>[$ color=50, opponentColor=50]
+    ->>[$ color=100, opponentColor=0, turn=turn+1]->opponentColor
 
 #firstPhaseMove(color;opponentColor) =
     anySquare
     handlePiecePlacement(color;opponentColor)
 
 #standardMovement(color) =
-    {$ color~Piece > 3}
+    {$ color~Piece > 2}
     anyNeighbor
 
 #flyingMovement(color) =
-    {$ color~Piece == 3}
+    {$ color~Piece == 2}
     anySquare
 
 #secondPhaseMove(color;opponentColor) =
