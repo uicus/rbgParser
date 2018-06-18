@@ -17,4 +17,4 @@
 #variables =
 #players = nobody (1)
 
-#rules = ->>{}
+#rules = up{? [empty]{! [white]} [black]}->nobody[empty]->nobody

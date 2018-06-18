@@ -186,7 +186,7 @@
         )
       + enPassantPawnMove(forwardDirection; color)
     ){! checked(color; opponentColor; forwardDirection)}
-    (
+    ->>(
         {? checked(opponentColor; color; backDirection)}[$ opponentColor=0,color=100]
       + {! checked(opponentColor; color; backDirection)}[$ color=50,opponentColor=50]
     )->>[$ turn=turn+1]->opponentColor

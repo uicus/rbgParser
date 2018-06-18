@@ -43,6 +43,7 @@ int main(int argc, const char** argv){
             rbg_parser::parsed_game pg = g.parse_game(msg);
             if(msg.is_empty())
                 std::cout<<"Verification successful"<<std::endl;
+            std::cout<<"Straightness: "<<pg.get_moves()->compute_k_straightness().final_result()<<std::endl;
             out<<pg.to_rbg(true);
         }
         catch(rbg_parser::message& m){

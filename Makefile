@@ -43,7 +43,7 @@ $(BIN_DIR):
 
 verify: $(EXAMPLES)
 	@$(foreach game,$(EXAMPLES),                     \
-		echo 'Verifying idempotency on $(game)...';  \
+		echo 'Verifying idempotence on $(game)...';  \
 		$(BIN_DIR)/$(TARGET) -o test1.rbg $(game);   \
 		$(BIN_DIR)/$(TARGET) -o test2.rbg test1.rbg; \
 		diff test1.rbg test2.rbg;                    \

@@ -23,6 +23,12 @@ std::unique_ptr<game_move> move_check::simplify(void){
     return std::unique_ptr<game_move>(new move_check(content->simplify(), negated));
 }
 
+straightness_result move_check::compute_k_straightness(void)const{
+    auto result = content->compute_k_straightness();
+    result.wrap_in_check();
+    return result;
+}
+
 std::string move_check::to_rbg(uint indent)const{
     std::string result = "";
     result += negated ? "{!" : "{?";
