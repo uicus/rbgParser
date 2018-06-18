@@ -11,6 +11,7 @@
 #include"unchecked_graph.hpp"
 #include"rectangle2D.hpp"
 #include"hexagon2D.hpp"
+#include"cuboid3D.hpp"
 
 namespace rbg_parser{
 
@@ -258,6 +259,7 @@ std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarat
     std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarations&, slice_iterator&, messages_container&)>> result;
     result.push_back(parse_hexagon2D);
     result.push_back(parse_rectangle2D);
+    result.push_back(parse_cuboid3D);
     result.push_back(parse_unchecked_graph); // must be last
     return std::move(result);
 }

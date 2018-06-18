@@ -50,6 +50,7 @@ enum token_type{
     rules,
     board,
     hexagon,
+    cuboid,
     rectangle,
     number,
     identifier, // must third-to-last
