@@ -24,9 +24,6 @@ class player_switch : public game_move{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
-        void gather_concatenation_elements(
-            std::vector<std::unique_ptr<game_move>>& elements,
-            std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         straightness_result compute_k_straightness(void)const override;
         bool has_finisher(void)const override{return true;};
         const token& get_player(void)const;
@@ -48,9 +45,6 @@ class keeper_switch : public game_move{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
-        void gather_concatenation_elements(
-            std::vector<std::unique_ptr<game_move>>& elements,
-            std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         straightness_result compute_k_straightness(void)const override;
         bool has_finisher(void)const override{return true;};
         bool is_deterministic(void)const;
