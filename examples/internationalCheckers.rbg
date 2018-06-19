@@ -1,0 +1,156 @@
+// International checkers
+// -- game ends after 20 moves without capturing or moving a man
+
+#players = black(100), white(100)
+#pieces =
+    empty, whiteMan, whiteKing, blackMan, blackKing,
+    toBeRemoved, manToBeRemoved, kingToBeRemoved, toBeRemovedDuringCheck, manToBePlaced, kingToBePlaced
+#variables = stagnation(20), actuallyCapturedPieces(12)
+
+#line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty]
+#offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece]
+#board = rectangle(up,down,left,right,
+         line(blackMan)
+         offsetLine(blackMan)
+         line(blackMan)
+         offsetLine(empty)
+         line(empty)
+         offsetLine(whiteMan)
+         line(whiteMan)
+         offsetLine(whiteMan))
+
+#anySquare = ((up* + down*)(left* + right*))
+#grabPiece(piece) = {piece}[empty]
+
+#jumpWhileRealMove(direction; opp) =
+    direction
+    {opp~Man, opp~King}
+    [toBeRemoved]
+    direction
+    {empty}
+
+#jumpWhileChecking(direction; opp) =
+    direction
+    {opp~Man, opp~King, toBeRemoved}
+    [toBeRemovedDuringCheck]
+    direction
+    {empty, manToBePlaced, kingToBePlaced}
+
+#jumpWhileCleaning(direction) =
+    direction
+    {toBeRemoved}
+    [empty]
+    direction
+
+#manJumpWhileRealMove(opp; forwardDirection) =
+    (
+        jumpWhileRealMove(forwardDirection left;opp)
+      + jumpWhileRealMove(forwardDirection right;opp)
+    )
+
+#manJumpWhileChecking(opp; forwardDirection) =
+    (
+        jumpWhileChecking(forwardDirection left;opp)
+      + jumpWhileChecking(forwardDirection right;opp)
+    )
+
+#realManCapturingMove(me; opp; forwardDirection) =
+    grabPiece(me~Man)
+    manJumpWhileRealMove(opp; forwardDirection)
+    (manJumpWhileRealMove(opp; forwardDirection))*
+
+#checkingManCapturingMove(me; opp; forwardDirection) =
+    grabPiece(me~Man)
+    manJumpWhileChecking(opp; forwardDirection)
+    (manJumpWhileChecking(opp; forwardDirection))*
+
+#kingJumpWhileRealMove(opp) =
+    (
+        manJumpWhileRealMove(opp; up)
+      + manJumpWhileRealMove(opp; down)
+    )
+
+#kingJumpWhileChecking(opp) =
+    (
+        manJumpWhileChecking(opp; up)
+      + manJumpWhileChecking(opp; down)
+    )
+
+#realKingCapturingMove(me; opp) =
+    grabPiece(me~King)
+    kingJumpWhileRealMove(opp)
+    (kingJumpWhileRealMove(opp))*
+
+#checkingKingCapturingMove(me; opp) =
+    grabPiece(me~King)
+    kingJumpWhileChecking(opp)
+    (kingJumpWhileChecking(opp))*
+
+#noncapturingManMove(me; forwardDirection) =
+    grabPiece(me~Man)
+    forwardDirection (left + right)
+    {empty}
+
+#noncapturingKingMove(me) =
+    grabPiece(me~King)
+    (up + down)(left + right)
+    {empty}
+
+#realKingMove(me; opp) =
+    (
+        realKingCapturingMove(me; opp)
+      + noncapturingKingMove(me)
+    )[kingToBePlaced]
+
+#realManMove(me; opp; forwardDirection) =
+    (
+        realManCapturingMove(me; opp; forwardDirection)
+      + noncapturingManMove(me; forwardDirection)
+    )[manToBePlaced]
+
+#realMove(me; opp; forwardDirection) =
+    anySquare
+    (
+        realKingMove(me; opp)
+      + realManMove(me; opp; forwardDirection)
+    )
+
+#checkingMove(me; opp; forwardDirection) =
+    anySquare
+    (
+        checkingKingCapturingMove(me; opp)
+      + checkingManCapturingMove(me; opp; forwardDirection)
+    )
+
+#cleaningJumpSequence(me) =
+    (
+        jumpWhileCleaning(up left)
+      + jumpWhileCleaning(up right)
+      + jumpWhileCleaning(down left)
+      + jumpWhileCleaning(down right)
+    )
+
+#cleaningMove(me) =
+    (
+        {manToBePlaced}[me~Man]
+      + {kingToBePlaced}[me~King]
+    )
+    cleaningJumpSequence(me)*
+    grabPiece(manToBeRemoved, kingToBeRemoved)
+
+#move(me; opp; forwardDirection) =
+    realMove(me; opp; forwardDirection)
+    {!
+        [$ actuallyCapturedPieces = toBeRemoved]
+        checkingMove(me; opp; forwardDirection)
+        {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
+    }->>
+    cleaningMove(me)
+    {$ toBeRemoved + manToBeRemoved + kingToBeRemoved + manToBePlaced + kingToBePlaced == 0}
+    [$ me=50] [$ opp=50] ->>
+    [$ stagnation = stagnation+1][$ me=100] [$ opp=0] ->opp
+
+#rules = ->black (
+      move(black; white; down)
+      move(white; black; up)
+    )*
