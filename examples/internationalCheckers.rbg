@@ -55,12 +55,12 @@
     )
 
 #realManCapturingMove(me; opp; forwardDirection) =
-    grabPiece(me~Man)
+    {me~Man}[manToBeRemoved]
     manJumpWhileRealMove(opp; forwardDirection)
     (manJumpWhileRealMove(opp; forwardDirection))*
 
 #checkingManCapturingMove(me; opp; forwardDirection) =
-    grabPiece(me~Man)
+    grabPiece(me~Man, manToBeRemoved)
     manJumpWhileChecking(opp; forwardDirection)
     (manJumpWhileChecking(opp; forwardDirection))*
 
@@ -77,22 +77,22 @@
     )
 
 #realKingCapturingMove(me; opp) =
-    grabPiece(me~King)
+    {me~King}[kingToBeRemoved]
     kingJumpWhileRealMove(opp)
     (kingJumpWhileRealMove(opp))*
 
 #checkingKingCapturingMove(me; opp) =
-    grabPiece(me~King)
+    grabPiece(me~King, kingToBeRemoved)
     kingJumpWhileChecking(opp)
     (kingJumpWhileChecking(opp))*
 
 #noncapturingManMove(me; forwardDirection) =
-    grabPiece(me~Man)
+    {me~Man}[manToBeRemoved]
     forwardDirection (left + right)
     {empty}
 
 #noncapturingKingMove(me) =
-    grabPiece(me~King)
+    {me~King}[kingToBeRemoved]
     (up + down)(left + right)
     {empty}
 
@@ -130,12 +130,18 @@
       + jumpWhileCleaning(down right)
     )
 
+#cleaningNieghborMove(me) =
+    (up + down)(left + right)
+
 #cleaningMove(me) =
     (
         {manToBePlaced}[me~Man]
       + {kingToBePlaced}[me~King]
     )
-    cleaningJumpSequence(me)*
+    (
+        cleaningJumpSequence(me)*
+      + (up + down)(left + right)
+    )
     grabPiece(manToBeRemoved, kingToBeRemoved)
 
 #move(me; opp; forwardDirection) =
