@@ -143,7 +143,7 @@
         jumpWhileCleaning(up left(up left)*)
       + jumpWhileCleaning(up right(up right)*)
       + jumpWhileCleaning(down left(down left)*)
-      + jumpWhileCleaning(down right(down rgiht)*)
+      + jumpWhileCleaning(down right(down right)*)
     )
 
 #cleaningNeighborMove(me) =
