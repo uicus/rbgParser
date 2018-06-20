@@ -128,7 +128,7 @@
     anySquare
     (
         realKingMove(me; opp)
-      + realManMove(me; opp; forwardDirection)
+      + realManMove(me; opp; forwardDirection)[$ stagnation = 0]
     )
 
 #checkingMove(me; opp; forwardDirection) =
