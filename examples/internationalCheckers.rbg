@@ -7,14 +7,16 @@
     toBeRemoved, manToBeRemoved, kingToBeRemoved, toBeRemovedDuringCheck, manToBePlaced, kingToBePlaced
 #variables = stagnation(20), actuallyCapturedPieces(12)
 
-#line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty]
-#offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece]
+#line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty, piece, empty]
+#offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece, empty, piece]
 #board = rectangle(up,down,left,right,
     offsetLine(blackMan)
     line(blackMan)
     offsetLine(blackMan)
-    line(empty)
+    line(blackMan)
     offsetLine(empty)
+    line(empty)
+    offsetLine(whiteMan)
     line(whiteMan)
     offsetLine(whiteMan)
     line(whiteMan))
@@ -177,7 +179,7 @@
     [$ me=50] [$ opp=50] ->>
     [$ stagnation = stagnation+1][$ me=100] [$ opp=0] ->opp
 
-#rules = ->black (
-      move(black; white; down)
+#rules = ->white (
       move(white; black; up)
+      move(black; white; down)
     )*
