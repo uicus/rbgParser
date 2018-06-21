@@ -4,7 +4,7 @@
 #players = black(100), white(100)
 #pieces =
     empty, whiteMan, whiteKing, blackMan, blackKing,
-    toBeRemoved, manToBeRemoved, kingToBeRemoved, toBeRemovedDuringCheck, manToBePlaced, kingToBePlaced
+    toBeRemoved, manToBeRemoved, kingToBeRemoved, toBeRemovedDuringCheck, manToBePlaced, kingToBePlaced, manToBeMoved, kingToBeMoved
 #variables = stagnation(20), actuallyCapturedPieces(12)
 
 #line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty, piece, empty]
@@ -23,7 +23,7 @@
 
 #anySquare = ((up* + down*)(left* + right*))
 #grabPiece(piece) = {piece}[empty]
-#dropMan(forwardDirection) =
+#dropMan(me; forwardDirection) =
     {empty} ({? forwardDirection}[manToBePlaced] + {! forwardDirection}[kingToBePlaced])
 
 #jumpWhileRealMove(direction; opp) =
@@ -31,7 +31,7 @@
     {opp~Man, opp~King}
     [toBeRemoved]
     direction
-    {empty}
+    {empty, manToBeRemoved, kingToBeRemoved}
 
 #jumpWhileChecking(direction; opp) =
     direction
@@ -68,16 +68,16 @@
     (manJumpWhileRealMove(opp))*
 
 #checkingManCapturingMove(me; opp) =
-    grabPiece(me~Man, manToBeRemoved)
+    grabPiece(me~Man, manToBeRemoved, manToBeMoved)
     manJumpWhileChecking(opp)
     (manJumpWhileChecking(opp))*
 
 #kingJumpWhileRealMove(opp) =
     (
-        jumpWhileRealMove(up left({empty}up left)*;opp)
-      + jumpWhileRealMove(up right({empty}up right)*;opp)
-      + jumpWhileRealMove(down left({empty}down left)*;opp)
-      + jumpWhileRealMove(down right({empty}down right)*;opp)
+        jumpWhileRealMove(up left({empty, manToBeRemoved, kingToBeRemoved}up left)*;opp)
+      + jumpWhileRealMove(up right({empty, manToBeRemoved, kingToBeRemoved}up right)*;opp)
+      + jumpWhileRealMove(down left({empty, manToBeRemoved, kingToBeRemoved}down left)*;opp)
+      + jumpWhileRealMove(down right({empty, manToBeRemoved, kingToBeRemoved}down right)*;opp)
     )
 
 #kingJumpWhileChecking(opp) =
@@ -94,7 +94,7 @@
     (kingJumpWhileRealMove(opp))*
 
 #checkingKingCapturingMove(me; opp) =
-    grabPiece(me~King, kingToBeRemoved)
+    grabPiece(me~King, kingToBeRemoved, kingToBeMoved)
     kingJumpWhileChecking(opp)
     (kingJumpWhileChecking(opp))*
 
@@ -117,14 +117,21 @@
     (
         realKingCapturingMove(me; opp)
       + noncapturingKingMove(me)
-    )[kingToBePlaced]
+    )
+    (
+        {empty}[kingToBePlaced]
+      + {kingToBeRemoved}[kingToBeMoved]
+    )
 
 #realManMove(me; opp; forwardDirection) =
     (
         realManCapturingMove(me; opp)
       + noncapturingManMove(me; forwardDirection)
     )
-    dropMan(forwardDirection)
+    (
+        {empty}[manToBePlaced]
+      + {manToBeRemoved}[manToBeMoved]
+    )
 
 #realMove(me; opp; forwardDirection) =
     anySquare
@@ -156,16 +163,19 @@
       + (down right)*
     )
 
-#cleaningMove(me) =
+#cleaningMove(me; forwardDirection) =
     (
-        {manToBePlaced}[me~Man]
-      + {kingToBePlaced}[me~King]
+        {manToBePlaced, manToBeMoved}dropMan(me; forwardDirection)
+      + {kingToBePlaced, kingToBeMoved}[me~King]
     )
     (
         cleaningJumpSequence(me)*
       + cleaningNeighborMove(me)
     )
-    grabPiece(manToBeRemoved, kingToBeRemoved)
+    (
+        grabPiece(manToBeRemoved, kingToBeRemoved)
+      + {me~King, me~Man}
+    )
 
 #move(me; opp; forwardDirection) =
     realMove(me; opp; forwardDirection)
@@ -174,8 +184,8 @@
         checkingMove(me; opp; forwardDirection)
         {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
     }->>
-    cleaningMove(me)
-    {$ toBeRemoved + manToBeRemoved + kingToBeRemoved + manToBePlaced + kingToBePlaced == 0}
+    cleaningMove(me; forwardDirection)
+    {$ toBeRemoved + manToBeRemoved + kingToBeRemoved + manToBePlaced + kingToBePlaced + manToBeMoved + kingToBeMoved == 0}
     [$ me=50] [$ opp=50] ->>
     [$ stagnation = stagnation+1][$ me=100] [$ opp=0] ->opp
 

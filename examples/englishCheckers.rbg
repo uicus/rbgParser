@@ -8,14 +8,14 @@
 #line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty]
 #offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece]
 #board = rectangle(up,down,left,right,
-         line(blackMan)
          offsetLine(blackMan)
          line(blackMan)
-         offsetLine(empty)
+         offsetLine(blackMan)
          line(empty)
-         offsetLine(whiteMan)
+         offsetLine(empty)
          line(whiteMan)
-         offsetLine(whiteMan))
+         offsetLine(whiteMan)
+         line(whiteMan))
 
 #anySquare = ((up* + down*)(left* + right*))
 
