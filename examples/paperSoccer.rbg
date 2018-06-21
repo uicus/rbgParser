@@ -80,7 +80,6 @@
 
 #canMoveFurther =
     (up + down + left + right + (up + down)(left + right)){visited}
-  + {! up} + {! down} + {! left} + {! right} + {! up left} + {! up right} + {! down right} + {! down left}
 
 #changeNeighbor(from; to) =
     (
