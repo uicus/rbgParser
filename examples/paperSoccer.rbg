@@ -79,14 +79,8 @@
 #findBall = (up* + down*)(left* + right*){ball}[empty]
 
 #canMoveFurther =
-    up{visited}
-  + down{visited}
-  + left{visited}
-  + right{visited}
-  + up left{visited}
-  + up right{visited}
-  + down left{visited}
-  + down right{visited}
+    (up + down + left + right + (up + down)(left + right)){visited}
+  + {! up} + {! down} + {! left} + {! right} + {! up left} + {! up right} + {! down right} + {! down left}
 
 #changeNeighbor(from; to) =
     (
@@ -127,6 +121,7 @@
 #wholeMove =
     singleJump
     (
+        {? canMoveFurther}
         changeJustArrivedIntoVisited
         singleJump
     )*
