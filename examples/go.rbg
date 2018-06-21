@@ -1,0 +1,128 @@
+// Go 19x19
+// -- area scoring
+// -- no ko rule
+// -- 722 turn limit
+
+#players = black(361), white(361)
+#variables = blackPass(1), whitePass(1), turn(722)
+#pieces = empty, blackStone, whiteStone, toCapture, dame
+
+#boardLine = [empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty]
+#board = rectangle(up,down,left,right,
+         boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine)
+
+#anySquare = (left* + right*)(up* + down*)
+#gotoNeighbor(neighbor) = ((up+down+left+right){neighbor})
+#gotoBlockNeighbor(stone; neighbor) = (gotoNeighbor(stone)* gotoNeighbor(neighbor))
+#blockHasLiberty(stone) = {? gotoBlockNeighbor(stone; empty)}
+#blockHasNoLiberty(stone) = {! gotoBlockNeighbor(stone; empty)}
+     
+#placeStone(stone; oppStone) = (
+      anySquare
+      {empty}
+      [stone]
+      (
+          // Stawiamy na puste pole, które należy do bloku posiadającego oddech
+          blockHasLiberty(stone)
+          // Stawiamy na puste pole które ma za sąsiada blok przeciwnika nie mający oddechu
+        + {? (up+down+left+right) {stone} blockHasNoLiberty(oppStone)}
+      )
+    )
+
+
+#markNeighborToCapture(oppStone; dir; oppDir) = (
+      (
+          dir {oppStone} blockHasNoLiberty(oppStone) [toCapture] oppDir
+        + {! dir {oppStone} blockHasNoLiberty(oppStone)}
+      ) ->>
+    )
+
+// Jeśli sąsiedni blok powinien zostać usunięty, to zaznaczamy jeden jego kamień na 'toCapture'
+#markToCapture(oppStone) = (
+      markNeighborToCapture(oppStone; up; down)
+      markNeighborToCapture(oppStone; down; up)
+      markNeighborToCapture(oppStone; left; right)
+      markNeighborToCapture(oppStone; right; left)
+    )    
+      
+// Zaznaczamy wszystkie kamienie odpowiedniego koloru sąsiadujące z 'toCapture' jako 'toCapture'
+#floodfillCaptures(oppStone) = (
+      (
+        anySquare
+        {toCapture}
+        gotoNeighbor(oppStone)
+        [toCapture]
+        ->>
+      )*
+      {! anySquare {toCapture} gotoNeighbor(oppStone) }
+    )
+
+// Usuwamy z planszy wszystkie 'toCapture'
+#clearCaptures = (
+      (
+        anySquare
+        {toCapture}
+        [empty]
+        ->>
+      )*
+      {! anySquare {toCapture} }
+    )
+    
+// dopóki na planszy są puste pola (bloki) to zapełniamy je neutralnymi jeśli blok jest otoczony kamieniami obu graczy (lub dame)
+// lub zapełniamy kamieniami gracza który go otacza jednoznacznie
+// gdy pustych pól już nie ma score każdego z graczy to liczba jego kamieni
+// (dla uproszczenia, zamiast wypełniać floodfillem całe bloki, możemy to robić wygodniej kamień po kamieniu)
+//
+// https://www.reddit.com/r/baduk/comments/13dt8t/help_writing_a_scoring_algorithm_for_a_go_game/?st=ja5l3bw8&sh=91192330
+// https://senseis.xmp.net/?Scoring
+#countPoints = (
+      (
+        anySquare 
+        {empty}
+        ->>
+        (
+            (
+                {? gotoBlockNeighbor(empty; dame)}
+              + {? gotoBlockNeighbor(empty; blackStone)}
+                {? gotoBlockNeighbor(empty; whiteStone)}
+            ) [dame]
+          + {! gotoBlockNeighbor(empty; dame)}
+            (
+                {? gotoBlockNeighbor(empty; blackStone)}
+                {! gotoBlockNeighbor(empty; whiteStone)}
+                [blackStone]
+              +
+                {? gotoBlockNeighbor(empty; whiteStone)}
+                {! gotoBlockNeighbor(empty; blackStone)}
+                [whiteStone]
+            )
+        )
+        ->>
+      )*
+      {! anySquare {empty}}
+      [$ white = whiteStone]
+      [$ black = blackStone]
+    )
+
+#endGameCheck = (
+      {$ blackPass + whitePass < 2}
+      [$ turn = turn+1]
+    + {$ blackPass + whitePass == 2}
+      countPoints ->> {}
+    )
+
+#move(me; opp) = (
+      (
+          [$ me~Pass=0]
+          placeStone(me~Stone; opp~Stone) ->>
+          markToCapture(opp~Stone) ->>
+          floodfillCaptures(opp~Stone) ->>
+          clearCaptures
+        + [$ me~Pass=1]
+      ) ->> endGameCheck ->opp
+    )
+
+#rules = ->black (
+      move(black; white) 
+      move(white; black)
+    )*
