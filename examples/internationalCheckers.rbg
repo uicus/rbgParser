@@ -1,14 +1,14 @@
 // International checkers
-// -- game ends after 20 moves without capturing or moving a man
+// -- game ends in a draw after 20 moves without capturing or moving a man
 
-#players = black(100), white(100)
+#players = white(100), black(100)
 #pieces =
     empty, whiteMan, whiteKing, blackMan, blackKing,
     toBeRemoved, manToBeRemoved, kingToBeRemoved, toBeRemovedDuringCheck, manToBePlaced, kingToBePlaced, manToBeMoved, kingToBeMoved
 #variables = stagnation(20), actuallyCapturedPieces(12)
 
-#line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty, piece, empty]
 #offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece, empty, piece]
+#line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty, piece, empty]
 #board = rectangle(up,down,left,right,
     offsetLine(blackMan)
     line(blackMan)
