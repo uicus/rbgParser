@@ -24,7 +24,7 @@
 #anySquare = ((up* + down*)(left* + right*))
 #grabPiece(piece) = {piece}[empty]
 #dropMan(me; forwardDirection) =
-    {empty} ({? forwardDirection}[manToBePlaced] + {! forwardDirection}[kingToBePlaced])
+    {manToBePlaced, manToBeMoved} ({? forwardDirection}[me~Man] + {! forwardDirection}[me~King])
 
 #jumpWhileRealMove(direction; opp) =
     direction
@@ -165,7 +165,7 @@
 
 #cleaningMove(me; forwardDirection) =
     (
-        {manToBePlaced, manToBeMoved}dropMan(me; forwardDirection)
+        dropMan(me; forwardDirection)
       + {kingToBePlaced, kingToBeMoved}[me~King]
     )
     (
