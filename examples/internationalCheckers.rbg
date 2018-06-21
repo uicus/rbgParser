@@ -140,14 +140,14 @@
       + realManMove(me; opp; forwardDirection)[$ stagnation = 0]
     )
 
-#checkingMove(me; opp; forwardDirection) =
+#checkingMove(me; opp) =
     anySquare
     (
         checkingKingCapturingMove(me; opp)
       + checkingManCapturingMove(me; opp)
     )
 
-#cleaningJumpSequence(me) =
+#cleaningJumpSequence =
     (
         jumpWhileCleaning(up left(up left)*)
       + jumpWhileCleaning(up right(up right)*)
@@ -155,7 +155,7 @@
       + jumpWhileCleaning(down right(down right)*)
     )
 
-#cleaningNeighborMove(me) =
+#cleaningNeighborMove =
     (
         (up left)*
       + (up right)*
@@ -169,8 +169,8 @@
       + {kingToBePlaced, kingToBeMoved}[me~King]
     )
     (
-        cleaningJumpSequence(me)*
-      + cleaningNeighborMove(me)
+        cleaningJumpSequence*
+      + cleaningNeighborMove
     )
     (
         grabPiece(manToBeRemoved, kingToBeRemoved)
@@ -181,7 +181,7 @@
     realMove(me; opp; forwardDirection)
     {!
         [$ actuallyCapturedPieces = toBeRemoved]
-        checkingMove(me; opp; forwardDirection)
+        checkingMove(me; opp)
         {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
     }->>
     cleaningMove(me; forwardDirection)
