@@ -74,18 +74,18 @@
 
 #kingJumpWhileRealMove(opp) =
     (
-        jumpWhileRealMove(up left(up left)*;opp)
-      + jumpWhileRealMove(up right(up right)*;opp)
-      + jumpWhileRealMove(down left(down left)*;opp)
-      + jumpWhileRealMove(down right(down right)*;opp)
+        jumpWhileRealMove(up left({empty}up left)*;opp)
+      + jumpWhileRealMove(up right({empty}up right)*;opp)
+      + jumpWhileRealMove(down left({empty}down left)*;opp)
+      + jumpWhileRealMove(down right({empty}down right)*;opp)
     )
 
 #kingJumpWhileChecking(opp) =
     (
-        jumpWhileChecking(up left(up left)*;opp)
-      + jumpWhileChecking(up right(up right)*;opp)
-      + jumpWhileChecking(down left(down left)*;opp)
-      + jumpWhileChecking(down right(down right)*;opp)
+        jumpWhileChecking(up left({empty, manToBePlaced, kingToBePlaced}up left)*;opp)
+      + jumpWhileChecking(up right({empty, manToBePlaced, kingToBePlaced}up right)*;opp)
+      + jumpWhileChecking(down left({empty, manToBePlaced, kingToBePlaced}down left)*;opp)
+      + jumpWhileChecking(down right({empty, manToBePlaced, kingToBePlaced}down right)*;opp)
     )
 
 #realKingCapturingMove(me; opp) =
@@ -106,10 +106,10 @@
 #noncapturingKingMove(me) =
     {me~King}[kingToBeRemoved]
     (
-        (up left)*
-      + (up right)*
-      + (down left)*
-      + (down right)*
+        up left({empty}up left)*
+      + up right({empty}up right)*
+      + down left({empty}down left)*
+      + down right({empty}down right)*
     )
     {empty}
 
