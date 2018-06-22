@@ -7,17 +7,20 @@ INC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
 DEP_DIR := dep
+MAIN_FILE := $(SRC_DIR)/main.cpp
 EXAMPLES_DIR := examples
 
 C := g++
+AR = ar
 INCLUDE := -I$(INC_DIR)
 CFLAGS := -Wall -Wextra -Wpedantic -O3 -flto -std=c++11 -s $(INCLUDE)
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
+OBJECTS_FOR_LIB := $(filter-out $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(MAIN_FILE)), $(OBJECTS))
 DEPFILES := $(patsubst $(SRC_DIR)/%.cpp, $(DEP_DIR)/%.d, $(wildcard $(SRC_DIR)/*.cpp))
 EXAMPLES := $(wildcard $(EXAMPLES_DIR)/*.rbg)
 
-all: $(TARGET)
+all: $(TARGET) $(TARGET).a
 
 ifeq (0, $(words $(findstring $(MAKECMDGOALS), $(NODEPS))))
     -include $(DEPFILES)
@@ -31,6 +34,9 @@ $(DEP_DIR)/%.d: $(SRC_DIR)/%.cpp | $(DEP_DIR)
 
 $(TARGET): $(OBJECTS) | $(BIN_DIR)
 	$(C) $(CFLAGS) $(OBJECTS) -o $(BIN_DIR)/$@
+
+$(TARGET).a: $(OBJECTS_FOR_LIB) | $(BIN_DIR)
+	$(AR) rvs $(BIN_DIR)/$@ $(OBJECTS_FOR_LIB)
 
 $(DEP_DIR):
 	mkdir -p $(DEP_DIR)
