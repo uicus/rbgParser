@@ -11,7 +11,7 @@ MAIN_FILE := $(SRC_DIR)/main.cpp
 EXAMPLES_DIR := examples
 
 C := g++
-AR = ar
+AR = gcc-ar
 INCLUDE := -I$(INC_DIR)
 CFLAGS := -Wall -Wextra -Wpedantic -O3 -flto -std=c++11 -s $(INCLUDE)
 
@@ -20,7 +20,7 @@ OBJECTS_FOR_LIB := $(filter-out $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(M
 DEPFILES := $(patsubst $(SRC_DIR)/%.cpp, $(DEP_DIR)/%.d, $(wildcard $(SRC_DIR)/*.cpp))
 EXAMPLES := $(wildcard $(EXAMPLES_DIR)/*.rbg)
 
-all: $(TARGET) $(TARGET).a
+all: $(TARGET) lib$(TARGET).a
 
 ifeq (0, $(words $(findstring $(MAKECMDGOALS), $(NODEPS))))
     -include $(DEPFILES)
@@ -35,8 +35,8 @@ $(DEP_DIR)/%.d: $(SRC_DIR)/%.cpp | $(DEP_DIR)
 $(TARGET): $(OBJECTS) | $(BIN_DIR)
 	$(C) $(CFLAGS) $(OBJECTS) -o $(BIN_DIR)/$@
 
-$(TARGET).a: $(OBJECTS_FOR_LIB) | $(BIN_DIR)
-	$(AR) rvs $(BIN_DIR)/$@ $(OBJECTS_FOR_LIB)
+lib$(TARGET).a: $(OBJECTS_FOR_LIB) | $(BIN_DIR)
+	$(AR) rs $(BIN_DIR)/$@ $(OBJECTS_FOR_LIB)
 
 $(DEP_DIR):
 	mkdir -p $(DEP_DIR)
