@@ -5,7 +5,6 @@
 #include<memory>
 
 #include"declarations.hpp"
-#include"game_board.hpp"
 #include"game_move.hpp"
 #include"graph.hpp"
 

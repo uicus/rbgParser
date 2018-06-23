@@ -13,7 +13,6 @@
 #include"slice_iterator.hpp"
 #include"declarations.hpp"
 #include"parsed_game.hpp"
-#include"game_board.hpp"
 #include"parser_helpers.hpp"
 #include"sum.hpp"
 
