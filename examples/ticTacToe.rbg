@@ -10,17 +10,18 @@
 
 #anySquare = ((up* + down*)(left* + right*))
 
-#winIn(dir; piece) = (dir {piece})^2
-#win(piece) =
-    winIn(up left; piece) + winIn(up; piece) + winIn(up right; piece) +
-    winIn(left; piece) + winIn(right; piece) +
-    winIn(down left; piece) + winIn(down; piece) + winIn(down right; piece)
+#winAtDir(dir; oppDir; piece) = (dir {piece} (dir + (oppDir)^2) {piece} + (oppDir {piece})^2)
+#winAtPlace(piece) =
+      winAtDir(up left; down right; piece)
+    + winAtDir(up; down; piece)
+    + winAtDir(up right; down left; piece)
+    + winAtDir(left; right; piece)
 
 #move(me; opp) =
     anySquare {e} ->> [me]
     (
-        {? win(me)} [$ me~player=100] [$ opp~player=0] ->> {}
-      + {! win(me)} ->opp~player
+        {? winAtPlace(me)} [$ me~player=100] [$ opp~player=0] ->> {}
+      + {! winAtPlace(me)} ->opp~player
     )
 
 #rules = [$ xplayer=50] [$ oplayer=50] ->oplayer (move(x; o) move(o; x))*
