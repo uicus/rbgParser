@@ -11,7 +11,6 @@
 #pieces = ball, whiteGoal, blackGoal, empty, visited, notVisited, justArrived
 #variables =
 
-
 #leftMarkedTriplet(mark; between) = mark, between, between
 #rightMarkedTriplet(mark; between) = between, between, mark
 
@@ -117,7 +116,7 @@
       + jumpInGivenDirection(down right)
     )
 
-#wholeMove =
+#wholeMove(me; opp) =
     singleJump
     (
         {? canMoveFurther}
@@ -129,14 +128,12 @@
     (
         {whiteGoal}[$ black=100, white=0]->>{}
       + {blackGoal}[$ white=100, black=0]->>{}
-      + {empty}
+      + {empty}[$ me=100, opp=0] ->opp
     )
 
 #rules =
     findBall ->white
     (
-        [$ white=100, black=0]
-        wholeMove->black
-        [$ black=100, white=0]
-        wholeMove->white
-)*
+        wholeMove(white; black)
+        wholeMove(black; white)
+    )*
