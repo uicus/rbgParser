@@ -27,6 +27,9 @@ class move_check : public game_move{
         straightness_result compute_k_straightness(void)const override;
         std::string to_rbg(uint indent)const override;
         std::string to_rbg()const override;
+        void gather_concatenation_elements(
+            std::vector<std::unique_ptr<game_move>>& elements,
+            std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         std::unique_ptr<game_move> flatten(void)override;
 };
 

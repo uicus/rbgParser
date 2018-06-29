@@ -1,6 +1,6 @@
 #include"concatenation.hpp"
 #include"printer_helpers.hpp"
-#include"modifier_block.hpp"
+#include"actions_block.hpp"
 
 namespace rbg_parser{
 
@@ -51,14 +51,14 @@ std::string concatenation::to_rbg()const{
 
 std::unique_ptr<game_move> concatenation::flatten(void){
     std::vector<std::unique_ptr<game_move>> result;
-    std::vector<std::unique_ptr<game_move>> first_modifier_block;
+    std::vector<std::unique_ptr<game_move>> first_actions_block;
     for(auto& el: content)
-        el->gather_concatenation_elements(result,first_modifier_block);
-    if(!first_modifier_block.empty()){
-        if(first_modifier_block.size()>1)
-            result.push_back(std::unique_ptr<game_move>(new modifier_block(std::move(first_modifier_block))));
+        el->gather_concatenation_elements(result,first_actions_block);
+    if(!first_actions_block.empty()){
+        if(first_actions_block.size()>1)
+            result.push_back(std::unique_ptr<game_move>(new actions_block(std::move(first_actions_block))));
         else
-            result.push_back(std::move(first_modifier_block[0]));
+            result.push_back(std::move(first_actions_block[0]));
     }
     if(result.size()==1) // probably only modifiers
         return std::move(result[0]);

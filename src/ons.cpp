@@ -26,6 +26,12 @@ std::unique_ptr<game_move> ons::flatten(void){
     return std::unique_ptr<game_move>(new ons(std::move(*this)));
 }
 
+void ons::gather_concatenation_elements(
+    std::vector<std::unique_ptr<game_move>>&,
+    std::vector<std::unique_ptr<game_move>>& next_block_elements){
+    next_block_elements.push_back(flatten());
+}
+
 const std::set<token>& ons::get_legal_ons(void)const{
     return legal_ons;
 }

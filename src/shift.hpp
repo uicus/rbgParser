@@ -25,6 +25,9 @@ class shift : public game_move{
         std::string to_rbg(uint)const override;
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
+        void gather_concatenation_elements(
+            std::vector<std::unique_ptr<game_move>>& elements,
+            std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         const token& get_content(void)const;
 };
 
