@@ -22,7 +22,9 @@ class game_move{
         virtual uint priority(void)const=0; // being of higher priority containing lower ones requires surrounding them with brackets
         virtual std::string to_rbg(uint indent)const=0;
         virtual std::string to_rbg()const=0;
-        virtual void gather_concatenation_elements(std::vector<std::unique_ptr<game_move>>& elements){elements.push_back(flatten());}
+        virtual void gather_concatenation_elements(
+            std::vector<std::unique_ptr<game_move>>& elements,
+            std::vector<std::unique_ptr<game_move>>& next_block_elements);
         virtual void gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements){elements.push_back(flatten());};
         virtual straightness_result compute_k_straightness(void)const{return standard_non_switch();};
         virtual bool check_if_redundant(std::set<token>&, bool&)const{return false;};
