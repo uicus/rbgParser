@@ -23,8 +23,8 @@
 
 #anySquare = ((up* + down*)(left* + right*))
 #grabPiece(piece) = {piece}[empty]
-#dropMan(me; forwardDirection) =
-    {manToBePlaced, manToBeMoved} ({? forwardDirection}[me~Man] + {! forwardDirection}[me~King])
+#dropMan(temporaryPiece; me; forwardDirection) =
+    {temporaryPiece} ({? forwardDirection}[me~Man] + {! forwardDirection}[me~King])
 
 #jumpWhileRealMove(direction; opp) =
     direction
@@ -165,8 +165,9 @@
 
 #cleaningMove(me; forwardDirection) =
     (
-        dropMan(me; forwardDirection)
-      + {kingToBePlaced, kingToBeMoved}[me~King]
+        dropMan(manToBePlaced; me; forwardDirection)
+      + {kingToBePlaced}[me~King]
+      + {manToBeMoved, kingToBeMoved}
     )
     (
         cleaningJumpSequence*
@@ -174,7 +175,8 @@
     )
     (
         grabPiece(manToBeRemoved, kingToBeRemoved)
-      + {me~King, me~Man}
+      + {kingToBeMoved}[me~King]
+      + dropMan(manToBeMoved; me; forwardDirection)
     )
 
 #move(me; opp; forwardDirection) =
