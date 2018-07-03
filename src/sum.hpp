@@ -16,8 +16,8 @@ class sum : public game_move{
         ~sum(void)override=default;
         sum(void)=default;
         sum(sum&&)=default;
-        sum(const sum&)=default;
-        sum& operator=(const sum&)=default;
+        sum(const sum&)=delete;
+        sum& operator=(const sum&)=delete;
         sum& operator=(sum&&)=default;
         bool modifies(void)const override;
         std::unique_ptr<game_move> simplify(void)override;
@@ -30,6 +30,7 @@ class sum : public game_move{
         straightness_result compute_k_straightness(void)const override;
         const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
         void add_move(std::unique_ptr<game_move> m);
+        std::unique_ptr<game_move> copy(void)const override;
 };
 
 }

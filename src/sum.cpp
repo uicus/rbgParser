@@ -78,4 +78,11 @@ void sum::add_move(std::unique_ptr<game_move> m){
     content.push_back(std::move(m));
 }
 
+std::unique_ptr<game_move> sum::copy(void)const{
+    std::vector<std::unique_ptr<game_move>> result_content;
+    for(const auto& el: content)
+        result_content.push_back(el->copy());
+    return std::unique_ptr<game_move>(new sum(std::move(result_content)));
+}
+
 }

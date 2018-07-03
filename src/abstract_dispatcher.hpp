@@ -5,7 +5,6 @@ namespace rbg_parser{
 
 class sum;
 class concatenation;
-class power_move;
 class star_move;
 class shift;
 class ons;
@@ -24,7 +23,6 @@ class abstract_dispatcher{
     public:
         virtual void dispatch(const sum&)=0;
         virtual void dispatch(const concatenation&)=0;
-        virtual void dispatch(const power_move&)=0;
         virtual void dispatch(const star_move&)=0;
         virtual void dispatch(const shift&)=0;
         virtual void dispatch(const ons&)=0;

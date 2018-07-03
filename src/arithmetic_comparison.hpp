@@ -30,8 +30,8 @@ class arithmetic_comparison : public game_move{
             std::unique_ptr<arithmetic_expression> right_side);
         ~arithmetic_comparison(void)override=default;
         arithmetic_comparison(arithmetic_comparison&&)=default;
-        arithmetic_comparison(const arithmetic_comparison&)=default;
-        arithmetic_comparison& operator=(const arithmetic_comparison&)=default;
+        arithmetic_comparison(const arithmetic_comparison&)=delete;
+        arithmetic_comparison& operator=(const arithmetic_comparison&)=delete;
         arithmetic_comparison& operator=(arithmetic_comparison&&)=default;
         void accept(abstract_dispatcher& dispatcher)const override;
         const arithmetic_expression* get_left_side(void)const;
@@ -45,6 +45,7 @@ class arithmetic_comparison : public game_move{
             std::vector<std::unique_ptr<game_move>>& elements,
             std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         std::unique_ptr<game_move> flatten(void)override;
+        std::unique_ptr<game_move> copy(void)const override;
 };
 
 }

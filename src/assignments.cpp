@@ -4,7 +4,7 @@
 
 namespace rbg_parser{
 
-assignment::assignment(const token& left_side, std::unique_ptr<arithmetic_expression> right_side):
+assignment::assignment(const token& left_side, std::unique_ptr<arithmetic_expression>&& right_side):
 left_side(left_side),
 right_side(std::move(right_side)){
 }
@@ -68,6 +68,10 @@ std::unique_ptr<game_move> make_assignments_concatenation(
     for(auto& el: legal_sides)
         result->add_move(std::unique_ptr<game_move>(new assignment(std::move(el.first), std::move(el.second))));
     return std::unique_ptr<game_move>(result);
+}
+
+std::unique_ptr<game_move> assignment::copy(void)const{
+    return std::unique_ptr<game_move>(new assignment(left_side, right_side->copy()));
 }
 
 }

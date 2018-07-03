@@ -11,6 +11,7 @@ class actions_block : public concatenation{
         void accept(abstract_dispatcher& dispatcher)const override;
         bool modifies(void)const override{return true;};
         bool has_finisher(void)const override{return content.back()->has_finisher();};
+        std::unique_ptr<game_move> copy(void)const override;
 };
 
 }

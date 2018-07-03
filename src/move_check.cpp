@@ -2,7 +2,7 @@
 
 namespace rbg_parser{
 
-move_check::move_check(std::unique_ptr<game_move> content, bool negated):
+move_check::move_check(std::unique_ptr<game_move>&& content, bool negated):
 content(std::move(content)),
 negated(negated){
 }
@@ -53,6 +53,10 @@ void move_check::gather_concatenation_elements(
 
 std::unique_ptr<game_move> move_check::flatten(void){
     return std::unique_ptr<game_move>(new move_check(content->flatten(), negated));
+}
+
+std::unique_ptr<game_move> move_check::copy(void)const{
+    return std::unique_ptr<game_move>(new move_check(content->copy(),negated));
 }
 
 }

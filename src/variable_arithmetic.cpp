@@ -31,4 +31,8 @@ const token& variable_arithmetic::get_content(void)const{
     return content;
 }
 
+std::unique_ptr<arithmetic_expression> variable_arithmetic::copy(void)const{
+    return std::unique_ptr<arithmetic_expression>(new variable_arithmetic(content));
+}
+
 }

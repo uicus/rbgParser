@@ -19,6 +19,7 @@ class arithmetic_expression{
         virtual std::unique_ptr<arithmetic_expression> flatten(void)=0;
         virtual void gather_sum_elements(std::vector<std::unique_ptr<arithmetic_expression>>& elements){elements.push_back(flatten());};
         virtual void gather_multiply_elements(std::vector<std::unique_ptr<arithmetic_expression>>& elements){elements.push_back(flatten());};
+        virtual std::unique_ptr<arithmetic_expression> copy(void)const=0;
 };
 
 }

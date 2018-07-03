@@ -5,7 +5,7 @@
 
 namespace rbg_parser{
 
-star_move::star_move(std::unique_ptr<game_move> contained_move):
+star_move::star_move(std::unique_ptr<game_move>&& contained_move):
 contained_move(std::move(contained_move)){
 }
 
@@ -55,6 +55,10 @@ straightness_result star_move::compute_k_straightness(void)const{
 
 const game_move* star_move::get_content(void)const{
     return contained_move.get();
+}
+
+std::unique_ptr<game_move> star_move::copy(void)const{
+    return std::unique_ptr<game_move>(new star_move(contained_move->copy()));
 }
 
 }

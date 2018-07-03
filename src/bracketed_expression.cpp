@@ -6,8 +6,8 @@
 #include"offs.hpp"
 #include"ons.hpp"
 #include"shift.hpp"
-#include"power_move.hpp"
 #include"star_move.hpp"
+#include"concatenation.hpp"
 
 namespace rbg_parser{
 
@@ -21,10 +21,16 @@ br(br),
 t(not_typed_yet){
 }
 
-std::unique_ptr<game_move> bracketed_expression::append_suffix_if_possible(std::unique_ptr<game_move> base_move)const{
+std::unique_ptr<game_move> bracketed_expression::append_suffix_if_possible(std::unique_ptr<game_move>&& base_move)const{
     switch(s.t){
         case number_power:
-            return std::unique_ptr<game_move>(new power_move(std::move(base_move), s.val));
+            {
+                std::vector<std::unique_ptr<game_move>> element_copies;
+                element_copies.push_back(std::move(base_move));
+                for(uint i=1;i<s.val;++i)
+                    element_copies.push_back(element_copies[0]->copy());
+                return std::unique_ptr<game_move>(new concatenation(std::move(element_copies)));
+            }
         case star_power:
             return std::unique_ptr<game_move>(new star_move(std::move(base_move)));
         case no_suffix:

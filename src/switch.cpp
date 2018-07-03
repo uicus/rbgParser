@@ -42,6 +42,10 @@ const token& player_switch::get_player(void)const{
     return to_player;
 }
 
+std::unique_ptr<game_move> player_switch::copy(void)const{
+    return std::unique_ptr<game_move>(new player_switch(to_player));
+}
+
 keeper_switch::keeper_switch(bool deterministic):
 deterministic(deterministic){
 }
@@ -79,6 +83,10 @@ straightness_result keeper_switch::compute_k_straightness(void)const{
 
 bool keeper_switch::is_deterministic(void)const{
     return deterministic;
+}
+
+std::unique_ptr<game_move> keeper_switch::copy(void)const{
+    return std::unique_ptr<game_move>(new keeper_switch(deterministic));
 }
 
 }

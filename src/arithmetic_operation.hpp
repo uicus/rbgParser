@@ -20,9 +20,9 @@ class arithmetic_operation : public arithmetic_expression{
         operation kind_of_operation;
     public:
         arithmetic_operation(std::vector<std::unique_ptr<arithmetic_expression>>&& content, operation kind_of_operation);
-        arithmetic_operation(const arithmetic_operation&)=default;
+        arithmetic_operation(const arithmetic_operation&)=delete;
         arithmetic_operation(arithmetic_operation&&)=default;
-        arithmetic_operation& operator=(const arithmetic_operation&)=default;
+        arithmetic_operation& operator=(const arithmetic_operation&)=delete;
         arithmetic_operation& operator=(arithmetic_operation&&)=default;
         ~arithmetic_operation(void)override=default;
         void accept(abstract_dispatcher &dispatcher)const override;
@@ -35,6 +35,7 @@ class arithmetic_operation : public arithmetic_expression{
         void gather_multiply_elements(std::vector<std::unique_ptr<arithmetic_expression>>& elements)override;
         const std::vector<std::unique_ptr<arithmetic_expression>>& get_content(void)const;
         operation get_operation(void)const;
+        std::unique_ptr<arithmetic_expression> copy(void)const override;
 };
 
 }

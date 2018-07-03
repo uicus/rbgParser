@@ -13,11 +13,11 @@ class move_check : public game_move{
         bool negated;
         move_check(void)=default;
     public:
-        move_check(std::unique_ptr<game_move> content, bool negated);
+        move_check(std::unique_ptr<game_move>&& content, bool negated);
         ~move_check(void)override=default;
         move_check(move_check&&)=default;
-        move_check(const move_check&)=default;
-        move_check& operator=(const move_check&)=default;
+        move_check(const move_check&)=delete;
+        move_check& operator=(const move_check&)=delete;
         move_check& operator=(move_check&&)=default;
         void accept(abstract_dispatcher& dispatcher)const override;
         const game_move* get_content(void)const;
@@ -31,6 +31,7 @@ class move_check : public game_move{
             std::vector<std::unique_ptr<game_move>>& elements,
             std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         std::unique_ptr<game_move> flatten(void)override;
+        std::unique_ptr<game_move> copy(void)const override;
 };
 
 }

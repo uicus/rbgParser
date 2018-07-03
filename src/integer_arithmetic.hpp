@@ -9,9 +9,9 @@ class integer_arithmetic : public arithmetic_expression{
         uint content;
     public:
         integer_arithmetic(uint content);
-        integer_arithmetic(const integer_arithmetic&)=default;
+        integer_arithmetic(const integer_arithmetic&)=delete;
         integer_arithmetic(integer_arithmetic&&)=default;
-        integer_arithmetic& operator=(const integer_arithmetic&)=default;
+        integer_arithmetic& operator=(const integer_arithmetic&)=delete;
         integer_arithmetic& operator=(integer_arithmetic&&)=default;
         ~integer_arithmetic(void)override=default;
         void accept(abstract_dispatcher &dispatcher)const override;
@@ -21,6 +21,7 @@ class integer_arithmetic : public arithmetic_expression{
         std::string to_rbg()const override;
         std::unique_ptr<arithmetic_expression> flatten(void)override;
         uint get_content(void)const;
+        std::unique_ptr<arithmetic_expression> copy(void)const override;
 };
 
 }

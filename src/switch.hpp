@@ -15,8 +15,8 @@ class player_switch : public game_move{
         ~player_switch(void)override=default;
         player_switch(void)=default;
         player_switch(player_switch&&)=default;
-        player_switch(const player_switch&)=default;
-        player_switch& operator=(const player_switch&)=default;
+        player_switch(const player_switch&)=delete;
+        player_switch& operator=(const player_switch&)=delete;
         player_switch& operator=(player_switch&&)=default;
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new player_switch(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
@@ -30,6 +30,7 @@ class player_switch : public game_move{
         straightness_result compute_k_straightness(void)const override;
         bool has_finisher(void)const override{return true;};
         const token& get_player(void)const;
+        std::unique_ptr<game_move> copy(void)const override;
 };
 
 class keeper_switch : public game_move{
@@ -39,8 +40,8 @@ class keeper_switch : public game_move{
         ~keeper_switch(void)override=default;
         keeper_switch(void)=default;
         keeper_switch(keeper_switch&&)=default;
-        keeper_switch(const keeper_switch&)=default;
-        keeper_switch& operator=(const keeper_switch&)=default;
+        keeper_switch(const keeper_switch&)=delete;
+        keeper_switch& operator=(const keeper_switch&)=delete;
         keeper_switch& operator=(keeper_switch&&)=default;
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new keeper_switch(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
@@ -54,6 +55,7 @@ class keeper_switch : public game_move{
         straightness_result compute_k_straightness(void)const override;
         bool has_finisher(void)const override{return true;};
         bool is_deterministic(void)const;
+        std::unique_ptr<game_move> copy(void)const override;
 };
 
 }

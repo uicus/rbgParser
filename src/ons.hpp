@@ -16,8 +16,8 @@ class ons : public game_move{
         ons(std::vector<token>&& legal_ons);
         ~ons(void)override=default;
         ons(ons&&)=default;
-        ons(const ons&)=default;
-        ons& operator=(const ons&)=default;
+        ons(const ons&)=delete;
+        ons& operator=(const ons&)=delete;
         ons& operator=(ons&&)=default;
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new ons(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
@@ -29,6 +29,7 @@ class ons : public game_move{
             std::vector<std::unique_ptr<game_move>>& elements,
             std::vector<std::unique_ptr<game_move>>& next_block_elements)override;
         const std::set<token>& get_legal_ons(void)const;
+        std::unique_ptr<game_move> copy(void)const override;
 };
 
 }

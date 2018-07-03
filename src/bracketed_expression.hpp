@@ -10,7 +10,7 @@ class bracketed_expression : public expression{
         std::unique_ptr<expression> element;
         bracket_type br;
         expression_type t;
-        std::unique_ptr<game_move> append_suffix_if_possible(std::unique_ptr<game_move> base_move)const;
+        std::unique_ptr<game_move> append_suffix_if_possible(std::unique_ptr<game_move>&& base_move)const;
     public:
         bracketed_expression(
             slice_iterator&& beginning_position,

@@ -80,4 +80,8 @@ const arithmetic_expression* arithmetic_comparison::get_right_side(void)const{
     return right_side.get();
 }
 
+std::unique_ptr<game_move> arithmetic_comparison::copy(void)const{
+    return std::unique_ptr<game_move>(new arithmetic_comparison(left_side->copy(),kind_of_comparison,right_side->copy()));
+}
+
 }

@@ -16,11 +16,11 @@ class assignment : public game_move{
         std::unique_ptr<arithmetic_expression> right_side;
         assignment(void)=default;
     public:
-        assignment(const token& left_side, std::unique_ptr<arithmetic_expression> right_side);
+        assignment(const token& left_side, std::unique_ptr<arithmetic_expression>&& right_side);
         ~assignment(void)override=default;
         assignment(assignment&&)=default;
-        assignment(const assignment&)=default;
-        assignment& operator=(const assignment&)=default;
+        assignment(const assignment&)=delete;
+        assignment& operator=(const assignment&)=delete;
         assignment& operator=(assignment&&)=default;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
@@ -36,6 +36,7 @@ class assignment : public game_move{
         const token& get_left_side(void)const;
         const arithmetic_expression* get_right_side(void)const;
         bool is_lazy(void)const;
+        std::unique_ptr<game_move> copy(void)const override;
 };
 
 std::unique_ptr<game_move> make_assignments_concatenation(

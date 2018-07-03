@@ -55,4 +55,8 @@ std::unique_ptr<game_move> make_offs_sum(std::vector<token>&& legal_offs){
     return std::unique_ptr<game_move>(result);
 }
 
+std::unique_ptr<game_move> off::copy(void)const{
+    return std::unique_ptr<game_move>(new off(token(off_piece)));
+}
+
 }

@@ -35,4 +35,8 @@ const token& shift::get_content(void)const{
     return edge_name;
 }
 
+std::unique_ptr<game_move> shift::copy(void)const{
+    return std::unique_ptr<game_move>(new shift(edge_name));
+}
+
 }

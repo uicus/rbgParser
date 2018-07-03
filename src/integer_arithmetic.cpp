@@ -31,4 +31,8 @@ uint integer_arithmetic::get_content(void)const{
     return content;
 }
 
+std::unique_ptr<arithmetic_expression> integer_arithmetic::copy(void)const{
+    return std::unique_ptr<arithmetic_expression>(new integer_arithmetic(content));
+}
+
 }

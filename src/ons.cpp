@@ -36,4 +36,11 @@ const std::set<token>& ons::get_legal_ons(void)const{
     return legal_ons;
 }
 
+std::unique_ptr<game_move> ons::copy(void)const{
+    std::vector<token> result_legal_ons;
+    for(const auto& el: legal_ons)
+        result_legal_ons.push_back(el);
+    return std::unique_ptr<game_move>(new ons(std::move(result_legal_ons)));
+}
+
 }

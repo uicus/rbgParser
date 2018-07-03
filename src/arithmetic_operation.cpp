@@ -114,4 +114,11 @@ operation arithmetic_operation::get_operation(void)const{
     return kind_of_operation;
 }
 
+std::unique_ptr<arithmetic_expression> arithmetic_operation::copy(void)const{
+    std::vector<std::unique_ptr<arithmetic_expression>> result_content;
+    for(const auto& el: content)
+        result_content.push_back(el->copy());
+    return std::unique_ptr<arithmetic_expression>(new arithmetic_operation(std::move(result_content), kind_of_operation));
+}
+
 }

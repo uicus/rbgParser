@@ -10,9 +10,9 @@ class variable_arithmetic : public arithmetic_expression{
         token content;
     public:
         variable_arithmetic(const token& content);
-        variable_arithmetic(const variable_arithmetic&)=default;
+        variable_arithmetic(const variable_arithmetic&)=delete;
         variable_arithmetic(variable_arithmetic&&)=default;
-        variable_arithmetic& operator=(const variable_arithmetic&)=default;
+        variable_arithmetic& operator=(const variable_arithmetic&)=delete;
         variable_arithmetic& operator=(variable_arithmetic&&)=default;
         ~variable_arithmetic(void)override=default;
         void accept(abstract_dispatcher &dispatcher)const override;
@@ -22,6 +22,7 @@ class variable_arithmetic : public arithmetic_expression{
         std::string to_rbg()const override;
         std::unique_ptr<arithmetic_expression> flatten(void)override;
         const token& get_content(void)const;
+        std::unique_ptr<arithmetic_expression> copy(void)const override;
 };
 
 }
