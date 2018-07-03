@@ -12,11 +12,12 @@
          boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine)
 
 #anySquare = (left* + right*)(up* + down*)
+#resetSquare = (left* up* {! left+up})
 #gotoNeighbor(neighbor) = ((up+down+left+right){neighbor})
 #gotoBlockNeighbor(stone; neighbor) = (gotoNeighbor(stone)* gotoNeighbor(neighbor))
 #blockHasLiberty(stone) = {? gotoBlockNeighbor(stone; empty)}
 #blockHasNoLiberty(stone) = {! gotoBlockNeighbor(stone; empty)}
-     
+
 #placeStone(stone; oppStone) = (
       anySquare
       {empty}
@@ -108,7 +109,7 @@
       {$ blackPass + whitePass < 2}
       [$ turn = turn+1]
     + {$ blackPass + whitePass == 2}
-      countPoints ->> {}
+      countPoints resetSquare ->> {}
     )
 
 #move(me; opp) = (
@@ -119,7 +120,7 @@
           floodfillCaptures(opp~Stone) ->>
           clearCaptures
         + [$ me~Pass=1]
-      ) ->> endGameCheck ->opp
+      ) ->> endGameCheck resetSquare ->opp
     )
 
 #rules = ->black (
