@@ -133,7 +133,7 @@
       + {manToBeRemoved}[manToBeMoved]
     )
 
-#realMove(me; opp; forwardDirection) =
+#selectMove(me; opp; forwardDirection) =
     anySquare
     (
         realKingMove(me; opp)
@@ -163,7 +163,7 @@
       + (down right)*
     )
 
-#cleaningMove(me; forwardDirection) =
+#applyMove(me; forwardDirection) =
     (
         dropMan(manToBePlaced; me; forwardDirection)
       + {kingToBePlaced}[me~King]
@@ -179,14 +179,15 @@
       + dropMan(manToBeMoved; me; forwardDirection)
     )
 
+#canCaptureMore(me; opp) =
+    [$ actuallyCapturedPieces = toBeRemoved]
+    checkingMove(me; opp)
+    {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
+
 #move(me; opp; forwardDirection) =
-    realMove(me; opp; forwardDirection)
-    {!
-        [$ actuallyCapturedPieces = toBeRemoved]
-        checkingMove(me; opp)
-        {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
-    }->>
-    cleaningMove(me; forwardDirection)
+    selectMove(me; opp; forwardDirection)
+    {! canCaptureMore(me; opp)}->>
+    applyMove(me; forwardDirection)
     {$ toBeRemoved + manToBeRemoved + kingToBeRemoved + manToBePlaced + kingToBePlaced + manToBeMoved + kingToBeMoved == 0}
     [$ me=50] [$ opp=50] ->>
     [$ stagnation = stagnation+1][$ me=100] [$ opp=0] ->opp
