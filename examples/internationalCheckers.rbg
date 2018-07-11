@@ -22,9 +22,9 @@
     line(whiteMan))
 
 #anySquare = ((up* + down*)(left* + right*))
-#grabPiece(piece) = {piece}[empty]
-#dropMan(temporaryPiece; me; forwardDirection) =
-    {temporaryPiece} ({? forwardDirection}[me~Man] + {! forwardDirection}[me~King])
+#grabPiece(pieces) = {pieces}[empty]
+#dropMan(temporaryPiece; me; forward) =
+    {temporaryPiece} ({? forward}[me~Man] + {! forward}[me~King])
 
 #jumpWhileRealMove(direction; opp) =
     direction
@@ -98,9 +98,9 @@
     kingJumpWhileChecking(opp)
     (kingJumpWhileChecking(opp))*
 
-#noncapturingManMove(me; forwardDirection) =
+#noncapturingManMove(me; forward) =
     {me~Man}[manToBeRemoved]
-    forwardDirection (left + right)
+    forward (left + right)
     {empty}
 
 #noncapturingKingMove(me) =
@@ -123,21 +123,21 @@
       + {kingToBeRemoved}[kingToBeMoved]
     )
 
-#realManMove(me; opp; forwardDirection) =
+#realManMove(me; opp; forward) =
     (
         realManCapturingMove(me; opp)
-      + noncapturingManMove(me; forwardDirection)
+      + noncapturingManMove(me; forward)
     )
     (
         {empty}[manToBePlaced]
       + {manToBeRemoved}[manToBeMoved]
     )
 
-#selectMove(me; opp; forwardDirection) =
+#selectMove(me; opp; forward) =
     anySquare
     (
         realKingMove(me; opp)
-      + realManMove(me; opp; forwardDirection)[$ stagnation = 0]
+      + realManMove(me; opp; forward)[$ stagnation = 0]
     )
 
 #checkingMove(me; opp) =
@@ -163,9 +163,9 @@
       + (down right)*
     )
 
-#applyMove(me; forwardDirection) =
+#applyMove(me; forward) =
     (
-        dropMan(manToBePlaced; me; forwardDirection)
+        dropMan(manToBePlaced; me; forward)
       + {kingToBePlaced}[me~King]
       + {manToBeMoved, kingToBeMoved}
     )
@@ -176,7 +176,7 @@
     (
         grabPiece(manToBeRemoved, kingToBeRemoved)
       + {kingToBeMoved}[me~King]
-      + dropMan(manToBeMoved; me; forwardDirection)
+      + dropMan(manToBeMoved; me; forward)
     )
 
 #canCaptureMore(me; opp) =
@@ -184,10 +184,10 @@
     checkingMove(me; opp)
     {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
 
-#move(me; opp; forwardDirection) =
-    selectMove(me; opp; forwardDirection)
-    {! canCaptureMore(me; opp)}->>
-    applyMove(me; forwardDirection)
+#move(me; opp; forward) =
+    selectMove(me; opp; forward)
+    {! canCaptureMore(me; opp)} ->>
+    applyMove(me; forward)
     {$ toBeRemoved + manToBeRemoved + kingToBeRemoved + manToBePlaced + kingToBePlaced + manToBeMoved + kingToBeMoved == 0}
     [$ me=50] [$ opp=50] ->>
     [$ stagnation = stagnation+1][$ me=100] [$ opp=0] ->opp
