@@ -12,7 +12,7 @@
          boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine)
 
 #anySquare = (left* + right*)(up* + down*)
-#resetSquare = (left* up* {! left+up})
+#resetSquare = (left* up* right^18 down^18)
 #gotoNeighbor(neighbor) = ((up+down+left+right){neighbor})
 #gotoBlockNeighbor(stone; neighbor) = (gotoNeighbor(stone)* gotoNeighbor(neighbor))
 #blockHasLiberty(stone) = {? gotoBlockNeighbor(stone; empty)}
