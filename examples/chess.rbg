@@ -1,8 +1,6 @@
 // Chess
-// notes:
-// - no rules about repeating states or tie after given number of turns without pawn moves
-// - game is limited to 200 turns
-
+// -- no rules about repeating states or tie after given number of turns without pawn moves
+// -- game is limited to 200 turns
 
 #anyRook(color) = color~RookMoved, color~RookUnmoved
 #majorPieces(color) = anyRook(color), color~Knight, color~Bishop, color~Queen
@@ -14,42 +12,33 @@
 #pieces = allPieces, empty
 #variables = pawnDoubleMove (1), whiteKingMoved (1), blackKingMoved (1), turn (200)
 
-
-#board =
-    rectangle(up,down,left,right,
-        [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
-        [blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn, blackPawn  , blackPawn  , blackPawn       ]
-        [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-        [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-        [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-        [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-        [whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn, whitePawn  , whitePawn  , whitePawn       ]
-        [whiteRookUnmoved, whiteKnight, whiteBishop, whiteQueen, whiteKing, whiteBishop, whiteKnight, whiteRookUnmoved]
-    )
-
+#board = rectangle(up,down,left,right,
+         [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
+         [blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn, blackPawn  , blackPawn  , blackPawn       ]
+         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+         [whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn, whitePawn  , whitePawn  , whitePawn       ]
+         [whiteRookUnmoved, whiteKnight, whiteBishop, whiteQueen, whiteKing, whiteBishop, whiteKnight, whiteRookUnmoved])
 
 #anySquare = (left* + right*)(up* + down*)
-
-#anyNeighborSquare =
-    (
-        left + right + up + down
-      + (left + right)(up + down)
-    )
+#anyNeighborSquare = (left + right + up + down + (left + right)(up + down))
 
 #diagonalLine =
     (
-        (up left{empty})*up left
-      + (up right{empty})*up right
-      + (down left{empty})*down left
-      + (down right{empty})*down right
+        (up left {empty})* up left
+      + (up right {empty})* up right
+      + (down left {empty})* down left
+      + (down right {empty})* down right
     )
 
 #parallelLine =
     (
-        (up{empty})* up
-      + (down{empty})* down
-      + (right{empty})* right
-      + (left{empty})* left
+        (up {empty})* up
+      + (down {empty})* down
+      + (right {empty})* right
+      + (left {empty})* left
     )
 
 #knightHop =
@@ -58,12 +47,9 @@
       + (left^2 + right^2)(up + down)
     )
 
-#captureAnyBy(capturingPiece; opponentColor) =
-    {emptyOrColor(opponentColor)}
-    [capturingPiece]
+#captureAnyBy(capturingPiece; opponentColor) = {emptyOrColor(opponentColor)} [capturingPiece]
 
-#pickUpPiece(piece) =
-    {piece}[empty]
+#pickUpPiece(piece) = {piece}[empty]
 
 #standardMove(piece; movePattern; opponentColor) =
     pickUpPiece(piece)
@@ -88,91 +74,87 @@
 #isAttackedByQueen(opponentColor) = (diagonalLine + parallelLine){opponentColor~Queen}
 #isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
 #isAttackedByKing(opponentColor) = anyNeighborSquare{opponentColor~King}
-#isAttackedByPawn(opponentColor; forwardDirection) =
-    (right forwardDirection + left forwardDirection){opponentColor~Pawn}
+#isAttackedByPawn(opponentColor; forward) = (right forward + left forward){opponentColor~Pawn}
 
-#isNotAttackedBy(opponentColor; forwardDirection) =
+#isNotAttackedBy(opponentColor; forward) =
     {!
         isAttackedByBishop(opponentColor)
       + isAttackedByRook(opponentColor)
       + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
-      + isAttackedByPawn(opponentColor; forwardDirection)
+      + isAttackedByPawn(opponentColor; forward)
     }
 
-#checked(color; opponentColor; forwardDirection) =
-    anySquare
-    {color~King}
+#checked(color; opponentColor; forward) =
+    anySquare {color~King}
     (
         isAttackedByBishop(opponentColor)
       + isAttackedByRook(opponentColor)
       + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
-      + isAttackedByPawn(opponentColor; forwardDirection)
+      + isAttackedByPawn(opponentColor; forward)
     )
 
-#castlingKingMove(forwardDirection; color; opponentColor) =
+#castlingKingMove(forward; color; opponentColor) =
     {$ color~KingMoved==0}
     pickUpPiece(color~King)
     (
-        (right{empty}isNotAttackedBy(opponentColor; forwardDirection))^2
+        (right {empty} isNotAttackedBy(opponentColor; forward))^2
         [color~King]
         right pickUpPiece(color~RookUnmoved)
         left^2
-      + (left{empty}isNotAttackedBy(opponentColor; forwardDirection))^2
+      + (left {empty} isNotAttackedBy(opponentColor; forward))^2
         [color~King]
-        left{empty} // rook CAN pass through attacked square
+        left {empty} // rook CAN pass through an attacked square
         left pickUpPiece(color~RookUnmoved)
         right^3
     )
     [color~RookMoved]
     [$ color~KingMoved=1]
 
-#kingMove(forwardDirection; color; opponentColor) =
+#kingMove(forward; color; opponentColor) =
     (
-        castlingKingMove(forwardDirection; color; opponentColor)
+        castlingKingMove(forward; color; opponentColor)
       + standardKingMove(color; opponentColor)
-        isNotAttackedBy(opponentColor; forwardDirection)
+        isNotAttackedBy(opponentColor; forward)
     )
 
-#checkForPromotion(forwardDirection; color) =
+#checkForPromotion(forward; color) =
     (
-        {? forwardDirection}[color~Pawn]
-      + {! forwardDirection}[majorPieces(color)]
+        {? forward} [color~Pawn]
+      + {! forward} [majorPieces(color)]
     )
 
-#standardPawnMove(forwardDirection; backDirection; color; opponentColor) =
+#standardPawnMove(forward; backward; color; opponentColor) =
     pickUpPiece(color~Pawn)
     (
         // promotion cannot occur
-        {! backDirection^2}
-        (forwardDirection{empty})^2
+        {! backward^2}
+        (forward {empty})^2
         [color~Pawn]
         [$ pawnDoubleMove=1]
       + (
-            forwardDirection{empty}
-          + (right forwardDirection+left forwardDirection){singleColorPieces(opponentColor)}
+            forward {empty}
+          + (right forward + left forward) {singleColorPieces(opponentColor)}
         )
-        checkForPromotion(forwardDirection; color)
+        checkForPromotion(forward; color)
     )
 
-#enPassantPawnMove(forwardDirection; color) =
+#enPassantPawnMove(forward; color) =
     {$ pawnDoubleMove==1}
     (
         // we are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so don't check it
-        right pickUpPiece(color~Pawn)
-        left
-      + left pickUpPiece(color~Pawn)
-        right
+        right pickUpPiece(color~Pawn) left
+      + left pickUpPiece(color~Pawn) right
     )
     [empty]
-    forwardDirection
+    forward
     [$ pawnDoubleMove=0]
     [color~Pawn]
 
-#allMoves(forwardDirection; backDirection; color; opponentColor) =
+#allMoves(forward; backward; color; opponentColor) =
     (
         anySquare
         [$ pawnDoubleMove=0]
@@ -181,19 +163,18 @@
           + rookMove(color; opponentColor)
           + knightMove(color; opponentColor)
           + queenMove(color; opponentColor)
-          + kingMove(forwardDirection; color; opponentColor)
-          + standardPawnMove(forwardDirection; backDirection; color; opponentColor)
+          + kingMove(forward; color; opponentColor)
+          + standardPawnMove(forward; backward; color; opponentColor)
         )
-      + enPassantPawnMove(forwardDirection; color)
-    ){! checked(color; opponentColor; forwardDirection)}
-    ->>(
-        {? checked(opponentColor; color; backDirection)}[$ opponentColor=0,color=100]
-      + {! checked(opponentColor; color; backDirection)}[$ color=50,opponentColor=50]
-    )->>[$ turn=turn+1]->opponentColor
+      + enPassantPawnMove(forward; color)
+    ){! checked(color; opponentColor; forward)}
+    ->> (
+        {? checked(opponentColor; color; backward)}[$ opponentColor=0,color=100]
+      + {! checked(opponentColor; color; backward)}[$ color=50,opponentColor=50]
+    ) ->> [$ turn=turn+1] ->opponentColor
 
 #rules = ->white
     (
         allMoves(up;down;white;black)
         allMoves(down;up;black;white)
     )*
-
