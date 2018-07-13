@@ -1,7 +1,7 @@
 // Chinese checkers
-// six players variant
-// no alliances
-// first win ends the game
+// -- Six players variant
+// -- No alliances
+// -- First win ends the game
 
 #players = northPlayer(100), northEastPlayer(100), southEastPlayer(100), southPlayer(100), southWestPlayer(100), northWestPlayer(100)
 #variables = turn(200)
@@ -39,10 +39,7 @@
 #anySquare = anyNeighbor*
 
 #inCorner(relativeNorthWest; relativeNorthEast; relativeEast; relativeWest) =
-    {! relativeNorthWest}
-    {! relativeNorthEast}
-    {! relativeWest}
-    {! relativeEast}
+    {! relativeNorthWest + relativeNorthEast + relativeWest + relativeEast}
 
 #filledCorner(relativeNorthWest; relativeNorthEast; relativeEast; relativeSouthEast; relativeSouthWest; relativeWest; piece) =
     anySquare
@@ -112,7 +109,7 @@
     (
         neighborJump
       + singleJump*
-    )[playerDirection~Piece]->>[$ turn = turn+1]
+    ) [playerDirection~Piece] ->> [$ turn = turn+1]
     (
         {? winCondition} everybodyLooses [$ playerDirection~Player = 100]->>{}
       + {! winCondition} ->nextPlayerDirection~Player
