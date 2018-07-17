@@ -22,7 +22,7 @@
     line(whiteMan))
 
 #anySquare = ((up* + down*)(left* + right*))
-#grabPiece(pieces) = {pieces}[empty]
+#grabPiece(piece) = {piece}[empty]
 #dropMan(temporaryPiece; me; forward) =
     {temporaryPiece} ({? forward}[me~Man] + {! forward}[me~King])
 
