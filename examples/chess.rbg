@@ -118,7 +118,6 @@
     (
         castlingKingMove(forward; color; opponentColor)
       + standardKingMove(color; opponentColor)
-        isNotAttackedBy(opponentColor; forward)
     )
 
 #checkForPromotion(forward; color) =
