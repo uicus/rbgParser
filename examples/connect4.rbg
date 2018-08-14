@@ -13,13 +13,16 @@
 
 #anySquare = ((up* + down*)(left* + right*))
 
+#winAt(piece; shift1; shift2) = (((shift1) {piece})^2 ((shift1) {piece} + (shift2)^3 {piece}))
 #winAt(piece) = (
-    left* up* {piece} (
-      (right {piece})^3
+      winAt(piece; up left; down right)
+    + winAt(piece; up right; up left)
+    + winAt(piece; left; right)
+    + winAt(piece; right; left)
+    + winAt(piece; down left; up right)
     + (down {piece})^3
-    + (right down {piece})^3
-    )
-  )
+    + winAt(piece; down right; up left)
+)
 
 #move(me; opp; piece) = (
       anySquare {e} {! down {e}} ->>
