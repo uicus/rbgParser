@@ -1,6 +1,6 @@
 // Chess
-// -- no rules about repeating states or tie after given number of turns without pawn moves
-// -- game is limited to 200 turns
+// -- No rules about repeating states or tie after given number of turns without pawn moves.
+// -- Game is limited to 200 turns.
 
 #anyRook(color) = color~RookMoved, color~RookUnmoved
 #majorPieces(color) = anyRook(color), color~Knight, color~Bishop, color~Queen
@@ -69,18 +69,20 @@
     standardMove(color~King; anyNeighborSquare; opponentColor)
     [$ color~KingMoved=1]
 
-#isAttackedByBishop(opponentColor) = diagonalLine{opponentColor~Bishop}
-#isAttackedByRook(opponentColor) = parallelLine{anyRook(opponentColor)}
-#isAttackedByQueen(opponentColor) = (diagonalLine + parallelLine){opponentColor~Queen}
+//#isAttackedByBishop(opponentColor) = diagonalLine{opponentColor~Bishop}
+#isAttackedByBishopOrQueen(opponentColor) = diagonalLine{opponentColor~Bishop,opponentColor~Queen}
+//#isAttackedByRook(opponentColor) = parallelLine{anyRook(opponentColor)}
+#isAttackedByRookOrQueen(opponentColor) = parallelLine{anyRook(opponentColor),opponentColor~Queen}
+// #isAttackedByQueen(opponentColor) = (diagonalLine + parallelLine){opponentColor~Queen}
 #isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
 #isAttackedByKing(opponentColor) = anyNeighborSquare{opponentColor~King}
 #isAttackedByPawn(opponentColor; forward) = (right forward + left forward){opponentColor~Pawn}
 
 #isNotAttackedBy(opponentColor; forward) =
     {!
-        isAttackedByBishop(opponentColor)
-      + isAttackedByRook(opponentColor)
-      + isAttackedByQueen(opponentColor)
+        isAttackedByBishopOrQueen(opponentColor)
+      + isAttackedByRookOrQueen(opponentColor)
+//      + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
       + isAttackedByPawn(opponentColor; forward)
@@ -89,9 +91,9 @@
 #checked(color; opponentColor; forward) =
     anySquare {color~King}
     (
-        isAttackedByBishop(opponentColor)
-      + isAttackedByRook(opponentColor)
-      + isAttackedByQueen(opponentColor)
+        isAttackedByBishopOrQueen(opponentColor)
+      + isAttackedByRookOrQueen(opponentColor)
+//      + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
       + isAttackedByPawn(opponentColor; forward)
@@ -107,7 +109,7 @@
         left^2
       + (left {empty} isNotAttackedBy(opponentColor; forward))^2
         [color~King]
-        left {empty} // rook CAN pass through an attacked square
+        left {empty} // Rook CAN pass through an attacked square
         left pickUpPiece(color~RookUnmoved)
         right^3
     )
@@ -129,14 +131,14 @@
 #standardPawnMove(forward; backward; color; opponentColor) =
     pickUpPiece(color~Pawn)
     (
-        // promotion cannot occur
-        {! backward^2}
-        (forward {empty})^2
+        // Promotion cannot occur
+        //{! backward^2}
+        (forward^6 backward^5 {empty} forward {empty})
+        //(forward {empty})^2
         [color~Pawn]
         [$ pawnDoubleMove=1]
       + (
-            forward {empty}
-          + (right forward + left forward) {singleColorPieces(opponentColor)}
+            forward ({empty} + (right + left) {singleColorPieces(opponentColor)})
         )
         checkForPromotion(forward; color)
     )
@@ -144,7 +146,7 @@
 #enPassantPawnMove(forward; color) =
     {$ pawnDoubleMove==1}
     (
-        // we are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so don't check it
+        // We are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so do not check it
         right pickUpPiece(color~Pawn) left
       + left pickUpPiece(color~Pawn) right
     )
@@ -166,10 +168,10 @@
           + standardPawnMove(forward; backward; color; opponentColor)
         )
       + enPassantPawnMove(forward; color)
-    ){! checked(color; opponentColor; forward)}
+    ) {! checked(color; opponentColor; forward)}
     ->> (
-        {? checked(opponentColor; color; backward)}[$ opponentColor=0,color=100]
-      + {! checked(opponentColor; color; backward)}[$ color=50,opponentColor=50]
+        {! checked(opponentColor; color; backward)} [$ color=50,opponentColor=50]
+      + checked(opponentColor; color; backward) [$ opponentColor=0,color=100]
     ) ->> [$ turn=turn+1] ->opponentColor
 
 #rules = ->white
