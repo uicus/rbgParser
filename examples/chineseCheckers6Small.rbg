@@ -4,7 +4,7 @@
 // -- First win ends the game
 
 #players = northPlayer(100), northEastPlayer(100), southEastPlayer(100), southPlayer(100), southWestPlayer(100), northWestPlayer(100)
-#variables = turn(200)
+#variables = turn(60)
 #pieces = northPiece, northEastPiece, southEastPiece, southPiece, southWestPiece, northWestPiece, empty
 
 #e = empty
