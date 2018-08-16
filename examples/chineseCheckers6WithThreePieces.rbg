@@ -16,23 +16,15 @@
 #NW = northWestPiece
 
 #board = hexagon(northWest, northEast, east, southEast, southWest, west,
-                    [   ,   ,   ,   , N ,   ,   ,   ,   ]
-                  [   ,   ,   ,   , N , N ,   ,   ,   ,   ]
-                [   ,   ,   ,   , e , e , e ,   ,   ,   ,   ]
-              [   ,   ,   ,   , e , e , e , e ,   ,   ,   ,   ]
-            [NW ,NW , e , e , e , e , e , e , e , e , e ,NE ,NE ]
-          [   ,NW , e , e , e , e , e , e , e , e , e , e ,NE ,   ]
-        [   ,   , e , e , e , e , e , e , e , e , e , e , e ,   ,   ]
-      [   ,   ,   , e , e , e , e , e , e , e , e , e , e ,   ,   ,   ]
-    [   ,   ,   ,   , e , e , e , e , e , e , e , e , e ,   ,   ,   ,   ]
-      [   ,   ,   , e , e , e , e , e , e , e , e , e , e ,   ,   ,   ]
-        [   ,   , e , e , e , e , e , e , e , e , e , e , e ,   ,   ]
-          [   ,SW , e , e , e , e , e , e , e , e , e , e ,SE ,   ]
-            [SW ,SW , e , e , e , e , e , e , e , e , e ,SE ,SE ]
-              [   ,   ,   ,   , e , e , e , e ,   ,   ,   ,   ]
-                [   ,   ,   ,   , e , e , e ,   ,   ,   ,   ]
-                  [   ,   ,   ,   , S , S ,   ,   ,   ,   ]
-                    [   ,   ,   ,   , S ,   ,   ,   ,   ])
+                [   ,   , N ,   ,   ]
+              [   ,   , N , N ,   ,   ]
+            [NW ,NW , e , e , e ,NE ,NE ]
+          [   ,NW , e , e , e , e ,NE ,   ]
+        [   ,   , e , e , e , e , e ,   ,   ]
+          [   ,SW , e , e , e , e ,SE ,   ]
+            [SW ,SW , e , e , e ,SE ,SE ]
+              [   ,   , S , S ,   ,   ]
+                [   ,   , S ,   ,   ])
 
 #anyNeighbor = (northWest + northEast + east + southEast + southWest + west)
 
