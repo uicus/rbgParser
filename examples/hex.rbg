@@ -32,8 +32,7 @@
 #reachable(dir; piece) = ((anyNeighbor {piece})* {! dir})
 
 #move(player; oppPlayer; dir1; dir2; piece) =
-  anySquare {e} [piece]
-  ->>
+  anySquare {e} ->> [piece]
   (
      ({! reachable(dir1; piece)} + {! reachable(dir2; piece)})
      ->oppPlayer

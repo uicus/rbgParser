@@ -36,8 +36,8 @@
 #move(me; opp; piece) = (
       anySquare {e} ->> [piece] 
       (
-          {? winAt(piece)} [$ me=100] [$ opp=0] ->> {}
-        + {! winAt(piece)} ->opp
+          {! winAt(piece)} ->opp
+        + winAt(piece) [$ me=100] [$ opp=0] ->> {}
       )
     )
 
