@@ -69,11 +69,8 @@
     standardMove(color~King; anyNeighborSquare; opponentColor)
     [$ color~KingMoved=1]
 
-//#isAttackedByBishop(opponentColor) = diagonalLine{opponentColor~Bishop}
 #isAttackedByBishopOrQueen(opponentColor) = diagonalLine{opponentColor~Bishop,opponentColor~Queen}
-//#isAttackedByRook(opponentColor) = parallelLine{anyRook(opponentColor)}
 #isAttackedByRookOrQueen(opponentColor) = parallelLine{anyRook(opponentColor),opponentColor~Queen}
-// #isAttackedByQueen(opponentColor) = (diagonalLine + parallelLine){opponentColor~Queen}
 #isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
 #isAttackedByKing(opponentColor) = anyNeighborSquare{opponentColor~King}
 #isAttackedByPawn(opponentColor; forward) = (right forward + left forward){opponentColor~Pawn}
@@ -82,7 +79,6 @@
     {!
         isAttackedByBishopOrQueen(opponentColor)
       + isAttackedByRookOrQueen(opponentColor)
-//      + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
       + isAttackedByPawn(opponentColor; forward)
@@ -93,7 +89,6 @@
     (
         isAttackedByBishopOrQueen(opponentColor)
       + isAttackedByRookOrQueen(opponentColor)
-//      + isAttackedByQueen(opponentColor)
       + isAttackedByKnight(opponentColor)
       + isAttackedByKing(opponentColor)
       + isAttackedByPawn(opponentColor; forward)
@@ -168,11 +163,12 @@
           + standardPawnMove(forward; backward; color; opponentColor)
         )
       + enPassantPawnMove(forward; color)
-    ) {! checked(color; opponentColor; forward)}
+    )  {! checked(color; opponentColor; forward)}
     ->> (
         {! checked(opponentColor; color; backward)} [$ color=50,opponentColor=50]
-      + checked(opponentColor; color; backward) [$ opponentColor=0,color=100]
-    ) ->> [$ turn=turn+1] ->opponentColor
+      + {? checked(opponentColor; color; backward)} [$ opponentColor=0,color=100]
+    )
+    ->> [$ turn=turn+1] ->opponentColor
 
 #rules = ->white
     (
