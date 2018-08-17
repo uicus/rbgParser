@@ -98,12 +98,13 @@
     {$ color~KingMoved==0}
     pickUpPiece(color~King)
     (
-        (right {empty} isNotAttackedBy(opponentColor; forward))^2
-        [color~King]
+        //(right {empty} isNotAttackedBy(opponentColor; forward))^2
+        right {empty} isNotAttackedBy(opponentColor; forward)
+        right {empty} [color~King]
         right pickUpPiece(color~RookUnmoved)
         left^2
-      + (left {empty} isNotAttackedBy(opponentColor; forward))^2
-        [color~King]
+      + left {empty} isNotAttackedBy(opponentColor; forward)
+        left {empty} [color~King]
         left {empty} // Rook CAN pass through an attacked square
         left pickUpPiece(color~RookUnmoved)
         right^3
@@ -164,11 +165,15 @@
         )
       + enPassantPawnMove(forward; color)
     )  {! checked(color; opponentColor; forward)}
-    ->> (
-        {! checked(opponentColor; color; backward)} [$ color=50,opponentColor=50]
+    ->>
+    [$ color=50,opponentColor=50] // Draw if reached turn limit
+    ->>
+    [$ turn=turn+1]
+    (
+        {! checked(opponentColor; color; backward)}
       + {? checked(opponentColor; color; backward)} [$ opponentColor=0,color=100]
     )
-    ->> [$ turn=turn+1] ->opponentColor
+    ->opponentColor
 
 #rules = ->white
     (
