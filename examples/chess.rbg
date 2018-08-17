@@ -88,6 +88,7 @@
 #castlingKingMove(forward; color; opponentColor) =
     {$ color~KingMoved==0}
     pickUpPiece(color~King)
+    {! isAttackedBy(opponentColor; forward)}
     (
         right {empty} {! isAttackedBy(opponentColor; forward)}
         right {empty} [color~King]
