@@ -74,36 +74,26 @@
 #isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
 #isAttackedByKing(opponentColor) = anyNeighborSquare{opponentColor~King}
 #isAttackedByPawn(opponentColor; forward) = (right forward + left forward){opponentColor~Pawn}
-
-#isNotAttackedBy(opponentColor; forward) =
-    {!
-        isAttackedByBishopOrQueen(opponentColor)
-      + isAttackedByRookOrQueen(opponentColor)
-      + isAttackedByKnight(opponentColor)
-      + isAttackedByKing(opponentColor)
-      + isAttackedByPawn(opponentColor; forward)
-    }
+#isAttackedBy(opponentColor; forward) = (
+      isAttackedByBishopOrQueen(opponentColor)
+    + isAttackedByRookOrQueen(opponentColor)
+    + isAttackedByKnight(opponentColor)
+    + isAttackedByKing(opponentColor)
+    + isAttackedByPawn(opponentColor; forward)
+  )
 
 #checked(color; opponentColor; forward) =
-    anySquare {color~King}
-    (
-        isAttackedByBishopOrQueen(opponentColor)
-      + isAttackedByRookOrQueen(opponentColor)
-      + isAttackedByKnight(opponentColor)
-      + isAttackedByKing(opponentColor)
-      + isAttackedByPawn(opponentColor; forward)
-    )
+    anySquare {color~King} isAttackedBy(opponentColor; forward)
 
 #castlingKingMove(forward; color; opponentColor) =
     {$ color~KingMoved==0}
     pickUpPiece(color~King)
     (
-        //(right {empty} isNotAttackedBy(opponentColor; forward))^2
-        right {empty} isNotAttackedBy(opponentColor; forward)
+        right {empty} {! isAttackedBy(opponentColor; forward)}
         right {empty} [color~King]
         right pickUpPiece(color~RookUnmoved)
         left^2
-      + left {empty} isNotAttackedBy(opponentColor; forward)
+      + left {empty} {! isAttackedBy(opponentColor; forward)}
         left {empty} [color~King]
         left {empty} // Rook CAN pass through an attacked square
         left pickUpPiece(color~RookUnmoved)
@@ -128,9 +118,8 @@
     pickUpPiece(color~Pawn)
     (
         // Promotion cannot occur
-        //{! backward^2}
+        // {! backward^2} (forward {empty})^2
         (forward^6 backward^5 {empty} forward {empty})
-        //(forward {empty})^2
         [color~Pawn]
         [$ pawnDoubleMove=1]
       + (
