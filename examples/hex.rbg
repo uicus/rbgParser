@@ -36,7 +36,7 @@
   (
      ({! reachable(dir1; piece)} + {! reachable(dir2; piece)})
      ->oppPlayer
-    + {? reachable(dir1; piece) reachable(dir2; piece)}
+    + {? reachable(dir1; piece)} {? reachable(dir2; piece)}
       [$ player=100, oppPlayer=0]
       ->> {}
   )
