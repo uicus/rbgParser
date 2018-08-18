@@ -21,7 +21,7 @@
 
 #grabPiece(piece) = {piece}[empty]
 #dropPiece(piece) = {empty}[piece]
-#dropMan(me; forward) = {empty} ({? forward}[me~Man] + {! forward}[me~King])
+#dropMan(me; forward; backward) = {empty} (forward backward [me~Man] + backward^7 forward^7 [me~King])
 
 #potentialJumpInGivenDirection(xDir; yDir; middleAction; opp) =
     xDir yDir
@@ -49,17 +49,17 @@
       + {me~Man} potentialJumpForward(opp; ; forward)
     )
 
-#nonCapturingManMove(me; forward) =
+#nonCapturingManMove(me; forward; backward) =
     grabPiece(me~Man)
     (right + left) forward
-    dropMan(me; forward)
+    dropMan(me; forward; backward)
 
-#capturingManMove(me; opp; forward) =
+#capturingManMove(me; opp; forward; backward) =
     grabPiece(me~Man)
     potentialJumpForward(opp; [empty]; forward)
     (potentialJumpForward(opp; [empty]; forward))*
     {! potentialJumpForward(opp; ; forward)}
-    dropMan(me; forward)
+    dropMan(me; forward; backward)
 
 #nonCapturingKingMove(me) =
     grabPiece(me~King)
@@ -73,25 +73,27 @@
     {! potentialJumpAround(opp;)}
     dropPiece(me~King)
 
-#move(me; opp; forward) =
+#move(me; opp; forward; backward) =
     (
         {! canCapture(me; opp; forward)}
         anySquare
         (
-            nonCapturingManMove(me; forward) [$ stagnation = 0]
+            nonCapturingManMove(me; forward; backward) [$ stagnation = 0]
           + nonCapturingKingMove(me)
         )
       + anySquare
         (
-            capturingManMove(me; opp; forward)
+            capturingManMove(me; opp; forward; backward)
           + capturingKingMove(me; opp)
         ) [$ stagnation = 0]
     )
     ->>
-    [$ me=50] [$ opp=50] [$ stagnation = stagnation+1]
-    [$ me=100] [$ opp=0] ->opp
+    [$ me=50] [$ opp=50]
+    ->>
+    [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
+    ->opp
 
 #rules = ->black (
-      move(black; white; down)
-      move(white; black; up)
+      move(black; white; down; up)
+      move(white; black; up; down)
     )*
