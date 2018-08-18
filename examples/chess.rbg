@@ -65,10 +65,6 @@
     parallelLine
     captureAnyBy(color~RookMoved; opponentColor)
 
-#standardKingMove(color; opponentColor) =
-    standardMove(color~King; anyNeighborSquare; opponentColor)
-    [$ color~KingMoved=1]
-
 #isAttackedByBishopOrQueen(opponentColor) = diagonalLine{opponentColor~Bishop,opponentColor~Queen}
 #isAttackedByRookOrQueen(opponentColor) = parallelLine{anyRook(opponentColor),opponentColor~Queen}
 #isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
@@ -85,6 +81,9 @@
 #checked(color; opponentColor; forward) =
     anySquare {color~King} isAttackedBy(opponentColor; forward)
 
+#standardKingMove(color; opponentColor) =
+    standardMove(color~King; anyNeighborSquare; opponentColor)
+    
 #castlingKingMove(forward; color; opponentColor) =
     {$ color~KingMoved==0}
     pickUpPiece(color~King)
@@ -101,13 +100,12 @@
         right^3
     )
     [color~RookMoved]
-    [$ color~KingMoved=1]
 
 #kingMove(forward; color; opponentColor) =
     (
         castlingKingMove(forward; color; opponentColor)
       + standardKingMove(color; opponentColor)
-    )
+    ) [$ color~KingMoved=1]
 
 #checkForPromotion(forward; color) =
     (
