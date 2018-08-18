@@ -75,6 +75,16 @@
     + backward left ({opponentColor~King} + ({empty} backward left)* {opponentColor~Queen,opponentColor~Bishop})
     + backward right ({opponentColor~King} + ({empty} backward right)* {opponentColor~Queen,opponentColor~Bishop})
 
+#isAttackedByBishopOrRookOrQueenOrKing(opponentColor) = 
+      up ({opponentColor~King} + ({empty} up)* {opponentColor~Queen,anyRook(opponentColor)})
+    + down ({opponentColor~King} + ({empty} down)* {opponentColor~Queen,anyRook(opponentColor)})
+    + left ({opponentColor~King} + ({empty} left)* {opponentColor~Queen,anyRook(opponentColor)})
+    + right ({opponentColor~King} + ({empty} right)* {opponentColor~Queen,anyRook(opponentColor)})
+    + up left ({opponentColor~King} + ({empty} up left)* {opponentColor~Queen,opponentColor~Bishop})
+    + up right ({opponentColor~King} + ({empty} up right)* {opponentColor~Queen,opponentColor~Bishop})
+    + down left ({opponentColor~King} + ({empty} down left)* {opponentColor~Queen,opponentColor~Bishop})
+    + down right ({opponentColor~King} + ({empty} down right)* {opponentColor~Queen,opponentColor~Bishop})
+
 #isAttackedByRookOrQueen(opponentColor) = parallelLine{anyRook(opponentColor),opponentColor~Queen}
 #isAttackedByBishopOrQueen(opponentColor) = diagonalLine{opponentColor~Bishop,opponentColor~Queen}
 #isAttackedByRookOrQueen(opponentColor) = parallelLine{anyRook(opponentColor),opponentColor~Queen}
@@ -101,7 +111,6 @@
 #standardKingMove(color; opponentColor) =
     anyNeighborSquare
     captureAnyBy(color~King; opponentColor)
-    [$ color~KingMoved=1]
 
 #castlingKingMove(forward; backward; color; opponentColor) =
     {$ color~KingMoved==0}
@@ -118,7 +127,6 @@
         right^3
     )
     [color~RookMoved]
-    [$ color~KingMoved=1]
 
 #kingMove(forward; backward; color; opponentColor) =
     (
@@ -126,7 +134,7 @@
       (
           castlingKingMove(forward; backward; color; opponentColor)
         + standardKingMove(color; opponentColor)
-      )
+      ) [$ color~KingMoved=1]
     )
 
 #checkForPromotion(forward; color) =
