@@ -11,8 +11,6 @@
          [e,e,e,e,e,e,e]
          [e,e,e,e,e,e,e])
 
-//#anySquare = ((up* + down*)(left* + right*))
-
 #winAt(piece; shift1; shift2) = (((shift1) {piece})^2 ((shift1) {piece} + (shift2)^3 {piece}))
 #winAt(piece) = (
       winAt(piece; up left; down right)
@@ -25,11 +23,10 @@
 )
 
 #move(me; opp; piece) = (
-//      anySquare {e} {! down {e}} ->>
-      (left* + right*) up* {! up} {e} ->> down* {e} {! down {e}}
+      (left* + right*) up* down^5 up^5 {e} ->> down* {e} {! down {e}}
       (
           {! winAt(piece)} [piece] ->opp
-        + winAt(piece) [$ me=100] [$ opp=0] ->> {}
+        + {? winAt(piece)} [$ me=100] [$ opp=0] ->> {}
       )
     )
 
