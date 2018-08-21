@@ -5,7 +5,7 @@
 #pieces = empty, whiteMan, whiteKing, blackMan, blackKing
 #variables = stagnation(20)
 
-#line(piece1; piece2) = [piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2]
+#line(piece1; piece2) = [piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2, piece1, piece2]
 #line(piece) = line(piece;empty)
 #offsetLine(piece) = line(empty;piece)
 #board = rectangle(up,down,left,right,
@@ -18,36 +18,12 @@
          offsetLine(blackMan)
          line(blackMan)
          offsetLine(blackMan)
-         line(blackMan)
-         offsetLine(blackMan)
-         line(blackMan)
-         offsetLine(blackMan)
-         line(blackMan)
-         offsetLine(blackMan)
-         line(blackMan)
-         offsetLine(blackMan)
-         line(blackMan)
-         offsetLine(empty)
          line(empty)
          offsetLine(empty)
          line(empty)
          offsetLine(empty)
          line(empty)
          offsetLine(empty)
-         line(empty)
-         offsetLine(empty)
-         line(empty)
-         offsetLine(empty)
-         line(empty)
-         offsetLine(whiteMan)
-         line(whiteMan)
-         offsetLine(whiteMan)
-         line(whiteMan)
-         offsetLine(whiteMan)
-         line(whiteMan)
-         offsetLine(whiteMan)
-         line(whiteMan)
-         offsetLine(whiteMan)
          line(whiteMan)
          offsetLine(whiteMan)
          line(whiteMan)
@@ -62,7 +38,7 @@
 
 #grabPiece(piece) = {piece}[empty]
 #dropPiece(piece) = {empty}[piece]
-#dropMan(me; forward; backward) = {empty} (forward backward [me~Man] + backward^7 forward^7 [me~King])
+#dropMan(me; forward; backward) = {empty} (forward backward [me~Man] + backward^23 forward^23 [me~King])
 
 #potentialJumpInGivenDirection(xDir; yDir; middleAction; opp) =
     xDir yDir
@@ -97,8 +73,8 @@
 
 #capturingManMove(me; opp; forward; backward) =
     grabPiece(me~Man)
-    potentialJumpForward(opp; [empty]; forward)
-    (potentialJumpForward(opp; [empty]; forward))*
+    potentialJumpForward(opp; [empty]; forward) ->me
+    (potentialJumpForward(opp; [empty]; forward) ->me)*
     {! potentialJumpForward(opp; ; forward)}
     dropMan(me; forward; backward)
 
@@ -109,8 +85,8 @@
 
 #capturingKingMove(me; opp) =
     grabPiece(me~King)
-    potentialJumpAround(opp; [empty])
-    (potentialJumpAround(opp; [empty]))*
+    potentialJumpAround(opp; [empty]) ->me
+    (potentialJumpAround(opp; [empty]) ->me)*
     {! potentialJumpAround(opp;)}
     dropPiece(me~King)
 
