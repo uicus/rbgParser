@@ -24,6 +24,7 @@
 
 #move(me; opp; piece) = (
       (left* + right*) up* down^5 up^5 {e} ->> down* {e} {! down {e}}
+//      (down* up^5 (left* + right*)) {e} ->> down* {e} {! down {e}} 
       (
           {! winAt(piece)} [piece] ->opp
         + {? winAt(piece)} [$ me=100] [$ opp=0] ->> {}
