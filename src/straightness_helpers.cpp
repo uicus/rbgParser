@@ -125,7 +125,7 @@ straightness_result modifier_non_switch(void){
 }
 
 straightness_result standard_switch(void){
-    return straightness_result(-1,0,1,-1);
+    return straightness_result(-1,0,0,-1);
 }
 
 straightness_result empty_move(void){

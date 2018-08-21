@@ -38,7 +38,7 @@ int main(int argc, const char** argv){
                     std::cout<<"Verification successful"<<std::endl;
                 else
                     msg.write_as_warnings(std::cout);
-                std::cout<<"Straightness: "<<pg.get_moves()->compute_k_straightness().final_result()<<std::endl;
+                std::cout<<"Strong straightness: "<<pg.get_moves()->compute_k_straightness().final_result()<<std::endl;
                 out<<pg.to_rbg(true);
             }
             else
