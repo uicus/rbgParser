@@ -25,12 +25,6 @@ std::string shift::to_rbg()const{
     return result;
 }
 
-void shift::gather_concatenation_elements(
-    std::vector<std::unique_ptr<game_move>>&,
-    std::vector<std::unique_ptr<game_move>>& next_block_elements){
-    next_block_elements.push_back(flatten());
-}
-
 const token& shift::get_content(void)const{
     return edge_name;
 }

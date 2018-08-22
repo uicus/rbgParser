@@ -62,12 +62,6 @@ std::unique_ptr<game_move> arithmetic_comparison::flatten(void){
     return std::unique_ptr<game_move>(new arithmetic_comparison(std::move(new_left_side), kind_of_comparison, std::move(new_right_side)));
 }
 
-void arithmetic_comparison::gather_concatenation_elements(
-    std::vector<std::unique_ptr<game_move>>&,
-    std::vector<std::unique_ptr<game_move>>& next_block_elements){
-    next_block_elements.push_back(flatten());
-}
-
 const arithmetic_expression* arithmetic_comparison::get_left_side(void)const{
     return left_side.get();
 }

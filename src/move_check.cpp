@@ -45,12 +45,6 @@ std::string move_check::to_rbg()const{
     return result;
 }
 
-void move_check::gather_concatenation_elements(
-    std::vector<std::unique_ptr<game_move>>&,
-    std::vector<std::unique_ptr<game_move>>& next_block_elements){
-    next_block_elements.push_back(flatten());
-}
-
 std::unique_ptr<game_move> move_check::flatten(void){
     return std::unique_ptr<game_move>(new move_check(content->flatten(), negated));
 }

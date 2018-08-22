@@ -13,7 +13,7 @@ class assignment;
 class player_switch;
 class keeper_switch;
 class move_check;
-class actions_block;
+class modifier_block;
 class arithmetic_comparison;
 class integer_arithmetic;
 class variable_arithmetic;
@@ -31,7 +31,7 @@ class abstract_dispatcher{
         virtual void dispatch(const player_switch&)=0;
         virtual void dispatch(const keeper_switch&)=0;
         virtual void dispatch(const move_check&)=0;
-        virtual void dispatch(const actions_block&)=0;
+        virtual void dispatch(const modifier_block&)=0;
         virtual void dispatch(const arithmetic_comparison&)=0;
         virtual void dispatch(const integer_arithmetic&)=0;
         virtual void dispatch(const variable_arithmetic&)=0;
