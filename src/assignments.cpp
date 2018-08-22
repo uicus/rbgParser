@@ -37,12 +37,6 @@ std::unique_ptr<game_move> assignment::flatten(void){
     return std::unique_ptr<game_move>(new assignment(std::move(left_side), std::move(new_right_side)));
 }
 
-void assignment::gather_concatenation_elements(
-    std::vector<std::unique_ptr<game_move>>&,
-    std::vector<std::unique_ptr<game_move>>& next_block_elements){
-    next_block_elements.push_back(flatten());
-}
-
 straightness_result assignment::compute_k_straightness(void)const{
     return modifier_non_switch();
 }

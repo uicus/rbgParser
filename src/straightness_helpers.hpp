@@ -17,6 +17,7 @@ class straightness_result{
         void repeat_result(int times=0);
         void max_of_results(const straightness_result& rhs);
         void concatenate_result(const straightness_result& rhs);
+        void wrap_in_check(void);
         int final_result(void)const;
         friend straightness_result standard_non_switch(void);
         friend straightness_result modifier_non_switch(void);
