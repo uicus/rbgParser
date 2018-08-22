@@ -8,9 +8,9 @@
 #emptyOrColor(color) = singleColorPieces(color), empty
 #allPieces = singleColorPieces(white), singleColorPieces(black)
 
-#players = white (100), black (100)
+#players = white(100), black(100)
 #pieces = allPieces, empty
-#variables = pawnDoubleMove (1), whiteKingMoved (1), blackKingMoved (1), turn (200)
+#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), turn(200)
 
 #board = rectangle(up,down,left,right,
          [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
@@ -25,24 +25,21 @@
 #anySquare = (left* + right*)(up* + down*)
 #anyNeighborSquare = (left + right + up + down + (left + right)(up + down))
 
-#diagonalLine =
-    (
+#diagonalLine = (
         (up left {empty})* up left
       + (up right {empty})* up right
       + (down left {empty})* down left
       + (down right {empty})* down right
     )
 
-#parallelLine =
-    (
+#parallelLine = (
         (up {empty})* up
       + (down {empty})* down
       + (right {empty})* right
       + (left {empty})* left
     )
 
-#knightHop =
-    (
+#knightHop = (
         (up^2 + down^2)(left + right)
       + (left^2 + right^2)(up + down)
     )
@@ -65,45 +62,17 @@
     parallelLine
     captureAnyBy(color~RookMoved; opponentColor)
 
-#isAttackedByBishopOrRookOrQueenOrKingOrPawn(opponentColor; forward; backward) = 
-      up ({opponentColor~King} + ({empty} up)* {opponentColor~Queen,anyRook(opponentColor)})
-    + down ({opponentColor~King} + ({empty} down)* {opponentColor~Queen,anyRook(opponentColor)})
-    + left ({opponentColor~King} + ({empty} left)* {opponentColor~Queen,anyRook(opponentColor)})
-    + right ({opponentColor~King} + ({empty} right)* {opponentColor~Queen,anyRook(opponentColor)})
-    + forward left ({opponentColor~King,opponentColor~Pawn} + ({empty} forward left)* {opponentColor~Queen,opponentColor~Bishop})
-    + forward right ({opponentColor~King,opponentColor~Pawn} + ({empty} forward right)* {opponentColor~Queen,opponentColor~Bishop})
-    + backward left ({opponentColor~King} + ({empty} backward left)* {opponentColor~Queen,opponentColor~Bishop})
-    + backward right ({opponentColor~King} + ({empty} backward right)* {opponentColor~Queen,opponentColor~Bishop})
-
-#isAttackedByBishopOrRookOrQueenOrKing(opponentColor) = 
-      up ({opponentColor~King} + ({empty} up)* {opponentColor~Queen,anyRook(opponentColor)})
-    + down ({opponentColor~King} + ({empty} down)* {opponentColor~Queen,anyRook(opponentColor)})
-    + left ({opponentColor~King} + ({empty} left)* {opponentColor~Queen,anyRook(opponentColor)})
-    + right ({opponentColor~King} + ({empty} right)* {opponentColor~Queen,anyRook(opponentColor)})
-    + up left ({opponentColor~King} + ({empty} up left)* {opponentColor~Queen,opponentColor~Bishop})
-    + up right ({opponentColor~King} + ({empty} up right)* {opponentColor~Queen,opponentColor~Bishop})
-    + down left ({opponentColor~King} + ({empty} down left)* {opponentColor~Queen,opponentColor~Bishop})
-    + down right ({opponentColor~King} + ({empty} down right)* {opponentColor~Queen,opponentColor~Bishop})
-
-#isAttackedByRookOrQueen(opponentColor) = parallelLine{anyRook(opponentColor),opponentColor~Queen}
-#isAttackedByBishopOrQueen(opponentColor) = diagonalLine{opponentColor~Bishop,opponentColor~Queen}
-#isAttackedByRookOrQueen(opponentColor) = parallelLine{anyRook(opponentColor),opponentColor~Queen}
-#isAttackedByKnight(opponentColor) = knightHop{opponentColor~Knight}
-#isAttackedByKing(opponentColor) = anyNeighborSquare{opponentColor~King}
-#isAttackedByPawn(opponentColor; forward) = (right forward + left forward){opponentColor~Pawn}
-
 #isAttackedBy(opponentColor; forward; backward) = (
-        isAttackedByBishopOrRookOrQueenOrKingOrPawn(opponentColor; forward; backward)
-//        isAttackedByBishopOrRookOrQueenOrKing(opponentColor)
-//        isAttackedByBishopOrQueen(opponentColor)
-//      + isAttackedByRookOrQueen(opponentColor)
-      + isAttackedByKnight(opponentColor)
-//      + isAttackedByKing(opponentColor)
-//      + isAttackedByPawn(opponentColor; forward)
+        up ({opponentColor~King} + ({empty} up)* {opponentColor~Queen,anyRook(opponentColor)})
+      + down ({opponentColor~King} + ({empty} down)* {opponentColor~Queen,anyRook(opponentColor)})
+      + left ({opponentColor~King} + ({empty} left)* {opponentColor~Queen,anyRook(opponentColor)})
+      + right ({opponentColor~King} + ({empty} right)* {opponentColor~Queen,anyRook(opponentColor)})
+      + forward left ({opponentColor~King,opponentColor~Pawn} + ({empty} forward left)* {opponentColor~Queen,opponentColor~Bishop})
+      + forward right ({opponentColor~King,opponentColor~Pawn} + ({empty} forward right)* {opponentColor~Queen,opponentColor~Bishop})
+      + backward left ({opponentColor~King} + ({empty} backward left)* {opponentColor~Queen,opponentColor~Bishop})
+      + backward right ({opponentColor~King} + ({empty} backward right)* {opponentColor~Queen,opponentColor~Bishop})
+      + knightHop {opponentColor~Knight}
     )
-
-#isNotAttackedBy(opponentColor; forward; backward) =
-    {! isAttackedBy(opponentColor; forward; backward)}
 
 #checked(color; opponentColor; forward; backward) =
     anySquare {color~King} isAttackedBy(opponentColor; forward; backward)
@@ -114,13 +83,13 @@
 
 #castlingKingMove(forward; backward; color; opponentColor) =
     {$ color~KingMoved==0}
-    isNotAttackedBy(opponentColor; forward; backward)
+     {! isAttackedBy(opponentColor; forward; backward)}
     (
-        right {empty} isNotAttackedBy(opponentColor; forward; backward)
+        right {empty} {! isAttackedBy(opponentColor; forward; backward)}
         right {empty} [color~King]
         right pickUpPiece(color~RookUnmoved)
         left^2
-      + left {empty} isNotAttackedBy(opponentColor; forward; backward)
+      + left {empty} {! isAttackedBy(opponentColor; forward; backward)}
         left {empty} [color~King]
         left {empty} // Rook CAN pass through an attacked square
         left pickUpPiece(color~RookUnmoved)
@@ -128,8 +97,7 @@
     )
     [color~RookMoved]
 
-#kingMove(forward; backward; color; opponentColor) =
-    (
+#kingMove(forward; backward; color; opponentColor) = (
       pickUpPiece(color~King)
       (
           castlingKingMove(forward; backward; color; opponentColor)
@@ -137,10 +105,9 @@
       ) [$ color~KingMoved=1]
     )
 
-#checkForPromotion(forward; color) =
-    (
-        {? forward} [color~Pawn]
-      + {! forward} [majorPieces(color)]
+#checkForPromotion(forward; backward; color) = (
+        forward backward [color~Pawn]
+      + backward^7 forward^7 [majorPieces(color)]
     )
 
 #standardPawnMove(forward; backward; color; opponentColor) =
@@ -155,7 +122,7 @@
       + (
             forward ({empty} + (right + left) {singleColorPieces(opponentColor)})
         )
-        checkForPromotion(forward; color)
+        checkForPromotion(forward; backward; color)
     )
 
 #enPassantPawnMove(forward; color) =
