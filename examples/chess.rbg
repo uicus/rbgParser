@@ -83,7 +83,7 @@
 
 #castlingKingMove(forward; backward; color; opponentColor) =
     {$ color~KingMoved==0}
-     {! isAttackedBy(opponentColor; forward; backward)}
+    {! isAttackedBy(opponentColor; forward; backward)}
     (
         right {empty} {! isAttackedBy(opponentColor; forward; backward)}
         right {empty} [color~King]
@@ -129,7 +129,7 @@
     {$ pawnDoubleMove==1}
     [$ pawnDoubleMove=0]
     (
-        // We are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so do not check it
+        // We are sure that thd current square is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so do not check it
         right pickUpPiece(color~Pawn) left
       + left pickUpPiece(color~Pawn) right
     )
