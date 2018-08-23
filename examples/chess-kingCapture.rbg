@@ -137,16 +137,12 @@
       + enPassantPawnMove(forward; color)
     )
     ->>
-    [$ color=50,opponentColor=50] // Draw if reached turn limit
-    ->>
-    [$ turn=turn+1]
     (
-        {! checked(opponentColor; color; backward; forward)}
-      + {? checked(opponentColor; color; backward; forward)} [$ opponentColor=0,color=100]
+        {$ opponentColor~King > 0} [$ turn=turn+1] ->opponentColor
+      + {$ opponentColor~King == 0} [$ color=100,opponentColor=0] ->> {}
     )
-    ->opponentColor
 
-#rules = ->white
+#rules = [$ white=50,black=50] ->white
     (
         allMoves(up;down;white;black)
         allMoves(down;up;black;white)

@@ -156,10 +156,13 @@
     ->>
     [$ turn=turn+1]
     (
-        {! checked(opponentColor; color; backward; forward)}
-      + {? checked(opponentColor; color; backward; forward)} [$ opponentColor=0,color=100]
+        {! checked(opponentColor; color; backward; forward)} ->opponentColor
+      + {? checked(opponentColor; color; backward; forward)} [$ color=100,opponentColor=0]
+        (   
+            {$ turn < 200} ->opponentColor
+          + {$ turn == 200} ->> // If mate in the last turn
+        )
     )
-    ->opponentColor
 
 #rules = ->white
     (
