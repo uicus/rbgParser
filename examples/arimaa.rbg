@@ -1,0 +1,155 @@
+// Arimaa (v1)
+// -- No rules about repeating states.
+// -- Play is limited to 400 turns.
+
+#colorPieces(color) = color~Elephant, color~Camel, color~Horse, color~Dog, color~Cat, color~Rabbit
+#players = gold(100), silver(100)
+#pieces = colorPieces(gold), colorPieces(silver), empty
+#variables = turn(400), steps(4)
+
+#board = rectangle(up,down,left,right,
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ])
+
+#anySquare = (left* + right*)(up* + down*)
+#anyNeighborSquare = (left + right + up + down)
+
+#setupPiece(color; piece; backward) = (->color anySquare {! backward^2} {empty} [color~piece])
+#setupPlayer(color; backward) = setupPiece(color; Elephant; backward)
+                                setupPiece(color; Camel; backward)
+                                setupPiece(color; Horse; backward)^2
+                                setupPiece(color; Dog; backward)^2
+                                setupPiece(color; Cat; backward)^2
+                                setupPiece(color; Rabbit; backward)^8
+
+#fireTrap = (
+      {colorPieces(gold)} ({? anyNeighborSquare {colorPieces(gold)}} + {! anyNeighborSquare {colorPieces(gold)}} [empty])
+    + {colorPieces(silver)} ({? anyNeighborSquare {colorPieces(silver)}} + {! anyNeighborSquare {colorPieces(silver)}} [empty])
+    + {empty}
+  )
+
+#fireTraps = (
+    anySquare left^7 up^7
+    right^2 down^2 fireTrap
+    right^3 fireTrap
+    down^3 fireTrap
+    left^3 fireTrap
+  )
+
+#basicMoveRabbit(color; forward) = (
+    {color~Rabbit} [empty]
+    (
+        left {empty} [color~Rabbit]
+      + right {empty} [color~Rabbit]
+      + forward {empty} [color~Rabbit]
+    )
+  )
+
+#basicMovePiece(color; piece) = (
+    {color~piece} [empty]
+    (
+        left {empty} [color~piece]
+      + right {empty} [color~piece]
+      + up {empty} [color~piece]
+      + down {empty} [color~piece]
+    )
+  )
+
+#basicMove(color; forward) = (
+    anySquare
+    (
+        basicMovePiece(color; Elephant)
+      + basicMovePiece(color; Camel)
+      + basicMovePiece(color; Horse)
+      + basicMovePiece(color; Dog)
+      + basicMovePiece(color; Cat)
+      + basicMoveRabbit(color; forward)
+    )
+  )
+
+#displace(color; dir) = (
+      {color~Rabbit} [empty] dir {empty} [color~Rabbit]
+    + {color~Cat} [empty] dir {empty} [color~Cat]
+    + {color~Dog} [empty] dir {empty} [color~Dog]
+    + {color~Horse} [empty] dir {empty} [color~Horse]
+    + {color~Camel} [empty] dir {empty} [color~Camel]
+    + {color~Elephant} [empty] dir {empty} [color~Elephant]
+  )
+
+#pushMovePiece(color; piece; weakerPieces; oppColor) = (
+    (
+        left weakerPieces (displace(oppColor; left) right + displace(oppColor; up) down + displace(oppColor; down) up)
+      + right weakerPieces (displace(oppColor; right) left + displace(oppColor; up) down + displace(oppColor; down) up)
+      + up weakerPieces (displace(oppColor; left) right + displace(oppColor; right) left + displace(oppColor; up) down)
+      + down weakerPieces (displace(oppColor; left) right + displace(oppColor; right) left + displace(oppColor; down) up)
+    ) [color~piece]
+  )
+
+#pullMovePiece(color; piece; weakerPieces; oppColor) = (
+    (
+        left {empty} [color~piece] right
+      + right {empty} [color~piece] left
+      + up {empty} [color~piece] down
+      + down {empty} [color~piece] up   
+    )
+    (
+        left weakerPieces displace(oppColor; right)
+      + right weakerPieces displace(oppColor; left)
+      + up weakerPieces displace(oppColor; down)
+      + down weakerPieces displace(oppColor; up)    
+    )
+  )
+
+#pushOrPullMovePiece(color; piece; weakerPieces; oppColor) = (
+    anySquare {color~piece} [empty] (
+        pushMovePiece(color; piece; weakerPieces; oppColor)
+      + pullMovePiece(color; piece; weakerPieces; oppColor)
+    )
+  )
+
+#pushOrPullMove(color; oppColor) = (
+      pushOrPullMovePiece(color; Elephant; {oppColor~Camel,oppColor~Horse,oppColor~Dog,oppColor~Cat,oppColor~Rabbit}; oppColor)
+    + pushOrPullMovePiece(color; Camel; {oppColor~Horse,oppColor~Dog,oppColor~Cat,oppColor~Rabbit}; oppColor)
+    + pushOrPullMovePiece(color; Horse; {oppColor~Dog,oppColor~Cat,oppColor~Rabbit}; oppColor)
+    + pushOrPullMovePiece(color; Dog; {oppColor~Cat,oppColor~Rabbit}; oppColor)
+    + pushOrPullMovePiece(color; Cat; {oppColor~Rabbit}; oppColor)
+  )
+
+#move(color; oppColor; forward; backward) = (
+    [$ steps = 4]
+    (
+      (   
+          [$ steps = steps-1] basicMove(color; forward)
+        + [$ steps = steps-2] pushOrPullMove(color; oppColor)
+      )
+      fireTraps
+      (
+          ({$ goldRabbit == 0} + {? anySquare down^7 {silverRabbit}}) [$ silver=100, gold=0] ->> {}
+        + ({$ silverRabbit == 0} + {? anySquare up^7 {goldRabbit}}) [$ gold=100, silver=0] ->> {}
+        + {$ goldRabbit > 0} {$ silverRabbit > 0} {! anySquare down^7 {silverRabbit}} {! anySquare up^7 {goldRabbit}}
+      )
+    )*
+    {$ steps < 4}
+    ->>
+    [$ color=50, oppColor=50]
+    ->>
+    [$ turn = turn+1]
+    [$ color=100, oppColor=0]
+    -> oppColor
+  )
+
+#rules =
+     setupPlayer(gold; down)
+     setupPlayer(silver; up)
+     ->gold
+     (
+       move(gold; silver; up; down)
+       move(silver; gold; down; up)
+     )*
+
