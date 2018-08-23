@@ -129,7 +129,7 @@
     {$ pawnDoubleMove==1}
     [$ pawnDoubleMove=0]
     (
-        // We are sure that thd current square is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so do not check it
+        // We are sure that the current square is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so do not check it
         right pickUpPiece(color~Pawn) left
       + left pickUpPiece(color~Pawn) right
     )
@@ -156,12 +156,14 @@
     ->>
     [$ turn=turn+1]
     (
-        {! checked(opponentColor; color; backward; forward)} ->opponentColor
-      + {? checked(opponentColor; color; backward; forward)} [$ color=100,opponentColor=0]
-        (   
-            {$ turn < 200} ->opponentColor
-          + {$ turn == 200} ->> // If mate in the last turn
-        )
+          {$ turn < 200} (          
+              {! checked(opponentColor; color; backward; forward)}
+            + {? checked(opponentColor; color; backward; forward)} [$ color=100,opponentColor=0]
+          ) ->opponentColor
+        + {$ turn == 200} (
+              {! checked(opponentColor; color; backward; forward)} ->> {}
+            + {? checked(opponentColor; color; backward; forward)} [$ color=100,opponentColor=0] ->> // Draw if there will be a next move
+          )
     )
 
 #rules = ->white
