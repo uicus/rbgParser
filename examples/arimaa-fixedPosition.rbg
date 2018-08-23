@@ -8,14 +8,14 @@
 #variables = turn(400), steps(4)
 
 #board = rectangle(up,down,left,right,
+         [silverHorse ,silverCat   ,silverDog   ,silverCamel ,silverElephant,silverDog   ,silverCat   ,silverHorse]
+         [silverRabbit,silverRabbit,silverRabbit,silverRabbit,silverRabbit  ,silverRabbit,silverRabbit,silverRabbit]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ])
+         [goldHorse , goldCat   , goldDog   ,goldCamel ,goldElephant,goldDog    ,goldCat    ,goldHorse  ]
+         [goldRabbit, goldRabbit, goldRabbit,goldRabbit,goldRabbit  ,goldRabbit ,goldRabbit ,goldRabbit ])
 
 #anySquare = (left* + right*)(up* + down*)
 #anyNeighborSquare = (left + right + up + down)
@@ -145,8 +145,8 @@
   )
 
 #rules =
-     setupPlayer(gold; down)
-     setupPlayer(silver; up)
+     //setupPlayer(gold; down)
+     //setupPlayer(silver; up)
      ->gold
      (
        move(gold; silver; up; down)
