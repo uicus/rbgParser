@@ -17,7 +17,7 @@
 
 #anySquare = ((up* + down*)(left* + right*))
 
-#queenMove = (
+#queenShift = (
       (up left {e}) (up left {e})* +
       (up {e}) (up {e})* +
       (up right {e}) (up right {e})* +
@@ -28,15 +28,15 @@
       (down right {e}) (down right {e})*
     )
 
-#move(piece) = (
-      anySquare {piece} [e]
-      queenMove
-      [piece]
-      queenMove
-      [x]
-    )
+#turn(piece) = (
+    anySquare {piece} [e]
+    queenShift
+    [piece]
+    queenShift
+    [x]
+  )
 
 #rules = ->white (
-      move(w) [$ white=100] [$ black=0] ->black
-      move(b) [$ white=0] [$ black=100] ->white
-    )*
+    turn(w) [$ white=100, black=0] ->black
+    turn(b) [$ white=0, black=100] ->white
+  )*

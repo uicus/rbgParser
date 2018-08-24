@@ -11,7 +11,7 @@
 
 #players = white(100), black(100)
 #pieces = allPieces, empty
-#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), turn(200)
+#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), turnCount(200)
 
 #board = rectangle(up,down,left,right,
          [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
@@ -136,7 +136,7 @@
     move(forward; backward; color; oppColor)
     ->>
     (
-        {$ oppColor~King > 0} [$ turn=turn+1] ->oppColor
+        {$ oppColor~King > 0} [$ turnCount=turnCount+1] ->oppColor
       + {$ oppColor~King == 0} [$ color=100,oppColor=0] ->> {}
     )
   )

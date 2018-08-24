@@ -15,7 +15,7 @@
 
 #anySquare = ((up* + down*)(left* + right*))
 
-#move(me; myPawn; opp; oppPawn; forward) =
+#turn(me; myPawn; opp; oppPawn; forward) =
     anySquare {myPawn}
     [e] forward ({e} + (left+right) {e,oppPawn})
     ->>
@@ -24,6 +24,6 @@
      + {? forward} [myPawn] ->opp)
 
 #rules = ->white (
-      move(white; w; black; b; up)
-      move(black; b; white; w; down)
+      turn(white; w; black; b; up)
+      turn(black; b; white; w; down)
     )*

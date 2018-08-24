@@ -87,7 +87,7 @@
     ->>[$ color=50, opponentColor=50]
     ->>[$ color=100, opponentColor=0, turn=turn+1]->opponentColor
 
-#firstPhaseMove(color;opponentColor) =
+#firstPhaseTurn(color;opponentColor) =
     anySquare
     handlePiecePlacement(color;opponentColor)
 
@@ -99,7 +99,7 @@
     {$ color~Piece == 2}
     anySquare
 
-#secondPhaseMove(color;opponentColor) =
+#secondPhaseTurn(color;opponentColor) =
     canContinueGame(color)
     anySquare
     removePiece(color~Piece)
@@ -111,10 +111,10 @@
 
 #rules = ->white
     (
-        firstPhaseMove(white;black)
-        firstPhaseMove(black;white)
+        firstPhaseTurn(white;black)
+        firstPhaseTurn(black;white)
     )^9
     (
-        secondPhaseMove(white;black)
-      + secondPhaseMove(black;white)
+        secondPhaseTurn(white;black)
+      + secondPhaseTurn(black;white)
     )*

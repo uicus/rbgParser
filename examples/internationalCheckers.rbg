@@ -184,7 +184,7 @@
     checkingMove(me; opp)
     {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
 
-#move(me; opp; forward; backward) =
+#turn(me; opp; forward; backward) =
     selectMove(me; opp; forward)
     {! canCaptureMore(me; opp)} ->>
     applyMove(me; forward; backward)
@@ -196,6 +196,6 @@
     ->opp
 
 #rules = ->white (
-      move(white; black; up; down)
-      move(black; white; down; up)
+      turn(white; black; up; down)
+      turn(black; white; down; up)
     )*

@@ -145,11 +145,12 @@
   )
 
 #rules =
-     //setupPlayer(gold; down)
-     //setupPlayer(silver; up)
-     ->gold
-     (
-       move(gold; silver; up; down)
-       move(silver; gold; down; up)
-     )*
+    //setupPlayer(gold; down)
+    //setupPlayer(silver; up)
+    ->gold
+    (
+      turn(gold; silver; up; down)
+      turn(silver; gold; down; up)
+    )*
+
 

@@ -33,7 +33,7 @@
     + winAt(piece; left; right)
   )
 
-#move(me; opp; piece) = (
+#turn(me; opp; piece) = (
       anySquare {e} ->> [piece] 
       (
           {! winAt(piece)} ->opp
@@ -41,5 +41,7 @@
       )
     )
 
-#rules = [$ white=50] [$ black=50] ->white
-    (move(white; black; w) move(black; white; b))*
+#rules = [$ white=50] [$ black=50] ->white (
+    turn(white; black; w)
+    turn(black; white; b)
+  )*

@@ -121,7 +121,7 @@
     + pushOrPullMovePiece(color; Cat; {oppColor~Rabbit}; oppColor)
   )
 
-#move(color; oppColor; forward; backward) = (
+#turn(color; oppColor; forward; backward) = (
     [$ steps = 4]
     (
       (   
@@ -145,11 +145,10 @@
   )
 
 #rules =
-     setupPlayer(gold; down)
-     setupPlayer(silver; up)
-     ->gold
-     (
-       move(gold; silver; up; down)
-       move(silver; gold; down; up)
-     )*
-
+    setupPlayer(gold; down)
+    setupPlayer(silver; up)
+    ->gold
+    (
+      turn(gold; silver; up; down)
+      turn(silver; gold; down; up)
+    )*

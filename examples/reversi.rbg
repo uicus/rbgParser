@@ -49,7 +49,7 @@
       swapDirection(me; opp; down right; up left)
     )
 
-#move(me; opp; oppPlayer) = (
+#turn(me; opp; oppPlayer) = (
         (
           anySquare {e} {? movePossible(me; opp)}
           ->>
@@ -72,4 +72,7 @@
         )
     )->oppPlayer
 
-#rules = ->white (move(w; b; black) move(b; w; white))*
+#rules = ->white (
+    turn(w; b; black)
+    turn(b; w; white)
+  )*

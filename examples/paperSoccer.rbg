@@ -116,7 +116,7 @@
       + jumpInGivenDirection(down right)
     )
 
-#wholeMove(me; opp) =
+#turn(me; opp) =
     singleJump
     (
         {? canMoveFurther}
@@ -131,9 +131,7 @@
       + {empty}[$ me=100, opp=0] ->opp
     )
 
-#rules =
-    findBall ->white
-    (
-        wholeMove(white; black)
-        wholeMove(black; white)
-    )*
+#rules = findBall ->white (
+    turn(white; black)
+    turn(black; white)
+  )*

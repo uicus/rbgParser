@@ -103,7 +103,7 @@
       countPoints resetSquare ->> {}
     )
 
-#move(me; opp) = (
+#turn(me; opp) = (
       (
           [$ me~Pass=0]
           placeStone(me~Stone; opp~Stone) ->>
@@ -115,6 +115,6 @@
     )
 
 #rules = ->black (
-      move(black; white) 
-      move(white; black)
+      turn(black; white) 
+      turn(white; black)
     )*
