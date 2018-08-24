@@ -20,7 +20,7 @@
 #anySquare = ((up* + down*)(left* + right*))
 
 #grabPiece(piece) = {piece}[empty]
-#dropMan(me; forward; backward) = (forward backward [me~Man] + backward^7 forward^7 [me~King])
+#dropMan(me; forward; backward) = ({? forward} [me~Man] + {! forward} [me~King])
 
 #potentialJumpInGivenDirection(xDir; yDir; middleAction; opp) =
     xDir yDir

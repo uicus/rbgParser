@@ -54,7 +54,7 @@
 
 #isPartOfDirectedMill(color;direction1;direction2) =
     (
-        {? direction1 {color~Piece}}{? direction2 {color~Piece}}
+        {? direction1 {color~Piece}} {? direction2 {color~Piece}}
       + threeInRow(color~Piece;direction1)
       + threeInRow(color~Piece;direction2)
     )

@@ -45,29 +45,29 @@
       + (left^2 + right^2)(up + down)
     )
 
-#captureAnyBy(capturingPiece; opponentColor) = {emptyOrColor(opponentColor)} [capturingPiece]
+#captureAnyBy(capturingPiece; oppColor) = {emptyOrColor(oppColor)} [capturingPiece]
 
 #pickUpPiece(piece) = {piece}[empty]
 
-#standardMove(piece; movePattern; opponentColor) =
+#standardMove(piece; movePattern; oppColor) =
     pickUpPiece(piece)
     movePattern
-    captureAnyBy(piece; opponentColor)
+    captureAnyBy(piece; oppColor)
 
-#bishopMove(color; opponentColor) = standardMove(color~Bishop; diagonalLine; opponentColor)
-#knightMove(color; opponentColor) = standardMove(color~Knight; knightHop; opponentColor)
-#queenMove(color; opponentColor) = standardMove(color~Queen; (diagonalLine + parallelLine); opponentColor)
+#bishopMove(color; oppColor) = standardMove(color~Bishop; diagonalLine; oppColor)
+#knightMove(color; oppColor) = standardMove(color~Knight; knightHop; oppColor)
+#queenMove(color; oppColor) = standardMove(color~Queen; (diagonalLine + parallelLine); oppColor)
 
-#rookMove(color; opponentColor) =
+#rookMove(color; oppColor) =
     pickUpPiece(anyRook(color))
     parallelLine
-    captureAnyBy(color~RookMoved; opponentColor)
+    captureAnyBy(color~RookMoved; oppColor)
 
-#standardKingMove(color; opponentColor) =
+#standardKingMove(color; oppColor) =
     anyNeighborSquare
-    captureAnyBy(color~King; opponentColor)
+    captureAnyBy(color~King; oppColor)
 
-#castlingKingMove(forward; backward; color; opponentColor) =
+#castlingKingMove(forward; backward; color; oppColor) =
     {$ color~KingMoved==0}
     (
         right {empty}
@@ -82,68 +82,66 @@
     )
     [color~RookMoved]
 
-#kingMove(forward; backward; color; opponentColor) = (
-      pickUpPiece(color~King)
+#kingMove(forward; backward; color; oppColor) = (
+      pickUpPiece(color~King) [$ color~KingMoved=1]
       (
-          castlingKingMove(forward; backward; color; opponentColor)
-        + standardKingMove(color; opponentColor)
-      ) [$ color~KingMoved=1]
+          standardKingMove(color; oppColor)
+        + castlingKingMove(forward; backward; color; oppColor)
+      )
     )
 
-#checkForPromotion(forward; backward; color) = (
-        forward backward [color~Pawn]
-      + backward^7 forward^7 [majorPieces(color)]
+#checkForPromotion(forward; color) = (
+        {? forward} [color~Pawn]
+      + {! forward} [majorPieces(color)]
     )
 
-#standardPawnMove(forward; backward; color; opponentColor) =
+#standardPawnMove(forward; backward; color; oppColor) =
     pickUpPiece(color~Pawn)
     (
-        // Promotion cannot occur
-        //{! backward^2}
-        (forward^6 backward^5 {empty} forward {empty})
-        //(forward {empty})^2
-        [color~Pawn]
-        [$ pawnDoubleMove=1]
-      + (
-            forward ({empty} + (right + left) {singleColorPieces(opponentColor)})
+        (
+            forward {empty}
+          + forward (left + right) {singleColorPieces(oppColor)}
         )
-        checkForPromotion(forward; backward; color)
+        checkForPromotion(forward; color)
+      + {! backward^2}
+        (forward {empty})^2
+        [color~Pawn] // Promotion cannot occur
+        [$ pawnDoubleMove=1]
     )
 
 #enPassantPawnMove(forward; color) =
     {$ pawnDoubleMove==1}
-    [$ pawnDoubleMove=0]
     (
-        // We are sure that thd current square is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so do not check it
+        // We are sure that thd current square is occupied by oppColor~Pawn, because pawnDoubleMove==1, so do not check it
         right pickUpPiece(color~Pawn) left
       + left pickUpPiece(color~Pawn) right
     )
-    [empty]
-    forward
-    [color~Pawn]
+    [empty] forward [color~Pawn] [$ pawnDoubleMove=0]
 
-#allMoves(forward; backward; color; opponentColor) =
-    (
-        [$ pawnDoubleMove=0]
-        anySquare
-        (
-            bishopMove(color; opponentColor)
-          + rookMove(color; opponentColor)
-          + knightMove(color; opponentColor)
-          + queenMove(color; opponentColor)
-          + kingMove(forward; backward; color; opponentColor)
-          + standardPawnMove(forward; backward; color; opponentColor)
-        )
-      + enPassantPawnMove(forward; color)
-    )
+#move(forward; backward; color; oppColor) = (
+      [$ pawnDoubleMove=0]
+      anySquare
+      (
+          bishopMove(color; oppColor)
+        + rookMove(color; oppColor)
+        + knightMove(color; oppColor)
+        + queenMove(color; oppColor)
+        + kingMove(forward; backward; color; oppColor)
+        + standardPawnMove(forward; backward; color; oppColor)
+      )
+    + enPassantPawnMove(forward; color)
+  )
+
+#turn(forward; backward; color; oppColor) = (
+    move(forward; backward; color; oppColor)
     ->>
     (
-        {$ opponentColor~King > 0} [$ turn=turn+1] ->opponentColor
-      + {$ opponentColor~King == 0} [$ color=100,opponentColor=0] ->> {}
+        {$ oppColor~King > 0} [$ turn=turn+1] ->oppColor
+      + {$ oppColor~King == 0} [$ color=100,oppColor=0] ->> {}
     )
+  )
 
-#rules = [$ white=50,black=50] ->white
-    (
-        allMoves(up;down;white;black)
-        allMoves(down;up;black;white)
+#rules = [$ white=50,black=50] ->white (
+        turn(up;down;white;black)
+        turn(down;up;black;white)
     )*

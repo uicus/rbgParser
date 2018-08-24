@@ -1,7 +1,7 @@
-// Go 19x19
-// -- area scoring
-// -- no ko rule
-// -- 722 turn limit
+// Go (19x19)
+// -- Area scoring.
+// -- No ko rule.
+// -- 722 turn limit.
 
 #players = black(361), white(361)
 #variables = blackPass(1), whitePass(1), turn(722)
@@ -12,7 +12,8 @@
          boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine boardLine)
 
 #anySquare = (left* + right*)(up* + down*)
-#resetSquare = (left* up* right^18 down^18)
+#resetSquare = (left* {! left} up*  {! up})
+//#resetSquare = (right* left^18 down* up^18)
 #gotoNeighbor(neighbor) = ((up+down+left+right){neighbor})
 #gotoBlockNeighbor(stone; neighbor) = (gotoNeighbor(stone)* gotoNeighbor(neighbor))
 #blockHasLiberty(stone) = {? gotoBlockNeighbor(stone; empty)}
@@ -38,7 +39,6 @@
       ) ->>
     )
 
-// Jeśli sąsiedni blok powinien zostać usunięty, to zaznaczamy jeden jego kamień na 'toCapture'
 #markToCapture(oppStone) = (
       markNeighborToCapture(oppStone; up; down)
       markNeighborToCapture(oppStone; down; up)
@@ -46,7 +46,6 @@
       markNeighborToCapture(oppStone; right; left)
     )    
       
-// Zaznaczamy wszystkie kamienie odpowiedniego koloru sąsiadujące z 'toCapture' jako 'toCapture'
 #floodfillCaptures(oppStone) = (
       (
         anySquare
@@ -58,7 +57,6 @@
       {! anySquare {toCapture} gotoNeighbor(oppStone) }
     )
 
-// Usuwamy z planszy wszystkie 'toCapture'
 #clearCaptures = (
       (
         anySquare
@@ -69,13 +67,6 @@
       {! anySquare {toCapture} }
     )
     
-// dopóki na planszy są puste pola (bloki) to zapełniamy je neutralnymi jeśli blok jest otoczony kamieniami obu graczy (lub dame)
-// lub zapełniamy kamieniami gracza który go otacza jednoznacznie
-// gdy pustych pól już nie ma score każdego z graczy to liczba jego kamieni
-// (dla uproszczenia, zamiast wypełniać floodfillem całe bloki, możemy to robić wygodniej kamień po kamieniu)
-//
-// https://www.reddit.com/r/baduk/comments/13dt8t/help_writing_a_scoring_algorithm_for_a_go_game/?st=ja5l3bw8&sh=91192330
-// https://senseis.xmp.net/?Scoring
 #countPoints = (
       (
         anySquare 
@@ -108,7 +99,7 @@
 #endGameCheck = (
       {$ blackPass + whitePass < 2}
       [$ turn = turn+1]
-    + {$ blackPass + whitePass == 2}
+    + ( {$ blackPass + whitePass == 2} + {$ turn == 722})
       countPoints resetSquare ->> {}
     )
 

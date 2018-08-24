@@ -24,5 +24,6 @@
      + {? forward} [myPawn] ->opp)
 
 #rules = ->white (
-      move(white; w; black; b; up) move(black; b; white; w; down)
+      move(white; w; black; b; up)
+      move(black; b; white; w; down)
     )*

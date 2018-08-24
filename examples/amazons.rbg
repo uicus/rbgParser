@@ -29,9 +29,11 @@
     )
 
 #move(piece) = (
-      anySquare {piece}
-      [e] queenMove
-      [piece] queenMove [x]
+      anySquare {piece} [e]
+      queenMove
+      [piece]
+      queenMove
+      [x]
     )
 
 #rules = ->white (

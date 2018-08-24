@@ -24,7 +24,7 @@
 #anySquare = ((up* + down*)(left* + right*))
 #grabPiece(piece) = {piece}[empty]
 #dropMan(temporaryPiece; me; forward; backward) =
-    {temporaryPiece} (forward backward [me~Man] + backward^9 forward^9 [me~King])
+    {temporaryPiece} ({? forward} [me~Man] + {! forward} [me~King])
 
 #jumpWhileRealMove(direction; opp) =
     direction
