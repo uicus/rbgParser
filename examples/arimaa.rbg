@@ -42,12 +42,15 @@
     left^3 fireTrap
   )
 
-#basicMoveRabbit(color; forward) = (
+#basicMoveRabbit(color; oppColor; forward) = (
     {color~Rabbit} [empty]
     (
         left {empty} [color~Rabbit]
       + right {empty} [color~Rabbit]
-      + forward {empty} [color~Rabbit]
+      + forward {empty} [color~Rabbit] (
+            {? forward}
+          + {! forward} [$ color=100, oppColor=0] ->> {}
+        )
     )
   )
 
@@ -61,7 +64,7 @@
     )
   )
 
-#basicMove(color; forward) = (
+#basicMove(color; oppColor; forward) = (
     anySquare
     (
         basicMovePiece(color; Elephant)
@@ -69,7 +72,7 @@
       + basicMovePiece(color; Horse)
       + basicMovePiece(color; Dog)
       + basicMovePiece(color; Cat)
-      + basicMoveRabbit(color; forward)
+      + basicMoveRabbit(color; oppColor; forward)
     )
   )
 
@@ -125,13 +128,15 @@
     [$ steps = 4]
     (
       (   
-          [$ steps = steps-1] basicMove(color; forward)
+          [$ steps = steps-1] basicMove(color; oppColor; forward)
         + [$ steps = steps-2] pushOrPullMove(color; oppColor)
       )
       fireTraps
       (
-          ({$ goldRabbit == 0} + {? anySquare down^7 {silverRabbit}}) [$ silver=100, gold=0] ->> {}
-        + ({$ silverRabbit == 0} + {? anySquare up^7 {goldRabbit}}) [$ gold=100, silver=0] ->> {}
+        //  ({$ goldRabbit == 0} + {? anySquare down^7 {silverRabbit}}) [$ silver=100, gold=0] ->> {}
+        //+ ({$ silverRabbit == 0} + {? anySquare up^7 {goldRabbit}}) [$ gold=100, silver=0] ->> {}
+          ({$ goldRabbit == 0}) [$ silver=100, gold=0] ->> {}
+        + ({$ silverRabbit == 0}) [$ gold=100, silver=0] ->> {}
         + {$ goldRabbit > 0} {$ silverRabbit > 0} {! anySquare down^7 {silverRabbit}} {! anySquare up^7 {goldRabbit}}
       )
     )*
