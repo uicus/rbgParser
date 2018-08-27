@@ -138,8 +138,7 @@
           [$ pawnDoubleMove=0]
           anySquare
           (
-                    kingMove(forward; backward; color; oppColor)
-                      
+              kingMove(forward; backward; color; oppColor)
             + bishopMove(color; oppColor)
             + rookMove(color; oppColor)
             + queenMove(color; oppColor)

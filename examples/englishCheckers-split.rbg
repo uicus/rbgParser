@@ -48,8 +48,8 @@
 
 #nonCapturingManMove(me; forward; backward) =
     grabPiece(me~Man)
-    (right + left) forward {empty}
-    ->> dropMan(me; forward; backward)
+    (left + right) forward {empty}
+    dropMan(me; forward; backward)
 
 #capturingManMove(me; opp; forward; backward) =
     grabPiece(me~Man)
