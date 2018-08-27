@@ -28,15 +28,15 @@
       (down right {e}) (down right {e})*
     )
 
-#turn(piece) = (
+#turn(piece; player) = (
     anySquare {piece} [e]
     queenShift
     [piece]
     queenShift
-    [x]
+    ->> [x]
   )
 
 #rules = ->white (
-    turn(w) [$ white=100, black=0] ->black
-    turn(b) [$ white=0, black=100] ->white
+    turn(w; white) [$ white=100, black=0] ->black
+    turn(b; black) [$ white=0, black=100] ->white
   )*
