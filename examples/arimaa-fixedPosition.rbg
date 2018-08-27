@@ -5,7 +5,7 @@
 #colorPieces(color) = color~Elephant, color~Camel, color~Horse, color~Dog, color~Cat, color~Rabbit
 #players = gold(100), silver(100)
 #pieces = colorPieces(gold), colorPieces(silver), empty
-#variables = turn(400), steps(4)
+#variables = turnCount(400), steps(4)
 
 #board = rectangle(up,down,left,right,
          [silverHorse ,silverCat   ,silverDog   ,silverCamel ,silverElephant,silverDog   ,silverCat   ,silverHorse]
@@ -14,8 +14,8 @@
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-         [goldHorse , goldCat   , goldDog   ,goldCamel ,goldElephant,goldDog    ,goldCat    ,goldHorse  ]
-         [goldRabbit, goldRabbit, goldRabbit,goldRabbit,goldRabbit  ,goldRabbit ,goldRabbit ,goldRabbit ])
+         [goldRabbit, goldRabbit, goldRabbit,goldRabbit,goldRabbit  ,goldRabbit ,goldRabbit ,goldRabbit ]
+         [goldHorse , goldCat   , goldDog   ,goldCamel ,goldElephant,goldDog    ,goldCat    ,goldHorse  ])
 
 #anySquare = (left* + right*)(up* + down*)
 #anyNeighborSquare = (left + right + up + down)
@@ -42,12 +42,15 @@
     left^3 fireTrap
   )
 
-#basicMoveRabbit(color; forward) = (
+#basicMoveRabbit(color; oppColor; forward) = (
     {color~Rabbit} [empty]
     (
         left {empty} [color~Rabbit]
       + right {empty} [color~Rabbit]
-      + forward {empty} [color~Rabbit]
+      + forward {empty} [color~Rabbit] (
+            {? forward}
+          + {! forward} [$ color=100, oppColor=0] ->> {}
+        )
     )
   )
 
@@ -61,7 +64,7 @@
     )
   )
 
-#basicMove(color; forward) = (
+#basicMove(color; oppColor; forward) = (
     anySquare
     (
         basicMovePiece(color; Elephant)
@@ -69,7 +72,7 @@
       + basicMovePiece(color; Horse)
       + basicMovePiece(color; Dog)
       + basicMovePiece(color; Cat)
-      + basicMoveRabbit(color; forward)
+      + basicMoveRabbit(color; oppColor; forward)
     )
   )
 
@@ -121,17 +124,19 @@
     + pushOrPullMovePiece(color; Cat; {oppColor~Rabbit}; oppColor)
   )
 
-#move(color; oppColor; forward; backward) = (
+#turn(color; oppColor; forward; backward) = (
     [$ steps = 4]
     (
       (   
-          [$ steps = steps-1] basicMove(color; forward)
+          [$ steps = steps-1] basicMove(color; oppColor; forward)
         + [$ steps = steps-2] pushOrPullMove(color; oppColor)
       )
       fireTraps
       (
-          ({$ goldRabbit == 0} + {? anySquare down^7 {silverRabbit}}) [$ silver=100, gold=0] ->> {}
-        + ({$ silverRabbit == 0} + {? anySquare up^7 {goldRabbit}}) [$ gold=100, silver=0] ->> {}
+        //  ({$ goldRabbit == 0} + {? anySquare down^7 {silverRabbit}}) [$ silver=100, gold=0] ->> {}
+        //+ ({$ silverRabbit == 0} + {? anySquare up^7 {goldRabbit}}) [$ gold=100, silver=0] ->> {}
+          ({$ goldRabbit == 0}) [$ silver=100, gold=0] ->> {}
+        + ({$ silverRabbit == 0}) [$ gold=100, silver=0] ->> {}
         + {$ goldRabbit > 0} {$ silverRabbit > 0} {! anySquare down^7 {silverRabbit}} {! anySquare up^7 {goldRabbit}}
       )
     )*
@@ -139,7 +144,7 @@
     ->>
     [$ color=50, oppColor=50]
     ->>
-    [$ turn = turn+1]
+    [$ turnCount = turnCount+1]
     [$ color=100, oppColor=0]
     -> oppColor
   )
