@@ -17,10 +17,10 @@
          offsetLine(whiteMan)
          line(whiteMan))
 
-#anySquare = ((up* + down*)(left* + right*))
+#anySquare = ((up left + up right + down left + down right)*)
 
 #grabPiece(piece) = {piece}[empty]
-#dropMan(me; forward; backward) = ({? forward} [me~Man] + {! forward} [me~King])
+#dropMan(me; forward) = ({? forward} [me~Man] + {! forward} [me~King])
 
 #potentialJumpInGivenDirection(xDir; yDir; middleAction; opp) =
     xDir yDir
@@ -46,17 +46,17 @@
       + {me~Man} potentialJumpForward(opp; ; forward)
     )
 
-#nonCapturingManMove(me; forward; backward) =
+#nonCapturingManMove(me; forward) =
     grabPiece(me~Man)
     (left + right) forward {empty}
-    dropMan(me; forward; backward)
+    dropMan(me; forward)
 
-#capturingManMove(me; opp; forward; backward) =
+#capturingManMove(me; opp; forward) =
     grabPiece(me~Man)
     potentialJumpForward(opp; [empty]; forward) ->>
     ({? potentialJumpForward(opp; ; forward)} ->me potentialJumpForward(opp; [empty]; forward) ->>)*
     {! potentialJumpForward(opp; ; forward)}
-    dropMan(me; forward; backward)
+    dropMan(me; forward)
 
 #nonCapturingKingMove(me) =
     grabPiece(me~King)
@@ -70,17 +70,17 @@
     {! potentialJumpAround(opp;)}
     [me~King]
 
-#turn(me; opp; forward; backward) =
+#turn(me; opp; forward) =
     (
         {! canCapture(me; opp; forward)}
         anySquare
         (
-            nonCapturingManMove(me; forward; backward) [$ stagnation = 0]
+            nonCapturingManMove(me; forward) [$ stagnation = 0]
           + nonCapturingKingMove(me)
         )
       + anySquare
         (
-            capturingManMove(me; opp; forward; backward)
+            capturingManMove(me; opp; forward)
           + capturingKingMove(me; opp)
         ) [$ stagnation = 0]
     )
@@ -89,7 +89,7 @@
     [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
     ->opp
 
-#rules = ->black (
-      turn(black; white; down; up)
-      turn(white; black; up; down)
+#rules = right ->black (
+      turn(black; white; down)
+      turn(white; black; up)
     )*

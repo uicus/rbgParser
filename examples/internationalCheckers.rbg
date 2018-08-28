@@ -21,10 +21,10 @@
     offsetLine(whiteMan)
     line(whiteMan))
 
-#anySquare = ((up* + down*)(left* + right*))
+#anySquare = ((up left + up right + down left + down right)*)
+
 #grabPiece(piece) = {piece}[empty]
-#dropMan(temporaryPiece; me; forward; backward) =
-    {temporaryPiece} ({? forward} [me~Man] + {! forward} [me~King])
+#dropMan(temporaryPiece; me; forward) = {temporaryPiece} ({? forward} [me~Man] + {! forward} [me~King])
 
 #jumpWhileRealMove(direction; opp) =
     direction
@@ -163,9 +163,9 @@
       + (down right)*
     )
 
-#applyMove(me; forward; backward) =
+#applyMove(me; forward) =
     (
-        dropMan(manToBePlaced; me; forward; backward)
+        dropMan(manToBePlaced; me; forward)
       + {kingToBePlaced}[me~King]
       + {manToBeMoved, kingToBeMoved}
     )
@@ -176,7 +176,7 @@
     (
         grabPiece(manToBeRemoved, kingToBeRemoved)
       + {kingToBeMoved}[me~King]
-      + dropMan(manToBeMoved; me; forward; backward)
+      + dropMan(manToBeMoved; me; forward)
     )
 
 #canCaptureMore(me; opp) =
@@ -184,10 +184,10 @@
     checkingMove(me; opp)
     {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
 
-#turn(me; opp; forward; backward) =
+#turn(me; opp; forward) =
     selectMove(me; opp; forward)
     {! canCaptureMore(me; opp)} ->>
-    applyMove(me; forward; backward)
+    applyMove(me; forward)
     {$ toBeRemoved + manToBeRemoved + kingToBeRemoved + manToBePlaced + kingToBePlaced + manToBeMoved + kingToBeMoved == 0}
     ->>
     [$ me=50] [$ opp=50]
@@ -195,7 +195,7 @@
     [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
     ->opp
 
-#rules = ->white (
-      turn(white; black; up; down)
-      turn(black; white; down; up)
+#rules = right ->white (
+      turn(white; black; up)
+      turn(black; white; down)
     )*
