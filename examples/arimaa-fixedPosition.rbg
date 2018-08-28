@@ -133,11 +133,9 @@
       )
       fireTraps
       (
-        //  ({$ goldRabbit == 0} + {? anySquare down^7 {silverRabbit}}) [$ silver=100, gold=0] ->> {}
-        //+ ({$ silverRabbit == 0} + {? anySquare up^7 {goldRabbit}}) [$ gold=100, silver=0] ->> {}
-          ({$ goldRabbit == 0}) [$ silver=100, gold=0] ->> {}
-        + ({$ silverRabbit == 0}) [$ gold=100, silver=0] ->> {}
-        + {$ goldRabbit > 0} {$ silverRabbit > 0} {! anySquare down^7 {silverRabbit}} {! anySquare up^7 {goldRabbit}}
+          {$ goldRabbit > 0} {$ silverRabbit > 0} {! anySquare down^7 {silverRabbit}} {! anySquare up^7 {goldRabbit}}
+        + ({$ goldRabbit == 0} + {? anySquare down^7 {silverRabbit}}) [$ silver=100, gold=0] ->> {}
+        + ({$ silverRabbit == 0} + {? anySquare up^7 {goldRabbit}}) [$ gold=100, silver=0] ->> {}
       )
     )*
     {$ steps < 4}
