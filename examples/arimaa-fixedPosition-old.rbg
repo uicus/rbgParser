@@ -7,24 +7,15 @@
 #pieces = colorPieces(gold), colorPieces(silver), empty
 #variables = turnCount(400), steps(4)
 
-#chessLayer = [
+#board = rectangle(up,down,left,right,
          [silverHorse ,silverCat   ,silverDog   ,silverCamel ,silverElephant,silverDog   ,silverCat   ,silverHorse]
-         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
          [silverRabbit,silverRabbit,silverRabbit,silverRabbit,silverRabbit  ,silverRabbit,silverRabbit,silverRabbit]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-         [goldRabbit, goldRabbit, goldRabbit,goldRabbit,goldRabbit  ,goldRabbit ,goldRabbit ,goldRabbit ]
          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-         [goldHorse , goldCat   , goldDog   ,goldCamel ,goldElephant,goldDog    ,goldCat    ,goldHorse  ]]
-#emptyLayer = [[empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
-          [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]]
-#board = cuboid(up,down,left,right,backLayer,frontLayer, chessLayer emptyLayer)
+         [empty     , empty     , empty     , empty     , empty     , empty     , empty     , empty     ]
+         [goldRabbit, goldRabbit, goldRabbit,goldRabbit,goldRabbit  ,goldRabbit ,goldRabbit ,goldRabbit ]
+         [goldHorse , goldCat   , goldDog   ,goldCamel ,goldElephant,goldDog    ,goldCat    ,goldHorse  ])
 
 #anySquare = (left* + right*)(up* + down*)
 #anyNeighborSquare = (left + right + up + down)
@@ -36,22 +27,6 @@
                                 setupPiece(color; Dog; backward)^2
                                 setupPiece(color; Cat; backward)^2
                                 setupPiece(color; Rabbit; backward)^8
-
-#forEachPiece(actionBegin; actionEnd) = (
-      {empty} actionBegin empty actionEnd
-    + {goldElephant} actionBegin goldElephant actionEnd
-    + {goldCamel} actionBegin goldCamel actionEnd
-    + {goldHorse} actionBegin goldHorse actionEnd
-    + {goldDog} actionBegin goldDog actionEnd
-    + {goldCat} actionBegin goldCat actionEnd
-    + {goldRabbit} actionBegin goldRabbit actionEnd
-    + {silverElephant} actionBegin silverElephant actionEnd
-    + {silverCamel} actionBegin silverCamel actionEnd
-    + {silverHorse} actionBegin silverHorse actionEnd
-    + {silverDog} actionBegin silverDog actionEnd
-    + {silverCat} actionBegin silverCat actionEnd
-    + {silverRabbit} actionBegin silverRabbit actionEnd
-  )
 
 #fireTrap = (
       {colorPieces(gold)} ({? anyNeighborSquare {colorPieces(gold)}} + {! anyNeighborSquare {colorPieces(gold)}} [empty])
@@ -67,23 +42,15 @@
     left^3 fireTrap
   )
 
-#isFrozen(color; oppColor) = (
-    {! anyNeighborSquare {colorPieces(color)}}
-    {?
-        {color~Camel} anyNeighborSquare {oppColor~Elephant}
-	    + {color~Horse} anyNeighborSquare {oppColor~Elephant,oppColor~Camel}
-	    + {color~Dog} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse}
-	    + {color~Cat} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog}
-	    + {color~Rabbit} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog,oppColor~Cat}
-	  }
-  )
-
 #basicMoveRabbit(color; oppColor; forward) = (
     {color~Rabbit} [empty]
     (
         left {empty} [color~Rabbit]
       + right {empty} [color~Rabbit]
-      + forward {empty} [color~Rabbit]
+      + forward {empty} [color~Rabbit] (
+            {? forward}
+          + {! forward} [$ color=100, oppColor=0] ->> {}
+        )
     )
   )
 
@@ -98,6 +65,7 @@
   )
 
 #basicMove(color; oppColor; forward) = (
+    anySquare
     (
         basicMovePiece(color; Elephant)
       + basicMovePiece(color; Camel)
@@ -142,7 +110,7 @@
   )
 
 #pushOrPullMovePiece(color; piece; weakerPieces; oppColor) = (
-    {color~piece} [empty] (
+    anySquare {color~piece} [empty] (
         pushMovePiece(color; piece; weakerPieces; oppColor)
       + pullMovePiece(color; piece; weakerPieces; oppColor)
     )
@@ -155,24 +123,11 @@
     + pushOrPullMovePiece(color; Dog; {oppColor~Cat,oppColor~Rabbit}; oppColor)
     + pushOrPullMovePiece(color; Cat; {oppColor~Rabbit}; oppColor)
   )
-  
-#isDifferentPieceInConfigurations = {! forEachPiece(backLayer {;})}
-#isConfigurationDifferent = {?
-    anySquare isDifferentPieceInConfigurations
-  }
-#isConfigurationSame = {!
-    anySquare isDifferentPieceInConfigurations
-  } 
-#copyConfiguration = (
-    (anySquare {! forEachPiece(backLayer {;})} ->> forEachPiece(backLayer [;]) frontLayer)*
-    isConfigurationSame
-  )
-
 
 #turn(color; oppColor; forward; backward) = (
     [$ steps = 4]
     (
-      {$ steps > 0} anySquare {colorPieces(color)} {! isFrozen(color; oppColor)} (   
+      (   
           [$ steps = steps-1] basicMove(color; oppColor; forward)
         + [$ steps = steps-2] pushOrPullMove(color; oppColor)
       )
@@ -183,22 +138,22 @@
         + ({$ silverRabbit == 0} + {? anySquare up^7 {goldRabbit}}) [$ gold=100, silver=0] ->> {}
       )
     )*
-    isConfigurationDifferent
+    {$ steps < 4}
     ->>
     [$ color=50, oppColor=50]
     ->>
     [$ turnCount = turnCount+1]
     [$ color=100, oppColor=0]
-    copyConfiguration
     -> oppColor
   )
 
 #rules =
     //setupPlayer(gold; down)
     //setupPlayer(silver; up)
-    copyConfiguration
     ->gold
     (
       turn(gold; silver; up; down)
       turn(silver; gold; down; up)
     )*
+
+
