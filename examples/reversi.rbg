@@ -17,9 +17,9 @@
 #anyNeighborSquare = (up + down + left + right + (up + down)(left + right))
 
 #swapDirectionPossible(me; opp; dir) = (
-    dir {opp}
-    (dir {opp})*
-    dir {me}
+    dir {opp} dir
+    ({opp} dir)*
+    {me}
   )
 
 #movePossible(me; opp) = (
@@ -35,7 +35,7 @@
 
 #swapDirection(me; opp; dir; backDir) = (
       {! swapDirectionPossible(me; opp; dir)}
-    + (dir {opp} [me])* dir {me}
+    + dir {opp} [me] dir ({opp} [me] dir)* {me}
       backDir ({me} backDir)* {e}
   )
 
@@ -56,20 +56,7 @@
     + {$ w == b} [$ black = 50] [$ white = 50]
   )
 
-#throughOppToEmpty(opp) = (
-    (
-        up left {opp} (up left {opp})* up left  {e}
-      + up {opp} (up {opp})* up {e}
-      + up right {opp} (up right {opp})* up right {e}
-      + left {opp} (left {opp})* left {e}
-      + right {opp} (right {opp})* right {e}
-      + down left {opp} (down left {opp})* down left {e}
-      + down {opp} (down {opp})* down {e}
-      + down right {opp} (down right {opp})* down right {e}
-    )
-  )
-
-#turn(me; opp; oppPlayer) = (
+#turn(me; opp) = (
     (
         (anySquare {opp} anyNeighborSquare {e} {? movePossible(me; opp)})
         ->>
@@ -79,12 +66,16 @@
         ->>
     )
     (
-        {? anySquare ({opp} anyNeighborSquare {e} movePossible(me; opp) + {me} anyNeighborSquare {e} movePossible(opp; me))}
-      + {! anySquare ({opp} anyNeighborSquare {e} movePossible(me; opp) + {me} anyNeighborSquare {e} movePossible(opp; me))} ->> setScores ->> {}
-    ) ->oppPlayer
+        {$ w > 0} {$ b > 0} {? anySquare ({opp} anyNeighborSquare {e} movePossible(me; opp) + {me} anyNeighborSquare {e} movePossible(opp; me))}
+      + (
+            {$ w == 0}
+          + {$ b == 0}
+          + {! anySquare ({opp} anyNeighborSquare {e} movePossible(me; opp) + {me} anyNeighborSquare {e} movePossible(opp; me))} ->> setScores ->> {}
+        )
+    )
   )
 
 #rules = ->black (
-    turn(b; w; white)
-    turn(w; b; black)
+    turn(b; w) ->white
+    turn(w; b) ->black
   )*
