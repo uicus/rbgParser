@@ -83,11 +83,11 @@
     [color~RookMoved]
 
 #kingMove(forward; backward; color; oppColor) = (
-      pickUpPiece(color~King) [$ color~KingMoved=1]
+      pickUpPiece(color~King)
       (
           standardKingMove(color; oppColor)
         + castlingKingMove(forward; backward; color; oppColor)
-      )
+      ) [$ color~KingMoved=1]
     )
 
 #checkForPromotion(forward; color) = (
