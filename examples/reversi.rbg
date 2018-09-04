@@ -66,12 +66,9 @@
         ->>
     )
     (
-        {$ w > 0} {$ b > 0} {? anySquare ({opp} anyNeighborSquare {e} movePossible(me; opp) + {me} anyNeighborSquare {e} movePossible(opp; me))}
-      + (
-            {$ w == 0}
-          + {$ b == 0}
-          + {! anySquare ({opp} anyNeighborSquare {e} movePossible(me; opp) + {me} anyNeighborSquare {e} movePossible(opp; me))} ->> setScores ->> {}
-        )
+        {? anySquare ({opp} anyNeighborSquare {e} movePossible(me; opp) + {me} anyNeighborSquare {e} movePossible(opp; me))}
+      + {! anySquare ({opp} anyNeighborSquare {e} movePossible(me; opp) + {me} anyNeighborSquare {e} movePossible(opp; me))}
+        ->> setScores ->> {}
     )
   )
 
