@@ -163,12 +163,12 @@
             {! checked(oppColor; color; backward; forward)} [$ color=50,oppColor=50] // Draw if stalemate (no further legal move)
           + {? checked(oppColor; color; backward; forward)} [$ color=100,oppColor=0] // Win if checkmate (no further legal move)
         ) ->oppColor
-      + {$ turnCount == 400} ->> [$ color=50,oppColor=50] (
+      + {$ turnCount == 400} [$ color=50,oppColor=50] ->> (
             {! checked(oppColor; color; backward; forward)} ->> {} // Draw if not checked
           + {? checked(oppColor; color; backward; forward)}
             {! move(forward; backward; color; oppColor)}
             [$ color=100,oppColor=0] ->> {} // Win if checkmate
-        ) ->> {}
+        )
     )
   )
 
