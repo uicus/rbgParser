@@ -72,7 +72,7 @@
     )
   )
 
-#rules = ->black (
-    turn(b; w) ->white
-    turn(w; b) ->black
+#rules = (
+    ->black turn(b; w)
+    ->white turn(w; b)
   )*
