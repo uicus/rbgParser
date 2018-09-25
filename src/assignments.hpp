@@ -34,6 +34,7 @@ class assignment : public game_move{
         const arithmetic_expression* get_right_side(void)const;
         bool is_lazy(void)const;
         std::unique_ptr<game_move> copy(void)const override;
+        bool has_piece_as_variable(const std::set<token>& pieces)const override;
 };
 
 std::unique_ptr<game_move> make_assignments_concatenation(

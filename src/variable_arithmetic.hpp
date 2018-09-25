@@ -23,6 +23,7 @@ class variable_arithmetic : public arithmetic_expression{
         std::unique_ptr<arithmetic_expression> flatten(void)override;
         const token& get_content(void)const;
         std::unique_ptr<arithmetic_expression> copy(void)const override;
+        bool has_piece_as_variable(const std::set<token>& pieces)const override;
 };
 
 }

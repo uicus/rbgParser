@@ -53,4 +53,8 @@ std::unique_ptr<game_move> move_check::copy(void)const{
     return std::unique_ptr<game_move>(new move_check(content->copy(),negated));
 }
 
+bool move_check::has_piece_as_variable(const std::set<token>& pieces)const{
+    return content->has_piece_as_variable(pieces);
+}
+
 }

@@ -3,10 +3,12 @@
 
 #include<memory>
 #include<vector>
+#include<set>
 
 namespace rbg_parser{
 
 class abstract_dispatcher;
+class token;
 // interface
 class arithmetic_expression{
     public:
@@ -20,6 +22,7 @@ class arithmetic_expression{
         virtual void gather_sum_elements(std::vector<std::unique_ptr<arithmetic_expression>>& elements){elements.push_back(flatten());};
         virtual void gather_multiply_elements(std::vector<std::unique_ptr<arithmetic_expression>>& elements){elements.push_back(flatten());};
         virtual std::unique_ptr<arithmetic_expression> copy(void)const=0;
+        virtual bool has_piece_as_variable(const std::set<token>&)const{return false;};
 };
 
 }

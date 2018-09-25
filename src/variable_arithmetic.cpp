@@ -35,4 +35,8 @@ std::unique_ptr<arithmetic_expression> variable_arithmetic::copy(void)const{
     return std::unique_ptr<arithmetic_expression>(new variable_arithmetic(content));
 }
 
+bool variable_arithmetic::has_piece_as_variable(const std::set<token>& pieces)const{
+    return pieces.find(content) != pieces.end();
+}
+
 }

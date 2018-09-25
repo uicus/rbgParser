@@ -78,4 +78,8 @@ std::unique_ptr<game_move> arithmetic_comparison::copy(void)const{
     return std::unique_ptr<game_move>(new arithmetic_comparison(left_side->copy(),kind_of_comparison,right_side->copy()));
 }
 
+bool arithmetic_comparison::has_piece_as_variable(const std::set<token>& pieces)const{
+    return left_side->has_piece_as_variable(pieces) or right_side->has_piece_as_variable(pieces);
+}
+
 }

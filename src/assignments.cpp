@@ -68,4 +68,8 @@ std::unique_ptr<game_move> assignment::copy(void)const{
     return std::unique_ptr<game_move>(new assignment(left_side, right_side->copy()));
 }
 
+bool assignment::has_piece_as_variable(const std::set<token>& pieces)const{
+    return right_side->has_piece_as_variable(pieces);
+}
+
 }

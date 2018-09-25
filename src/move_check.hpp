@@ -29,6 +29,7 @@ class move_check : public game_move{
         std::string to_rbg()const override;
         std::unique_ptr<game_move> flatten(void)override;
         std::unique_ptr<game_move> copy(void)const override;
+        bool has_piece_as_variable(const std::set<token>& pieces)const override;
 };
 
 }

@@ -61,4 +61,8 @@ std::unique_ptr<game_move> star_move::copy(void)const{
     return std::unique_ptr<game_move>(new star_move(contained_move->copy()));
 }
 
+bool star_move::has_piece_as_variable(const std::set<token>& pieces)const{
+    return contained_move->has_piece_as_variable(pieces);
+}
+
 }

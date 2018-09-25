@@ -82,4 +82,11 @@ std::unique_ptr<game_move> concatenation::copy(void)const{
     return std::unique_ptr<game_move>(new concatenation(std::move(result_content)));
 }
 
+bool concatenation::has_piece_as_variable(const std::set<token>& pieces)const{
+    for(const auto& el: content)
+        if(el->has_piece_as_variable(pieces))
+            return true;
+    return false;
+}
+
 }

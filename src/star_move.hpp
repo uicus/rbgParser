@@ -28,6 +28,7 @@ class star_move : public game_move{
         straightness_result compute_k_straightness(void)const override;
         const game_move* get_content(void)const;
         std::unique_ptr<game_move> copy(void)const override;
+        bool has_piece_as_variable(const std::set<token>& pieces)const override;
 };
 
 }

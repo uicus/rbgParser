@@ -31,6 +31,7 @@ class sum : public game_move{
         const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
         void add_move(std::unique_ptr<game_move> m);
         std::unique_ptr<game_move> copy(void)const override;
+        bool has_piece_as_variable(const std::set<token>& pieces)const override;
 };
 
 }
