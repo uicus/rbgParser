@@ -22,6 +22,7 @@ class graph{
         const edges& get_outgoing_edges(uint index)const;
         uint get_size(void)const;
         std::string to_rbg(bool pretty)const;
+        bool is_injective(void)const;
 };
 
 }

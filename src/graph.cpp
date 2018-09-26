@@ -51,4 +51,15 @@ std::string graph::to_rbg(bool pretty)const{
     return result;
 }
 
+bool graph::is_injective(void)const{
+    std::vector<std::set<token>> incoming_edges(vertices.size());
+    for(uint i=0;i<get_size();++i)
+        for(const auto& el: get_outgoing_edges(i))
+            if(incoming_edges[i].find(el.first) != incoming_edges[i].end())
+                return false;
+            else
+                incoming_edges[i].insert(el.first);
+    return true;
+}
+
 }
