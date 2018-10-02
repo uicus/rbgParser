@@ -3,6 +3,7 @@
 #include"arithmetic_expression.hpp"
 #include"arithmetic_operation.hpp"
 #include"sum.hpp"
+#include"prioritized_sum.hpp"
 #include"concatenation.hpp"
 #include"arithmetic_comparison.hpp"
 
@@ -132,6 +133,8 @@ std::unique_ptr<game_move> internal_node::get_game_move(void)const{
         case add:
         case no_operator:
             return std::unique_ptr<game_move>(new sum(std::move(result)));
+        case priority_add:
+            return std::unique_ptr<game_move>(new prioritized_sum(std::move(result)));
         case concatenate:
             return std::unique_ptr<game_move>(new concatenation(std::move(result)));
         default:

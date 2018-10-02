@@ -119,6 +119,8 @@ std::string operator_type_description(operator_type t){
             return "no operator";
         case concatenate:
             return "concatenation";
+        case priority_add:
+            return "prioritized addition";
         case add:
             return "addition";
         case subtract:

@@ -33,6 +33,7 @@ enum token_type{
     colon,
     dollar,
     equal,
+    priority_plus,
     arrow,
     keeper_arrow,
     exclamation,

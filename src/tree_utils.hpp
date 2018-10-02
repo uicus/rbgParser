@@ -56,6 +56,7 @@ bool is_subtype(expression_type t, expression_type sub_t);
 enum operator_type{
     no_operator = 0,
     concatenate,
+    priority_add,
     add,
     subtract,
     multiply,
