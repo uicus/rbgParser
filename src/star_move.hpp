@@ -18,6 +18,7 @@ class star_move : public game_move{
         star_move(const star_move&)=delete;
         star_move& operator=(const star_move&)=delete;
         star_move& operator=(star_move&&)=default;
+        int give_indices_in_expression(int next_free)override;
         bool modifies(void)const override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;

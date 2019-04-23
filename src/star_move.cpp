@@ -9,6 +9,11 @@ star_move::star_move(std::unique_ptr<game_move>&& contained_move):
 contained_move(std::move(contained_move)){
 }
 
+int star_move::give_indices_in_expression(int next_free){
+    next_free = contained_move->give_indices_in_expression(next_free);
+    return next_free;
+}
+
 bool star_move::modifies(void)const{
     if(contained_move)
         return contained_move->modifies();

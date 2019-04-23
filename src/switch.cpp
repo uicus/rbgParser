@@ -6,6 +6,11 @@ player_switch::player_switch(const token& to_player):
 to_player(to_player){
 }
 
+int player_switch::give_indices_in_expression(int next_free){
+    index = next_free;
+    return next_free+1;
+}
+
 void player_switch::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
@@ -36,6 +41,11 @@ std::unique_ptr<game_move> player_switch::copy(void)const{
 
 keeper_switch::keeper_switch(bool deterministic):
 deterministic(deterministic){
+}
+
+int keeper_switch::give_indices_in_expression(int next_free){
+    index = next_free;
+    return next_free+1;
 }
 
 void keeper_switch::accept(abstract_dispatcher& dispatcher)const{

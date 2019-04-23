@@ -19,6 +19,7 @@ class move_check : public game_move{
         move_check(const move_check&)=delete;
         move_check& operator=(const move_check&)=delete;
         move_check& operator=(move_check&&)=default;
+        int give_indices_in_expression(int next_free)override;
         void accept(abstract_dispatcher& dispatcher)const override;
         const game_move* get_content(void)const;
         bool is_negated(void)const;

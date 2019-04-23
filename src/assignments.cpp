@@ -9,6 +9,11 @@ left_side(left_side),
 right_side(std::move(right_side)){
 }
 
+int assignment::give_indices_in_expression(int next_free){
+    index = next_free;
+    return next_free+1;
+}
+
 void assignment::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }

@@ -20,6 +20,7 @@ class concatenation : public game_move{
         concatenation(const concatenation&)=delete;
         concatenation& operator=(const concatenation&)=delete;
         concatenation& operator=(concatenation&&)=default;
+        int give_indices_in_expression(int next_free)override;
         bool modifies(void)const override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;

@@ -6,6 +6,11 @@ shift::shift(const token& edge_name):
 edge_name(edge_name){
 }
 
+int shift::give_indices_in_expression(int next_free){
+    index = next_free;
+    return next_free+1;
+}
+
 void shift::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }

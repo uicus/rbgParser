@@ -19,6 +19,7 @@ class prioritized_sum : public game_move{
         prioritized_sum(const prioritized_sum&)=delete;
         prioritized_sum& operator=(const prioritized_sum&)=delete;
         prioritized_sum& operator=(prioritized_sum&&)=default;
+        int give_indices_in_expression(int next_free)override;
         bool modifies(void)const override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;

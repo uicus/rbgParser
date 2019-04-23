@@ -13,8 +13,12 @@ namespace rbg_parser{
 class abstract_dispatcher;
 // interface
 class game_move{
+    protected:
+        int index = 0;
     public:
         virtual ~game_move(void)=default;
+        int index_in_expression(void)const{return index;};
+        virtual int give_indices_in_expression(int next_free)=0;
         virtual bool modifies(void)const{return true;}
         virtual std::unique_ptr<game_move> flatten(void)=0;
         virtual std::unique_ptr<game_move> simplify(void)=0;

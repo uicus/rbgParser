@@ -18,6 +18,7 @@ class player_switch : public game_move{
         player_switch(const player_switch&)=delete;
         player_switch& operator=(const player_switch&)=delete;
         player_switch& operator=(player_switch&&)=default;
+        int give_indices_in_expression(int next_free)override;
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new player_switch(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 3;};
@@ -40,6 +41,7 @@ class keeper_switch : public game_move{
         keeper_switch(const keeper_switch&)=delete;
         keeper_switch& operator=(const keeper_switch&)=delete;
         keeper_switch& operator=(keeper_switch&&)=default;
+        int give_indices_in_expression(int next_free)override;
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new keeper_switch(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 3;};

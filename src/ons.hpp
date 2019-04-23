@@ -19,6 +19,7 @@ class ons : public game_move{
         ons(const ons&)=delete;
         ons& operator=(const ons&)=delete;
         ons& operator=(ons&&)=default;
+        int give_indices_in_expression(int next_free)override;
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new ons(std::move(*this)));};
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(void)const override{return 4;};

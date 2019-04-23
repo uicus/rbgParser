@@ -7,6 +7,11 @@ off::off(token&& off_piece):
 off_piece(std::move(off_piece)){
 }
 
+int off::give_indices_in_expression(int next_free){
+    index = next_free;
+    return next_free+1;
+}
+
 void off::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }

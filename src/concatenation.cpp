@@ -7,6 +7,12 @@ concatenation::concatenation(std::vector<std::unique_ptr<game_move>>&& content):
 content(std::move(content)){
 }
 
+int concatenation::give_indices_in_expression(int next_free){
+    for(const auto& el: content)
+        next_free = el->give_indices_in_expression(next_free);
+    return next_free;
+}
+
 bool concatenation::modifies(void)const{
     for(const auto& el: content)
         if(el->modifies())

@@ -33,6 +33,7 @@ class arithmetic_comparison : public game_move{
         arithmetic_comparison(const arithmetic_comparison&)=delete;
         arithmetic_comparison& operator=(const arithmetic_comparison&)=delete;
         arithmetic_comparison& operator=(arithmetic_comparison&&)=default;
+        int give_indices_in_expression(int next_free)override;
         void accept(abstract_dispatcher& dispatcher)const override;
         const arithmetic_expression* get_left_side(void)const;
         kind get_kind_of_comparison(void)const;
