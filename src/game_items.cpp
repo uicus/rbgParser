@@ -295,6 +295,7 @@ parsed_game game_items::parse_game(messages_container& msg)const{
     auto parsed_graph_builder = parse_graph(decl,msg);
     graph g = parsed_graph_builder->build_graph(msg);
     std::unique_ptr<game_move> moves = parse_moves(decl,&game_items::rules_segment,"rules",msg);
+    moves->give_indices_in_expression(1);
     return parsed_game(
         std::move(decl),
         std::move(g),
