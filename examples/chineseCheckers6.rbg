@@ -140,20 +140,47 @@
       + singleJump(relativeNorthWest; relativeNorthEast; relativeEast; relativeSouthEast; relativeSouthWest; relativeWest)*
     )
 
+#canMovePatternByDirection(relativeNorthWest; relativeNorthEast; relativeEast; relativeSouthEast; relativeSouthWest; relativeWest) =
+    {?
+        anySquare
+        (
+            neighborJump(relativeNorthWest; relativeNorthEast; relativeEast; relativeSouthEast; relativeSouthWest; relativeWest)
+          + singleJump(relativeNorthWest; relativeNorthEast; relativeEast; relativeSouthEast; relativeSouthWest; relativeWest)*
+        )
+    }
+
+#southCanMove =
+    canMovePatternByDirection(northWest; northEast; east; southEast; southWest; west)
+
 #southMoves =
     movePatternByDirection(northWest; northEast; east; southEast; southWest; west)
+
+#southWestCanMove =
+    canMovePatternByDirection(northEast; east; southEast; southWest; west; northWest)
 
 #southWestMoves =
     movePatternByDirection(northEast; east; southEast; southWest; west; northWest)
 
+#northWestCanMove =
+    canMovePatternByDirection(east; southEast; southWest; west; northWest; northEast)
+
 #northWestMoves =
     movePatternByDirection(east; southEast; southWest; west; northWest; northEast)
+
+#northCanMove =
+    canMovePatternByDirection(southEast; southWest; west; northWest; northEast; east)
 
 #northMoves =
     movePatternByDirection(southEast; southWest; west; northWest; northEast; east)
 
+#northEastCanMove =
+    canMovePatternByDirection(southWest; west; northWest; northEast; east; southEast)
+
 #northEastMoves =
     movePatternByDirection(southWest; west; northWest; northEast; east; southEast)
+
+#southEastCanMove =
+    canMovePatternByDirection(west; northWest; northEast; east; southEast; southWest)
 
 #southEastMoves =
     movePatternByDirection(west; northWest; northEast; east; southEast; southWest)
@@ -161,22 +188,64 @@
 #pickUpPiece(piece) =
     {piece}[empty]
 
-#move(playerDirection; winCondition; movePattern; nextPlayerDirection) =
+#clearPieces(piece) =
+    (anySquare pickUpPiece(piece))* {! anySquare {piece}}
+
+#defeat(playerDirection) =
+    clearPieces(playerDirection~Piece)
+    [$ playerDirection~Player = 0]
+
+#endGame = ->> {}
+
+#move(playerDirection; movePattern) =
+    ->playerDirection~Player
     anySquare
     pickUpPiece(playerDirection~Piece)
-    movePattern
-    [playerDirection~Piece] ->> [$ turn = turn+1]
+    movePattern ->>
+    [playerDirection~Piece]
+    [$ turn = turn+1]
+
+#everybodyBlocked =
+    {$ northPiece == 0}
+    {$ northEastPiece == 0}
+    {$ southEastPiece == 0}
+    {$ southPiece == 0}
+    {$ southWestPiece == 0}
+    {$ northWestPiece == 0}
+
+#someoneCanMove =
+    {$ northPiece > 0}
+  + {$ northEastPiece > 0}
+  + {$ southEastPiece > 0}
+  + {$ southPiece > 0}
+  + {$ southWestPiece > 0}
+  + {$ northWestPiece > 0}
+
+#playerTurn(playerDirection; winCondition; movePattern; canMovePattern) =
     (
-        {? winCondition} everybodyLooses [$ playerDirection~Player = 100]->>{}
-      + {! winCondition} ->nextPlayerDirection~Player
+        {$ playerDirection~Piece > 0}
+        (
+            {? canMovePattern} move(playerDirection; movePattern)
+            (
+                {? winCondition} everybodyLooses [$ playerDirection~Player = 100] endGame
+              + {! winCondition}
+            )
+          + {! canMovePattern} defeat(playerDirection)
+        )
+      + {$ playerDirection~Piece == 0}
+    )
+    (
+        everybodyBlocked endGame
+      + someoneCanMove
     )
 
-#rules = everybodyTies ->northPlayer
+
+#rules = everybodyTies
     (
-        move(north; northWins; northMoves; northEast)
-        move(northEast; northEastWins; northEastMoves; southEast)
-        move(southEast; southEastWins; southEastMoves; south)
-        move(south; southWins; southMoves; southWest)
-        move(southWest; southWestWins; southWestMoves; northWest)
-        move(northWest; northWestWins; northWestMoves; north)
+        playerTurn(north; northWins; northMoves; northCanMove)
+        playerTurn(northEast; northEastWins; northEastMoves; northEastCanMove)
+        playerTurn(southEast; southEastWins; southEastMoves; southEastCanMove)
+        playerTurn(south; southWins; southMoves; southCanMove)
+        playerTurn(southWest; southWestWins; southWestMoves; southWestCanMove)
+        playerTurn(northWest; northWestWins; northWestMoves; northWestCanMove)
     )*
