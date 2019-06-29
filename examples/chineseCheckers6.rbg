@@ -193,6 +193,7 @@
 
 #defeat(playerDirection) =
     clearPieces(playerDirection~Piece)
+    anySquare inCorner(northWest; northEast; east; west)
     [$ playerDirection~Player = 0]
 
 #endGame = ->> {}
