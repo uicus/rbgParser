@@ -26,7 +26,7 @@
     (down* up^5 (left* + right*)) {e} ->> down* {e} {! down {e}} 
     (
         {! winAt(piece)} [piece] ->opp
-      + {? winAt(piece)} [$ me=100] ->> {}
+      + {? winAt(piece)} [$ me=100, opp=0] ->> {}
     )
   )
 

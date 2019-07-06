@@ -37,7 +37,7 @@
       anySquare {e} ->> [piece] 
       (
           {! winAt(piece)} ->opp
-        + {? winAt(piece)} [$ me=100] ->> {}
+        + {? winAt(piece)} [$ me=100, opp=0] ->> {}
       )
     )
 

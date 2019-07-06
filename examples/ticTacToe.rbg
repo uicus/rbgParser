@@ -22,7 +22,7 @@
     anySquare {e} ->> [me]
     (
         {! winAt(me)} ->opp~player
-      + {? winAt(me)} [$ me~player=100] ->> {}
+      + {? winAt(me)} [$ me~player=100, opp~Player=0] ->> {}
     )
 
 #rules = [$ xplayer=50] [$ oplayer=50] ->oplayer (
