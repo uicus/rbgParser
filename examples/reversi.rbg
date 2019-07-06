@@ -51,8 +51,8 @@
   )
 
 #setScores = (
-      {$ w > b} [$ black = 0] [$ white = 100]
-    + {$ w < b} [$ black = 100] [$ white = 0]
+      {$ w > b} [$ white = 100]
+    + {$ w < b} [$ black = 100]
     + {$ w == b} [$ black = 50] [$ white = 50]
   )
 
