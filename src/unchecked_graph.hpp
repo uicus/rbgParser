@@ -18,12 +18,13 @@ class graph;
 class unchecked_graph : public graph_builder{
         typedef std::pair<slice_iterator, token> neighbor_name;
         typedef std::map<token, neighbor_name> neighbors;
-        std::map<token, std::pair<token, neighbors>> vertices;
-        token first_vertex_name;
+        // std::map<token, std::pair<token, neighbors>> vertices;
+        std::vector<std::tuple<token,token,neighbors>> vertices;
+        std::map<token, uint> vertices_to_indices;
+        // token first_vertex_name;
         std::map<token, uint> create_name_number_correspondence(void)const;
         std::map<token, uint> check_and_transform_edges(
             const neighbors& n,
-            const std::map<token, uint>& name_number_correspondence,
             messages_container& msg)const;
     public:
         unchecked_graph(void)=default;

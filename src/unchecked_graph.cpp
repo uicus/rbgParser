@@ -9,61 +9,45 @@ namespace rbg_parser{
 
 void unchecked_graph::add_vertex(const token& name, token&& starting_piece){
     assert(not vertex_exists(name));
-    if(vertices.empty())
-        first_vertex_name = name;
-    vertices.insert(std::make_pair(name, std::make_pair(std::move(starting_piece), neighbors())));
+    vertices_to_indices.insert(std::make_pair(name, vertices.size()));
+    vertices.emplace_back(name, std::move(starting_piece), neighbors());
 }
 
 bool unchecked_graph::vertex_exists(const token& name)const{
-    return vertices.find(name) != vertices.end();
+    return vertices_to_indices.find(name) != vertices_to_indices.end();
 }
 
 void unchecked_graph::add_edge(const token& source_vertex, const token& target_vertex, const slice_iterator& target_position, const token& edge_label){
     assert(vertex_exists(source_vertex) && not edge_exists(source_vertex, edge_label));
     auto prepared_neighbor = std::make_pair(target_position, target_vertex);
-    auto& existing_neighbors = vertices.at(source_vertex).second;
+    auto& existing_neighbors = std::get<2>(vertices[vertices_to_indices.at(source_vertex)]);
     existing_neighbors.insert(std::make_pair(edge_label, std::move(prepared_neighbor)));
 }
 
 bool unchecked_graph::edge_exists(const token& source_vertex, const token& edge_label)const{
     if(not vertex_exists(source_vertex))
         return false;
-    const auto& existing_neighbors = vertices.at(source_vertex).second;
+    const auto& existing_neighbors = std::get<2>(vertices[vertices_to_indices.at(source_vertex)]);
     return existing_neighbors.find(edge_label) != existing_neighbors.end();
-}
-
-std::map<token, uint> unchecked_graph::create_name_number_correspondence(void)const{
-    std::map<token, uint> result;
-    uint next_number_to_use = 1;
-    for(const auto& el: vertices){
-        if(el.first == first_vertex_name)
-            result.insert(std::make_pair(el.first, 0));
-        else
-            result.insert(std::make_pair(el.first, next_number_to_use++));
-    }
-    return result;
 }
 
 std::map<token, uint> unchecked_graph::check_and_transform_edges(
     const neighbors& n,
-    const std::map<token, uint>& name_number_correspondence,
     messages_container& msg)const{
     std::map<token, uint> result;
     for(const auto& el: n){
-        if(name_number_correspondence.find(el.second.second) == name_number_correspondence.end())
+        if(vertices_to_indices.find(el.second.second) == vertices_to_indices.end())
             throw msg.build_message(el.second.first.create_call_stack("Target vertex \'"+el.second.first.current(msg).to_string()+"\' was not declared"));
-        result.insert(std::make_pair(el.first, name_number_correspondence.at(el.second.second)));
+        result.insert(std::make_pair(el.first, vertices_to_indices.at(el.second.second)));
     }
     return result;
 }
 
 graph unchecked_graph::build_graph(messages_container& msg)const{
-    const std::map<token, uint> name_to_number_correspondence = create_name_number_correspondence();
     std::vector<std::tuple<token, token, edges>> checked_vertices;
-    checked_vertices.resize(name_to_number_correspondence.size());
-    for(const auto& el: vertices){
-        auto checked_edges = check_and_transform_edges(el.second.second, name_to_number_correspondence, msg);
-        checked_vertices[name_to_number_correspondence.at(el.first)] = std::make_tuple(el.first, el.second.first, std::move(checked_edges));
+    for(uint i=0;i<vertices.size();++i){
+        auto checked_edges = check_and_transform_edges(std::get<2>(vertices[i]), msg);
+        checked_vertices.emplace_back(std::get<0>(vertices[i]), std::get<1>(vertices[i]), std::move(checked_edges));
     }
     return graph(std::move(checked_vertices));
 }
