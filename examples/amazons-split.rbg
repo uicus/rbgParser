@@ -16,7 +16,6 @@
          [e, e, e, w, e, e, w, e, e, e])
 
 #anySquare = ((up* + down*)(left* + right*))
-#anyNeighborSquare = (left + right + up + down)
 
 #queenShift = (
       (up left {e}) (up left {e})* +
@@ -30,7 +29,7 @@
     )
 
 #turn(piece; player) = (
-    anySquare {piece} [e] queenShift {? anyNeighborSquare {e}}
+    anySquare {piece} [e] queenShift
     ->player
     [piece] queenShift
     ->> [x]
