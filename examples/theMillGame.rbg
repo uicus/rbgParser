@@ -28,8 +28,8 @@
         ,right: middle2;,down: middle4;,left: middle6;,up: middle8)
     circle(
         middle;
-        ,right: inner2;,down: inner4;,left: inner6;,up: inner8;
-        ,left: outer2;,up: outer4;,right: outer6;,down: outer8)
+        ,left: outer2;,up: outer4;,right: outer6;,down: outer8;
+        ,right: inner2;,down: inner4;,left: inner6;,up: inner8)
     circle(
         inner;
         ,left: middle2;,up: middle4;,right: middle6;,down: middle8;
@@ -76,45 +76,41 @@
       + {! anySquare {color~Piece}{! isPartOfMill(color)}}
     )->>[empty]
 
-#canContinueGame(color) = {$ color~Piece > 2}
-
 #handlePiecePlacement(color;opponentColor) =
     placePiece(color~Piece)
     (
         {? isPartOfMill(color)}findAndCaptureOpponent(opponentColor)
-      + {! isPartOfMill(color)}
+      + {! isPartOfMill(color)}->>
     )
-    ->>[$ color=50, opponentColor=50]
-    ->>[$ color=100, opponentColor=0, turn=turn+1]->opponentColor
+    [$ color=50, opponentColor=50]
+    ->>[$ color=100, opponentColor=0, turn=turn+1]
 
 #firstPhaseTurn(color;opponentColor) =
+    ->color
     anySquare
     handlePiecePlacement(color;opponentColor)
 
-#standardMovement(color) =
-    {$ color~Piece > 2}
-    anyNeighbor
-
-#flyingMovement(color) =
-    {$ color~Piece == 2}
-    anySquare
-
-#secondPhaseTurn(color;opponentColor) =
-    canContinueGame(color)
+#pickupAnyPiece(color) =
     anySquare
     removePiece(color~Piece)
+
+#secondPhaseTurn(color;opponentColor) =
     (
-        standardMovement(color)
-      + flyingMovement(color)
+        {$ color~Piece > 2}->color
+        pickupAnyPiece(color)
+        anyNeighbor
+      + {$ color~Piece == 2}->color
+        pickupAnyPiece(color)
+        anySquare
     )
     handlePiecePlacement(color;opponentColor)
 
-#rules = ->white
+#rules =
     (
         firstPhaseTurn(white;black)
         firstPhaseTurn(black;white)
     )^9
     (
         secondPhaseTurn(white;black)
-      + secondPhaseTurn(black;white)
+        secondPhaseTurn(black;white)
     )*
