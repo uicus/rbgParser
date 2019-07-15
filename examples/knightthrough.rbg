@@ -1,0 +1,31 @@
+// Knightthrough
+// -- A player that has no knights loses and the game ends.
+
+#players = white(100), black(100)
+#pieces = e, w, b
+#variables =
+#board = rectangle(up,down,left,right,
+         [b, b, b, b, b, b, b, b]
+         [b, b, b, b, b, b, b, b]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [w, w, w, w, w, w, w, w]
+         [w, w, w, w, w, w, w, w])
+
+#anySquare = ((up* + down*)(left* + right*))
+
+#knightShift(forward) = (forward (left^2 + (left + right) forward + right^2))
+
+#turn(me; myKnight; opp; oppKnight; forward) =
+    anySquare {myKnight} [e] knightShift(forward) {e,oppKnight}
+    ->>
+    [$ me=100] [$ opp=0]
+    (  {! forward} ->> {}
+     + {? forward} [myKnight] ->opp)
+
+#rules = ->white (
+      turn(white; w; black; b; up)
+      turn(black; b; white; w; down)
+    )*
