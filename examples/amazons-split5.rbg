@@ -1,5 +1,5 @@
-// Amazons split
-// -- Each original amazons move is split into two moves.
+// Amazons split 5
+// -- Each original amazons move is split into five moves.
 
 #players = white(100), black(100)
 #pieces = e, w, b, x
@@ -17,23 +17,24 @@
          [e, e, e, w, e, e, w, e, e, e])
 
 #anySquare = ((up* + down*)(left* + right*))
-#directedShift(dir) = (dir {e} (dir {e})*)
+#anyNeighbor = (up + down + left + right)
+#directedSplitShift(dir;player) = (dir {e} ->player (dir {e})*)
 
-#queenShift = (
-    directedShift(up left) +
-    directedShift(up) +
-    directedShift(up right) +
-    directedShift(left) +
-    directedShift(right) +
-    directedShift(down left) +
-    directedShift(down) +
-    directedShift(down right)
+#queenSplitShift(player) = (
+    directedSplitShift(up left;player) +
+    directedSplitShift(up;player) +
+    directedSplitShift(up right;player) +
+    directedSplitShift(left;player) +
+    directedSplitShift(right;player) +
+    directedSplitShift(down left;player) +
+    directedSplitShift(down;player) +
+    directedSplitShift(down right;player)
   )
 
 #turn(piece; player) = (
-    anySquare {piece} [e]
-    queenShift [piece] ->player
-    queenShift ->> [x]
+    anySquare {piece} {? anyNeighbor {e}} ->> [e] ->player
+    queenSplitShift(player) ->> [piece] ->player
+    queenSplitShift(player) ->> [x]
   )
 
 #rules = ->white (
