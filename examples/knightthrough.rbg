@@ -1,5 +1,5 @@
 // Knightthrough
-// -- A player that has no knights loses and the game ends.
+// -- A player wins when reaches the opponent's back rank or captures all his pieces.
 
 #players = white(100), black(100)
 #pieces = e, w, b
@@ -22,8 +22,8 @@
     anySquare {myKnight} [e] knightShift(forward) {e,oppKnight}
     ->>
     [$ me=100] [$ opp=0]
-    (  {! forward} ->> {}
-     + {? forward} [myKnight] ->opp)
+    (  {? forward} [myKnight] ->opp
+     + {! forward} ->> {} )
 
 #rules = ->white (
       turn(white; w; black; b; up)
