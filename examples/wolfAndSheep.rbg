@@ -1,0 +1,34 @@
+// Wolf and Sheep (Fox and Hounds)
+// -- The player that is unable to move loses.
+// -- Wolf wins when reaches the sheeps' back rank.
+
+#players = wolfPlayer(100), sheepPlayer(100)
+#pieces = e, w, s
+#variables =
+#board = rectangle(up,down,left,right,
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, s, e, s, e, s, e, s])
+
+#anySquare = ((up left + up right + down left + down right)*)
+
+#wolfTurn(forward) = (
+    anySquare {w} [e] (up + down) (left + right) {e} [w]
+    ->> [$ wolfPlayer = 100, sheepPlayer = 0] 
+    (   {? forward} ->sheepPlayer
+      + {! forward} ->> {})
+  )
+
+#sheepTurn(forward) = (
+    anySquare {s} [e] forward (left + right) {e} [s]
+    ->> [$ wolfPlayer = 0, sheepPlayer = 100]
+    ->wolfPlayer
+  )
+     
+#rules = ->wolfPlayer (up + left)* {! up + left} (right^2)* [w]
+    ->wolfPlayer (wolfTurn(down) sheepTurn(up))*
