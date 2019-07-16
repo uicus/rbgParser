@@ -13,7 +13,6 @@
 
 #anySquare = (left* + right*)(up* + down*)
 #resetSquare = (left* {! left} up*  {! up})
-//#resetSquare = (right* left^18 down* up^18)
 #gotoNeighbor(neighbor) = ((up+down+left+right){neighbor})
 #gotoBlockNeighbor(stone; neighbor) = (gotoNeighbor(stone)* gotoNeighbor(neighbor))
 #blockHasLiberty(stone) = {? gotoBlockNeighbor(stone; empty)}
@@ -24,9 +23,7 @@
       {empty}
       [stone]
       (
-          // Stawiamy na puste pole, które należy do bloku posiadającego oddech
           blockHasLiberty(stone)
-          // Stawiamy na puste pole które ma za sąsiada blok przeciwnika nie mający oddechu
         + {? (up+down+left+right) {stone} blockHasNoLiberty(oppStone)}
       )
     )
