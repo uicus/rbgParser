@@ -1,9 +1,9 @@
 // The Mill Game
-// -- The play is limited to 50 turns.
+// -- The play is limited to 18+32 turns.
 
 #pieces = empty, whitePiece, blackPiece
 #players = white(100), black(100)
-#variables = turn(49)
+#variables = turn(31)
 
 #circleSegment(
     v;id1;id2;id3;previousOnCircle;
@@ -40,69 +40,75 @@
 #anyNeighbor = (up+down+left+right)
 #anySquare = anyNeighbor*
 
-#threeInRow(piece;direction) =
-    {piece}direction{piece}direction{piece}
-
-#isPartOfDirectedMill(color;direction1;direction2) =
-    (
-        {? direction1 {color~Piece}} {? direction2 {color~Piece}}
-      + threeInRow(color~Piece;direction1)
-      + threeInRow(color~Piece;direction2)
+#isPartOfDirectedMill(color;direction1;direction2) = (
+        direction1 {color~Piece} (direction1 + direction2^2) {color~Piece}
+      + (direction2 {color~Piece})^2
     )
-
-#isPartOfMill(color) =
-    (
+#isPartOfMill(color) = (
         isPartOfDirectedMill(color;up;down)
       + isPartOfDirectedMill(color;left;right)
     )
 
-#placePiece(piece) = {empty}[piece]
+#pieceOutOfMill(color) = anySquare {color~Piece} {! isPartOfMill(color)}
+    
+#findAndCaptureOpponentOutOfMill(color) =
+    anySquare {color~Piece} {! isPartOfMill(color)} ->> [empty]
 
-#removePiece(piece) = {piece}[empty]
+#findAndCaptureOpponentAny(color) =
+    anySquare {color~Piece} ->> [empty]
 
-#findAndCaptureOpponent(color) =
-    anySquare {color~Piece}
-    (
-        {! isPartOfMill(color)}
-      + {! anySquare {color~Piece}{! isPartOfMill(color)}}
-    )->>[empty]
-
-#handlePiecePlacement(color;opponentColor) =
-    placePiece(color~Piece)
-    (
-        {? isPartOfMill(color)}findAndCaptureOpponent(opponentColor)
-      + {! isPartOfMill(color)}->>
+#captureOutOfMill(color;opponentColor) = (
+        {! isPartOfMill(color)} ->>
+      + {? isPartOfMill(color)} findAndCaptureOpponentOutOfMill(opponentColor)
     )
+#captureAny(color;opponentColor) = (
+        {! isPartOfMill(color)} ->>
+      + {? isPartOfMill(color)} findAndCaptureOpponentAny(opponentColor)
+    )
+
+#putPiece(color) =
+    ->color anySquare {empty} [color~Piece]
+
+#firstPhaseTurn(color;opponentColor) = (
+        {? pieceOutOfMill(opponentColor)}
+        putPiece(color)
+        captureOutOfMill(color;opponentColor)
+      + {! pieceOutOfMill(opponentColor)}
+        putPiece(color)
+        captureAny(color;opponentColor)
+    )
+
+#movePiece(color) = (
+        {$ color~Piece > 3} ->color
+        anySquare {color~Piece} [empty]
+        anyNeighbor
+      + {$ color~Piece == 3} ->color
+        anySquare {color~Piece} [empty]
+        anySquare
+    ) {empty} [color~Piece]
+
+#endTurn(color;opponentColor) =
     [$ color=100, opponentColor=0]
     (
         [$ turn = turn + 1]
-      + {$ turn == 49} (
+      + {$ turn == 31} (
             {$ opponentColor~Piece >= 3} [$ color=50, opponentColor=50]
           + {$ opponentColor~Piece < 3}
         ) ->> {}
     )
 
-#firstPhaseTurn(color;opponentColor) =
-    ->color
-    anySquare
-    handlePiecePlacement(color;opponentColor)
-
-#pickupAnyPiece(color) =
-    anySquare
-    removePiece(color~Piece)
-
 #secondPhaseTurn(color;opponentColor) =
     (
-        {$ color~Piece > 3}->color
-        pickupAnyPiece(color)
-        anyNeighbor
-      + {$ color~Piece == 3}->color
-        pickupAnyPiece(color)
-        anySquare
+        {? pieceOutOfMill(opponentColor)}
+        movePiece(color)
+        captureOutOfMill(color;opponentColor)
+      + {! pieceOutOfMill(opponentColor)}
+        movePiece(color)
+        captureAny(color;opponentColor)
     )
-    handlePiecePlacement(color;opponentColor)
-
-#rules =
+    endTurn(color;opponentColor)
+    
+#rules = [$ black=100, white=0]
     (
         firstPhaseTurn(white;black)
         firstPhaseTurn(black;white)
