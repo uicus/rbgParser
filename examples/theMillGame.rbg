@@ -1,8 +1,9 @@
 // The Mill Game
+// -- The play is limited to 50 turns.
 
 #pieces = empty, whitePiece, blackPiece
 #players = white(100), black(100)
-#variables = turn(50)
+#variables = turn(49)
 
 #circleSegment(
     v;id1;id2;id3;previousOnCircle;
@@ -37,20 +38,10 @@
 
 
 #anyNeighbor = (up+down+left+right)
-
 #anySquare = anyNeighbor*
 
 #threeInRow(piece;direction) =
     {piece}direction{piece}direction{piece}
-
-#formedMill(player) =
-    anySquare
-    (
-        threeInRow(player~Piece;up)
-      + threeInRow(player~Piece;down)
-      + threeInRow(player~Piece;left)
-      + threeInRow(player~Piece;right)
-    )
 
 #isPartOfDirectedMill(color;direction1;direction2) =
     (
@@ -82,8 +73,14 @@
         {? isPartOfMill(color)}findAndCaptureOpponent(opponentColor)
       + {! isPartOfMill(color)}->>
     )
-    [$ color=50, opponentColor=50]
-    ->>[$ color=100, opponentColor=0, turn=turn+1]
+    [$ color=100, opponentColor=0]
+    (
+        [$ turn = turn + 1]
+      + {$ turn == 49} (
+            {$ opponentColor~Piece >= 3} [$ color=50, opponentColor=50]
+          + {$ opponentColor~Piece < 3}
+        ) ->> {}
+    )
 
 #firstPhaseTurn(color;opponentColor) =
     ->color
@@ -96,10 +93,10 @@
 
 #secondPhaseTurn(color;opponentColor) =
     (
-        {$ color~Piece > 2}->color
+        {$ color~Piece > 3}->color
         pickupAnyPiece(color)
         anyNeighbor
-      + {$ color~Piece == 2}->color
+      + {$ color~Piece == 3}->color
         pickupAnyPiece(color)
         anySquare
     )
