@@ -4,7 +4,7 @@
 // -- 722 turn limit.
 
 #players = black(361), white(361)
-#variables = blackPass(1), whitePass(1), turn(722)
+#variables = blackPass(1), whitePass(1), turn(721)
 #pieces = empty, blackStone, whiteStone, toCapture, dame
 
 #boardLine = [empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty, empty]
@@ -24,7 +24,7 @@
       [stone]
       (
           blockHasLiberty(stone)
-        + {? (up+down+left+right) {stone} blockHasNoLiberty(oppStone)}
+        + {? gotoNeighbor(stone) blockHasNoLiberty(oppStone)}
       )
     )
 
@@ -96,22 +96,22 @@
 #endGameCheck = (
       {$ blackPass + whitePass < 2}
       [$ turn = turn+1]
-    + ( {$ blackPass + whitePass == 2} + {$ turn == 722})
+    + ( {$ blackPass + whitePass == 2} + {$ turn == 721})
       countPoints resetSquare ->> {}
     )
 
 #turn(me; opp) = (
-      (
+      ->me (
           [$ me~Pass=0]
           placeStone(me~Stone; opp~Stone) ->>
           markToCapture(opp~Stone) ->>
           floodfillCaptures(opp~Stone) ->>
           clearCaptures
         + [$ me~Pass=1]
-      ) ->> endGameCheck resetSquare ->opp
+      ) ->> endGameCheck resetSquare
     )
 
-#rules = ->black (
+#rules = (
       turn(black; white) 
       turn(white; black)
     )*
