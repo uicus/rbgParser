@@ -30,13 +30,11 @@
     directedShift(down right)
   )
 
-#turn(piece; player) = (
-    anySquare {piece} [e]
-    queenShift [piece] ->player
-    queenShift ->> [x]
+#turn(piece; me; opp) = (
+    ->me anySquare {piece} [e]
+    queenShift [piece]
+    ->me queenShift
+    ->> [x] [$ me=100, opp=0]
   )
 
-#rules = ->white (
-    turn(w; white) [$ white=100, black=0] ->black
-    turn(b; black) [$ white=0, black=100] ->white
-  )*
+#rules = (turn(w; white; black) turn(b; black; white))*

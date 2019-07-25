@@ -19,13 +19,13 @@
   )
 
 #turn(me; opp) =
-    anySquare {e} ->> [me]
+    ->me~player anySquare {e} ->> [me]
     (
-        {! winAt(me)} ->opp~player
+        {! winAt(me)}
       + {? winAt(me)} [$ me~player=100] [$ opp~player=0] ->> {}
     )
 
-#rules = [$ xplayer=50] [$ oplayer=50] ->oplayer (
-    turn(x; o)
+#rules = [$ xplayer=50] [$ oplayer=50] (
     turn(o; x)
+    turn(x; o)
   )*

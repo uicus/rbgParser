@@ -19,13 +19,13 @@
 #knightShift(forward) = (forward (left^2 + (left + right) forward + right^2))
 
 #turn(me; myKnight; opp; oppKnight; forward) =
-    anySquare {myKnight} [e] knightShift(forward) {e,oppKnight}
+    ->me anySquare {myKnight} [e] knightShift(forward) {e,oppKnight}
     ->>
     [$ me=100] [$ opp=0]
-    (  {? forward} [myKnight] ->opp
+    (  {? forward} [myKnight]
      + {! forward} ->> {} )
 
-#rules = ->white (
+#rules = (
       turn(white; w; black; b; up)
       turn(black; b; white; w; down)
     )*

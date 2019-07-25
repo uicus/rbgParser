@@ -34,14 +34,14 @@
   )
 
 #turn(me; opp; piece) = (
-      anySquare {e} ->> [piece]
-      (
-          {! winAt(piece)} ->opp
-        + {? winAt(piece)} [$ me=100, opp=0] ->> {}
-      )
+    ->me anySquare {e} ->> [piece]
+    (
+        {! winAt(piece)}
+      + {? winAt(piece)} [$ me=100, opp=0] ->> {}
     )
+  )
 
-#rules = [$ white=50] [$ black=50] ->white (
+#rules = [$ white=50] [$ black=50] (
     turn(white; black; w)
     turn(black; white; b)
   )*

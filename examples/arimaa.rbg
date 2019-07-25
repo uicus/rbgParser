@@ -162,6 +162,7 @@
   )
 
 #turn(color; oppColor; forward; backward) = (
+    ->color
     [$ steps = 4] [$ changed = 0]
     (
       {$ steps > 0} anySquare {colorPieces(color)} {! isFrozen(color; oppColor)} (   
@@ -182,7 +183,6 @@
     [$ color=100, oppColor=0]
     ->>
     copyConfiguration
-    -> oppColor
   )
 
 #rules =
@@ -190,7 +190,6 @@
     setupPlayer(silver; up)
     ->>
     copyConfiguration
-    ->gold
     (
       turn(gold; silver; up; down)
       turn(silver; gold; down; up)

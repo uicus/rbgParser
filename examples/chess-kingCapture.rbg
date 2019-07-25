@@ -133,15 +133,15 @@
   )
 
 #turn(forward; backward; color; oppColor) = (
-    move(forward; backward; color; oppColor)
+    ->color move(forward; backward; color; oppColor)
     ->>
     (
-        {$ oppColor~King > 0} [$ turnCount=turnCount+1] ->oppColor
+        {$ oppColor~King > 0} [$ turnCount=turnCount+1]
       + {$ oppColor~King == 0} [$ color=100,oppColor=0] ->> {}
     )
   )
 
-#rules = [$ white=50,black=50] ->white (
-        turn(up;down;white;black)
-        turn(down;up;black;white)
-    )*
+#rules = [$ white=50,black=50] (
+    turn(up;down;white;black)
+    turn(down;up;black;white)
+  )*

@@ -155,14 +155,14 @@
   )
 
 #turn(forward; backward; color; oppColor) = (
-    move(forward; backward; color; oppColor)
+    ->color move(forward; backward; color; oppColor)
     ->>
     [$ turnCount = turnCount+1]
     (
         {$ turnCount < 400} ->> (
             {! checked(oppColor; color; backward; forward)} [$ color=50,oppColor=50] // Draw if stalemate (no further legal move)
           + {? checked(oppColor; color; backward; forward)} [$ color=100,oppColor=0] // Win if checkmate (no further legal move)
-        ) ->oppColor
+        )
       + {$ turnCount == 400} [$ color=50,oppColor=50] ->> (
             {! checked(oppColor; color; backward; forward)} ->> {} // Draw if not checked
           + {? checked(oppColor; color; backward; forward)}
@@ -172,7 +172,7 @@
     )
   )
 
-#rules = ->white (
-        turn(up;down;white;black)
-        turn(down;up;black;white)
-    )*
+#rules = (
+    turn(up;down;white;black)
+    turn(down;up;black;white)
+  )*

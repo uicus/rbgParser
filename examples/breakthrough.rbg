@@ -16,14 +16,14 @@
 #anySquare = ((up* + down*)(left* + right*))
 
 #turn(me; myPawn; opp; oppPawn; forward) =
-    anySquare {myPawn}
+    ->me anySquare {myPawn}
     [e] forward ({e} + (left+right) {e,oppPawn})
     ->>
     [$ me=100] [$ opp=0]
-    (  {! forward} ->> {}
-     + {? forward} [myPawn] ->opp)
+    (  {? forward} [myPawn]
+     + {! forward} ->> {})
 
-#rules = ->white (
+#rules = (
       turn(white; w; black; b; up)
       turn(black; b; white; w; down)
     )*
