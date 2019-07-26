@@ -6,29 +6,29 @@
 #players = foxPlayer(100), houndPlayer(100)
 #pieces = e, w, s
 #variables =
-#board = rectangle(up,down,left,right,
-         [e, e, e, e, e, e, e, e]
-         [e, e, e, e, e, e, e, e]
-         [e, e, e, e, e, e, e, e]
-         [e, e, e, e, e, e, e, e]
-         [e, e, e, e, e, e, e, e]
-         [e, e, e, e, e, e, e, e]
-         [e, e, e, e, e, e, e, e]
-         [e, s, e, s, e, s, e, s])
+#board = rectangle(upRight,downLeft,upLeft,downRight,
+         [ , , ,e, , , ]
+         [ , ,e,e,e, , ]
+         [ ,e,e,e,e,e, ]
+         [e,e,e,e,e,e,e]
+         [e,e,e,e,e,e,s]
+         [ ,e,e,e,e,s, ]
+         [ , ,e,e,s, , ]
+         [ , , ,s, , , ])
 
-#anySquare = ((up left + up right + down left + down right)*)
+#anySquare = ((upRight + downLeft + upLeft + downRight)*)
 
 #foxTurn(forward) = (
-    ->foxPlayer anySquare {w} [e] (up + down) (left + right) {e} [w]
+    ->foxPlayer anySquare {w} [e] (upRight + downLeft + upLeft + downRight) {e} [w]
     ->> [$ foxPlayer = 100, houndPlayer = 0] 
-    (   {? forward}
-      + {! forward} ->> {})
+    (   {? forward~Left + forward~Right}
+      + {! forward~Left + forward~Right} ->> {})
   )
 
 #houndTurn(forward) = (
-    ->houndPlayer anySquare {s} [e] forward (left + right) {e} [s]
+    ->houndPlayer anySquare {s} [e] (forward~Left + forward~Right) {e} [s]
     ->> [$ foxPlayer = 0, houndPlayer = 100]
   )
      
-#rules = ->foxPlayer (up + left)* {! up + left} (right^2)* [w]
+#rules = ->foxPlayer anySquare {! upLeft + upRight} [w]
     (foxTurn(down) houndTurn(up))*
