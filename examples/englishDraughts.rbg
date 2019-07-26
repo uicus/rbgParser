@@ -7,31 +7,31 @@
 
 #line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty]
 #offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece]
-#board = rectangle(up,down,left,right,
-         offsetLine(blackMan)
-         line(blackMan)
-         offsetLine(blackMan)
-         line(empty)
-         offsetLine(empty)
-         line(whiteMan)
-         offsetLine(whiteMan)
-         line(whiteMan))
+#board = rectangle(upRight,downLeft,upLeft,downRight,
+         [        ,        ,        ,blackMan,        ,        ,        ]
+         [        ,        ,blackMan,blackMan,blackMan,        ,        ]
+         [        ,blackMan,blackMan,blackMan,empty   ,empty   ,        ]
+         [blackMan,blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan]
+         [blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan]
+         [        ,empty   ,empty   ,whiteMan,whiteMan,whiteMan,        ]
+         [        ,        ,whiteMan,whiteMan,whiteMan,        ,        ] 
+         [        ,        ,        ,whiteMan,        ,        ,        ])
 
-#anySquare = ((up left + up right + down left + down right)*)
+#anySquare = ((upRight + downLeft + upLeft + downRight)*)
 
 #grabPiece(piece) = {piece}[empty]
-#dropMan(me; forward) = ({? forward} [me~Man] + {! forward} [me~King])
+#dropMan(me; forward) = ({? forward~Left + forward~Right} [me~Man] + {! forward~Left + forward~Right} [me~King])
 
-#potentialJumpInGivenDirection(xDir; yDir; middleAction; opp) =
-    xDir yDir
+#potentialJumpInGivenDirection(dir; middleAction; opp) =
+    dir
     {opp~Man,opp~King}
     middleAction
-    xDir yDir
+    dir
     {empty}
 
 #potentialJumpForward(opp; middleAction; forward) = (
-        potentialJumpInGivenDirection(left; forward; middleAction; opp)
-      + potentialJumpInGivenDirection(right; forward; middleAction; opp)
+        potentialJumpInGivenDirection(forward~Left; middleAction; opp)
+      + potentialJumpInGivenDirection(forward~Right; middleAction; opp)
     )
 
 #potentialJumpAround(opp; middleAction) = (
@@ -48,7 +48,7 @@
 
 #nonCapturingManMove(me; forward) =
     grabPiece(me~Man)
-    (left + right) forward {empty}
+    (forward~Left + forward~Right) {empty}
     ->> dropMan(me; forward)
 
 #capturingManMove(me; opp; forward) =
@@ -60,7 +60,7 @@
 
 #nonCapturingKingMove(me) =
     grabPiece(me~King)
-    (up + down) (left + right) {empty}
+    (upRight + downLeft + upLeft + downRight) {empty}
     ->> [me~King]
 
 #capturingKingMove(me; opp) =
@@ -89,7 +89,7 @@
     ->>
     [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
 
-#rules = right (
+#rules = (
       turn(black; white; down)
       turn(white; black; up)
     )*
