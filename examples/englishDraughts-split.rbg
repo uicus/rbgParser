@@ -1,37 +1,36 @@
-// English draughts
+// English draughts (split)
 // -- The game ends in a draw after 20 moves without capturing or moving a man.
+// -- Each capture is performed in a single move.
 
 #players = black(100), white(100)
 #pieces = empty, whiteMan, whiteKing, blackMan, blackKing
 #variables = stagnation(20)
 
-#line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty]
-#offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece]
-#board = rectangle(up,down,left,right,
-         offsetLine(blackMan)
-         line(blackMan)
-         offsetLine(blackMan)
-         line(empty)
-         offsetLine(empty)
-         line(whiteMan)
-         offsetLine(whiteMan)
-         line(whiteMan))
+#board = rectangle(upRight,downLeft,upLeft,downRight,
+         [        ,        ,        ,blackMan,        ,        ,        ]
+         [        ,        ,blackMan,blackMan,blackMan,        ,        ]
+         [        ,blackMan,blackMan,blackMan,empty   ,empty   ,        ]
+         [blackMan,blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan]
+         [blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan]
+         [        ,empty   ,empty   ,whiteMan,whiteMan,whiteMan,        ]
+         [        ,        ,whiteMan,whiteMan,whiteMan,        ,        ] 
+         [        ,        ,        ,whiteMan,        ,        ,        ])
 
-#anySquare = ((up left + up right + down left + down right)*)
+#anySquare = ((upRight + downLeft + upLeft + downRight)*)
 
 #grabPiece(piece) = {piece}[empty]
-#dropMan(me; forward) = ({? forward} [me~Man] + {! forward} [me~King])
+#dropMan(me; forward) = ({? forward~Left + forward~Right} [me~Man] + {! forward~Left + forward~Right} [me~King])
 
-#potentialJumpInGivenDirection(xDir; yDir; middleAction; opp) =
-    xDir yDir
+#potentialJumpInGivenDirection(dir; middleAction; opp) =
+    dir
     {opp~Man,opp~King}
     middleAction
-    xDir yDir
+    dir
     {empty}
 
 #potentialJumpForward(opp; middleAction; forward) = (
-        potentialJumpInGivenDirection(left; forward; middleAction; opp)
-      + potentialJumpInGivenDirection(right; forward; middleAction; opp)
+        potentialJumpInGivenDirection(forward~Left; middleAction; opp)
+      + potentialJumpInGivenDirection(forward~Right; middleAction; opp)
     )
 
 #potentialJumpAround(opp; middleAction) = (
@@ -48,8 +47,8 @@
 
 #nonCapturingManMove(me; forward) =
     grabPiece(me~Man)
-    (left + right) forward {empty}
-    dropMan(me; forward)
+    (forward~Left + forward~Right) {empty}
+    ->> dropMan(me; forward)
 
 #capturingManMove(me; opp; forward) =
     grabPiece(me~Man)
@@ -60,7 +59,7 @@
 
 #nonCapturingKingMove(me) =
     grabPiece(me~King)
-    (up + down) (left + right) {empty}
+    (upRight + downLeft + upLeft + downRight) {empty}
     ->> [me~King]
 
 #capturingKingMove(me; opp) =
@@ -71,15 +70,15 @@
     [me~King]
 
 #turn(me; opp; forward) =
-    ->me
     (
         {! canCapture(me; opp; forward)}
-        anySquare
+        -> anySquare
         (
             nonCapturingManMove(me; forward) [$ stagnation = 0]
           + nonCapturingKingMove(me)
         )
-      + anySquare
+      + {? canCapture(me; opp; forward)}
+        ->me anySquare
         (
             capturingManMove(me; opp; forward)
           + capturingKingMove(me; opp)
@@ -89,7 +88,7 @@
     ->>
     [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
 
-#rules = right (
+#rules = (
       turn(black; white; down)
       turn(white; black; up)
     )*

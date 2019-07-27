@@ -5,8 +5,6 @@
 #pieces = empty, whiteMan, whiteKing, blackMan, blackKing
 #variables = stagnation(20)
 
-#line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty]
-#offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece]
 #board = rectangle(upRight,downLeft,upLeft,downRight,
          [        ,        ,        ,blackMan,        ,        ,        ]
          [        ,        ,blackMan,blackMan,blackMan,        ,        ]
@@ -71,15 +69,15 @@
     ->> [me~King]
 
 #turn(me; opp; forward) =
-    ->me
     (
         {! canCapture(me; opp; forward)}
-        anySquare
+        ->me anySquare
         (
             nonCapturingManMove(me; forward) [$ stagnation = 0]
           + nonCapturingKingMove(me)
         )
-      + anySquare
+      + {? canCapture(me; opp; forward)}
+        ->me anySquare
         (
             capturingManMove(me; opp; forward)
           + capturingKingMove(me; opp)

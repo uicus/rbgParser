@@ -7,24 +7,22 @@
     toBeRemoved, manToBeRemoved, kingToBeRemoved, toBeRemovedDuringCheck, manToBePlaced, kingToBePlaced, manToBeMoved, kingToBeMoved
 #variables = stagnation(20), actuallyCapturedPieces(12)
 
-#offsetLine(piece) = [empty, piece, empty, piece, empty, piece, empty, piece, empty, piece]
-#line(piece) = [piece, empty, piece, empty, piece, empty, piece, empty, piece, empty]
-#board = rectangle(up,down,left,right,
-    offsetLine(blackMan)
-    line(blackMan)
-    offsetLine(blackMan)
-    line(blackMan)
-    offsetLine(empty)
-    line(empty)
-    offsetLine(whiteMan)
-    line(whiteMan)
-    offsetLine(whiteMan)
-    line(whiteMan))
+#board = rectangle(upRight,downLeft,upLeft,downRight,
+         [        ,        ,        ,        ,blackMan,        ,        ,        ,        ]
+         [        ,        ,        ,blackMan,blackMan,blackMan,        ,        ,        ]
+         [        ,        ,blackMan,blackMan,blackMan,blackMan,empty   ,        ,        ]
+         [        ,blackMan,blackMan,blackMan,blackMan,empty   ,empty   ,whiteMan,        ]
+         [blackMan,blackMan,blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan]
+         [blackMan,blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan,whiteMan]
+         [        ,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan,whiteMan,        ]
+         [        ,        ,empty   ,whiteMan,whiteMan,whiteMan,whiteMan,        ,        ] 
+         [        ,        ,        ,whiteMan,whiteMan,whiteMan,        ,        ,        ]
+         [        ,        ,        ,        ,whiteMan,        ,        ,        ,        ])
 
-#anySquare = ((up left + up right + down left + down right)*)
+#anySquare = ((upRight + downLeft + upLeft + downRight)*)
 
-#grabPiece(piece) = {piece}[empty]
-#dropMan(temporaryPiece; me; forward) = {temporaryPiece} ({? forward} [me~Man] + {! forward} [me~King])
+#grabPiece(piece) = {piece} [empty]
+#dropMan(temporaryPiece; me; forward) = {temporaryPiece} ({? forward~Left + forward~Right} [me~Man] + {! forward~Left + forward~Right} [me~King])
 
 #jumpWhileRealMove(direction; opp) =
     direction
@@ -48,22 +46,22 @@
 
 #manJumpWhileRealMove(opp) =
     (
-        jumpWhileRealMove(up left;opp)
-      + jumpWhileRealMove(up right;opp)
-      + jumpWhileRealMove(down left;opp)
-      + jumpWhileRealMove(down right;opp)
+        jumpWhileRealMove(upLeft; opp)
+      + jumpWhileRealMove(upRight; opp)
+      + jumpWhileRealMove(downLeft; opp)
+      + jumpWhileRealMove(downRight; opp)
     )
 
 #manJumpWhileChecking(opp) =
     (
-        jumpWhileChecking(up left;opp)
-      + jumpWhileChecking(up right;opp)
-      + jumpWhileChecking(down left;opp)
-      + jumpWhileChecking(down right;opp)
+        jumpWhileChecking(upLeft; opp)
+      + jumpWhileChecking(upRight; opp)
+      + jumpWhileChecking(downLeft; opp)
+      + jumpWhileChecking(downRight; opp)
     )
 
 #realManCapturingMove(me; opp) =
-    {me~Man}[manToBeRemoved]
+    {me~Man} [manToBeRemoved]
     manJumpWhileRealMove(opp)
     (manJumpWhileRealMove(opp))*
 
@@ -74,22 +72,22 @@
 
 #kingJumpWhileRealMove(opp) =
     (
-        jumpWhileRealMove(up left({empty, manToBeRemoved, kingToBeRemoved}up left)*;opp)
-      + jumpWhileRealMove(up right({empty, manToBeRemoved, kingToBeRemoved}up right)*;opp)
-      + jumpWhileRealMove(down left({empty, manToBeRemoved, kingToBeRemoved}down left)*;opp)
-      + jumpWhileRealMove(down right({empty, manToBeRemoved, kingToBeRemoved}down right)*;opp)
+        jumpWhileRealMove(upLeft ({empty, manToBeRemoved, kingToBeRemoved} upLeft)*; opp)
+      + jumpWhileRealMove(upRight ({empty, manToBeRemoved, kingToBeRemoved} upRight)*; opp)
+      + jumpWhileRealMove(downLeft ({empty, manToBeRemoved, kingToBeRemoved} downLeft)*; opp)
+      + jumpWhileRealMove(downRight ({empty, manToBeRemoved, kingToBeRemoved} downRight)*; opp)
     )
 
 #kingJumpWhileChecking(opp) =
     (
-        jumpWhileChecking(up left({empty, manToBePlaced, kingToBePlaced}up left)*;opp)
-      + jumpWhileChecking(up right({empty, manToBePlaced, kingToBePlaced}up right)*;opp)
-      + jumpWhileChecking(down left({empty, manToBePlaced, kingToBePlaced}down left)*;opp)
-      + jumpWhileChecking(down right({empty, manToBePlaced, kingToBePlaced}down right)*;opp)
+        jumpWhileChecking(upLeft ({empty, manToBePlaced, kingToBePlaced} upLeft)*; opp)
+      + jumpWhileChecking(upRight ({empty, manToBePlaced, kingToBePlaced} upRight)*; opp)
+      + jumpWhileChecking(downLeft ({empty, manToBePlaced, kingToBePlaced} downLeft)*; opp)
+      + jumpWhileChecking(downRight ({empty, manToBePlaced, kingToBePlaced} downRight)*; opp)
     )
 
 #realKingCapturingMove(me; opp) =
-    {me~King}[kingToBeRemoved]
+    {me~King} [kingToBeRemoved]
     kingJumpWhileRealMove(opp)
     (kingJumpWhileRealMove(opp))*
 
@@ -99,17 +97,17 @@
     (kingJumpWhileChecking(opp))*
 
 #noncapturingManMove(me; forward) =
-    {me~Man}[manToBeRemoved]
-    forward (left + right)
+    {me~Man} [manToBeRemoved]
+    (forward~Left + forward~Right)
     {empty}
 
 #noncapturingKingMove(me) =
-    {me~King}[kingToBeRemoved]
+    {me~King} [kingToBeRemoved]
     (
-        up left({empty}up left)*
-      + up right({empty}up right)*
-      + down left({empty}down left)*
-      + down right({empty}down right)*
+        upLeft ({empty} upLeft)*
+      + upRight ({empty} upRight)*
+      + downLeft ({empty} downLeft)*
+      + downRight ({empty} downRight)*
     )
     {empty}
 
@@ -137,7 +135,7 @@
     anySquare
     (
         realKingMove(me; opp)
-      + realManMove(me; opp; forward)[$ stagnation = 0]
+      + realManMove(me; opp; forward) [$ stagnation = 0]
     )
 
 #checkingMove(me; opp) =
@@ -149,33 +147,33 @@
 
 #cleaningJumpSequence =
     (
-        jumpWhileCleaning(up left(up left)*)
-      + jumpWhileCleaning(up right(up right)*)
-      + jumpWhileCleaning(down left(down left)*)
-      + jumpWhileCleaning(down right(down right)*)
+        jumpWhileCleaning(upLeft (upLeft)*)
+      + jumpWhileCleaning(upRight (upRight)*)
+      + jumpWhileCleaning(downLeft (downLeft)*)
+      + jumpWhileCleaning(downRight (downRight)*)
     )
 
 #cleaningNeighborMove =
     (
-        (up left)*
-      + (up right)*
-      + (down left)*
-      + (down right)*
+        (upLeft)*
+      + (upRight)*
+      + (downLeft)*
+      + (downRight)*
     )
 
 #applyMove(me; forward) =
     (
         dropMan(manToBePlaced; me; forward)
-      + {kingToBePlaced}[me~King]
-      + {manToBeMoved, kingToBeMoved}
+      + {kingToBePlaced} [me~King]
+      + {manToBeMoved,kingToBeMoved}
     )
     (
         cleaningJumpSequence*
       + cleaningNeighborMove
     )
     (
-        grabPiece(manToBeRemoved, kingToBeRemoved)
-      + {kingToBeMoved}[me~King]
+        grabPiece(manToBeRemoved,kingToBeRemoved)
+      + {kingToBeMoved} [me~King]
       + dropMan(manToBeMoved; me; forward)
     )
 
@@ -186,15 +184,15 @@
 
 #turn(me; opp; forward) =
     ->me selectMove(me; opp; forward)
-    {! canCaptureMore(me; opp)} ->>
-    applyMove(me; forward)
+    {! canCaptureMore(me; opp)}
+    ->> applyMove(me; forward)
     {$ toBeRemoved + manToBeRemoved + kingToBeRemoved + manToBePlaced + kingToBePlaced + manToBeMoved + kingToBeMoved == 0}
     ->>
     [$ me=50] [$ opp=50]
     ->>
     [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
 
-#rules = right (
+#rules = (
       turn(white; black; up)
       turn(black; white; down)
     )*
