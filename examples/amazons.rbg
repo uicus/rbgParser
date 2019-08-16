@@ -16,8 +16,8 @@
          [e, e, e, w, e, e, w, e, e, e])
 
 #anySquare = ((up* + down*)(left* + right*))
-#directedShift(dir) = (dir {e} (dir {e})*)
 
+#directedShift(dir) = (dir {e} (dir {e})*)
 #queenShift = (
     directedShift(up left) +
     directedShift(up) +

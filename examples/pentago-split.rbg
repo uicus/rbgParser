@@ -1,4 +1,5 @@
 // Pentago
+// -- Each original move is split into two moves: placement and rotation.
 
 #players = white(100), black(100)
 #pieces = e, w, b
@@ -41,8 +42,8 @@
 
 #turn(me; opp; piece) = (
       ->me anySquare {e} [piece]
-      winCheck(me; opp; piece)
-      anySquare {? onAMiddleSquare}
+      ->> winCheck(me; opp; piece)
+      ->me anySquare {? onAMiddleSquare}
       (->> rotateClockwise + ->> rotateCounterclockwise)
       winCheck(me; opp; piece)
     )

@@ -18,8 +18,8 @@
 
 #anySquare = ((up* + down*)(left* + right*))
 #anyNeighbor = (up + down + left + right)
-#directedSplitShift(dir;me) = (dir {e} ->me (dir {e})*)
 
+#directedSplitShift(dir;me) = (dir {e} ->me (dir {e})*)
 #queenSplitShift(player) = (
     directedSplitShift(up left;player) +
     directedSplitShift(up;player) +
@@ -34,8 +34,7 @@
 #turn(piece; me; opp) = (
     ->me anySquare {piece} {? anyNeighbor {e}} ->> [e]
     ->me queenSplitShift(me) ->> [piece]
-    ->me queenSplitShift(me)
-    ->> [x] [$ me=100, opp=0]
+    ->me queenSplitShift(me) ->> [x] [$ me=100, opp=0]
   )
 
 #rules = (turn(w; white; black) turn(b; black; white))*
