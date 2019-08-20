@@ -1,0 +1,34 @@
+// Knightthrough-split
+// -- A player wins when reaches the opponent's back rank or captures all his pieces.
+// -- Each original move is split into two moves: select a knight and select a square.
+
+#players = white(100), black(100)
+#pieces = e, w, b
+#variables =
+#board = rectangle(up,down,left,right,
+         [b, b, b, b, b, b, b, b]
+         [b, b, b, b, b, b, b, b]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [e, e, e, e, e, e, e, e]
+         [w, w, w, w, w, w, w, w]
+         [w, w, w, w, w, w, w, w])
+
+#anySquare = ((up* + down*)(left* + right*))
+
+#knightShift(forward) = (forward (left^2 + (left + right) forward + right^2))
+
+#turn(me; myKnight; opp; oppKnight; forward) =
+    ->me anySquare {myKnight} {? knightShift(forward) {e,oppKnight}}
+    ->> [e]
+    ->me knightShift(forward) {e,oppKnight}
+    ->>
+    [$ me=100] [$ opp=0]
+    (  {? forward} [myKnight]
+     + {! forward} ->> {} )
+
+#rules = (
+      turn(white; w; black; b; up)
+      turn(black; b; white; w; down)
+    )*
