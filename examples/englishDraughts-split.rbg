@@ -72,7 +72,7 @@
 #turn(me; opp; forward) =
     (
         {! canCapture(me; opp; forward)}
-        -> anySquare
+        ->me anySquare
         (
             nonCapturingManMove(me; forward) [$ stagnation = 0]
           + nonCapturingKingMove(me)
