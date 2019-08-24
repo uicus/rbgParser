@@ -1,4 +1,5 @@
 // Gomoku standard 15x15
+// -- A player wins with a line of length exactly 5; longer lines do not count.
 
 #players = white(100), black(100)
 #pieces = e, w, b
