@@ -95,7 +95,7 @@
         left^2
       + left {empty} {! isAttackedBy(oppColor; forward; backward)}
         left {empty} [color~KingMoved]
-        left {empty} // Rook CAN pass through an attacked square
+        left {empty} // Rook can pass through an attacked square
         left pickUpPiece(color~RookUnmoved)
         right^3
     )
@@ -133,7 +133,7 @@
     {$ pawnDoubleMove==1}
     ([empty] + [empty]forward + [empty]forward^2)
     (
-        // We are sure that adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so do not check it
+        // We are sure that an adjacent cell is occupied by opponentColor~Pawn, because pawnDoubleMove==1, so do not check it
         right pickUpPiece(color~Pawn) left
       + left pickUpPiece(color~Pawn) right
     ) forward [color~Pawn] [$ pawnDoubleMove=0]
