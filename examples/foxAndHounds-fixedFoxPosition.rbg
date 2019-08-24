@@ -1,14 +1,13 @@
 // Fox and Hounds (Wolf and Sheep)
 // -- The player that is unable to move loses.
 // -- Fox wins when reaches the hounds' back rank.
-// -- In the first turn, fox selects any initial square of the four in his back rank.
 
 #players = foxPlayer(100), houndPlayer(100)
 #pieces = e, f, h
 #variables =
 #board = rectangle(upRight,downLeft,upLeft,downRight,
          [ , , ,e, , , ]
-         [ , ,e,e,e, , ]
+         [ , ,f,e,e, , ]
          [ ,e,e,e,e,e, ]
          [e,e,e,e,e,e,e]
          [e,e,e,e,e,e,h]
@@ -30,5 +29,4 @@
     ->> [$ foxPlayer = 0, houndPlayer = 100]
   )
 
-#rules = ->foxPlayer anySquare {! upLeft + upRight} [f]
-    (foxTurn(down) houndTurn(up))*
+#rules = (foxTurn(down) houndTurn(up))*
