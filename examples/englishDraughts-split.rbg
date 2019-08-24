@@ -13,7 +13,7 @@
          [blackMan,blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan]
          [blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan]
          [        ,empty   ,empty   ,whiteMan,whiteMan,whiteMan,        ]
-         [        ,        ,whiteMan,whiteMan,whiteMan,        ,        ] 
+         [        ,        ,whiteMan,whiteMan,whiteMan,        ,        ]
          [        ,        ,        ,whiteMan,        ,        ,        ])
 
 #anySquare = ((upRight + downLeft + upLeft + downRight)*)

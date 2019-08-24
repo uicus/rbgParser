@@ -36,6 +36,7 @@ class arithmetic_operation : public arithmetic_expression{
         const std::vector<std::unique_ptr<arithmetic_expression>>& get_content(void)const;
         operation get_operation(void)const;
         std::unique_ptr<arithmetic_expression> copy(void)const override;
+        bool has_piece_as_variable(const std::set<token>& pieces)const override;
 };
 
 }
