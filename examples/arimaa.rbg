@@ -107,13 +107,13 @@
         left {empty} [color~piece] right
       + right {empty} [color~piece] left
       + up {empty} [color~piece] down
-      + down {empty} [color~piece] up   
+      + down {empty} [color~piece] up
     )
     (
         left weakerPieces displace(oppColor; right)
       + right weakerPieces displace(oppColor; left)
       + up weakerPieces displace(oppColor; down)
-      + down weakerPieces displace(oppColor; up)    
+      + down weakerPieces displace(oppColor; up)
     )
   )
 
@@ -165,7 +165,7 @@
     ->color
     [$ steps = 4] [$ changed = 0]
     (
-      {$ steps > 0} anySquare {colorPieces(color)} {! isFrozen(color; oppColor)} (   
+      {$ steps > 0} anySquare {colorPieces(color)} {! isFrozen(color; oppColor)} (
           [$ steps = steps-1] basicMove(color; oppColor; forward)
         + [$ steps = steps-2] pushOrPullMove(color; oppColor)
       )

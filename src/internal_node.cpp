@@ -48,7 +48,7 @@ std::vector<token> internal_node::get_identifiers_sequence(void)const{
     std::vector<token> result;
     for(const auto& el: elements)
         result.push_back(el->get_identifier());
-    return std::move(result);
+    return result;
 }
 
 std::vector<std::pair<token, std::unique_ptr<arithmetic_expression>>> internal_node::get_assignments_sequence(void)const{
@@ -58,13 +58,13 @@ std::vector<std::pair<token, std::unique_ptr<arithmetic_expression>>> internal_n
             std::vector<std::pair<token, std::unique_ptr<arithmetic_expression>>> result;
             for(const auto& el: elements)
                 result.push_back(el->get_assignment());
-            return std::move(result);
+            return result;
         }
         case single_assignment:
         {
             std::vector<std::pair<token, std::unique_ptr<arithmetic_expression>>> result;
             result.push_back(get_assignment());
-            return std::move(result);
+            return result;
         }
         default:
             assert(false);

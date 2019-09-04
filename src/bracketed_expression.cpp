@@ -81,12 +81,12 @@ std::unique_ptr<game_move> bracketed_expression::get_game_move(void)const{
         case assignments_move:
         {
             auto result = make_assignments_concatenation(element->get_assignments_sequence());
-            return std::move(result);
+            return result;
         }
         case offs_move:
         {
             auto result = make_offs_sum(element->get_identifiers_sequence());
-            return std::move(result);
+            return result;
         }
         case on_move:
             return std::unique_ptr<game_move>(new ons(element->get_identifiers_sequence()));

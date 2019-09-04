@@ -50,7 +50,7 @@
     )
 
 #pieceOutOfMill(color) = anySquare {color~Piece} {! isPartOfMill(color)}
-    
+
 #findAndCaptureOpponentOutOfMill(color) =
     anySquare {color~Piece} {! isPartOfMill(color)} ->> [empty]
 
@@ -107,7 +107,7 @@
         captureAny(color;opponentColor)
     )
     endTurn(color;opponentColor)
-    
+
 #rules = [$ black=100, white=0]
     (
         firstPhaseTurn(white;black)

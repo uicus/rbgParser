@@ -20,7 +20,7 @@ std::string player_switch::to_rbg(uint)const{
 }
 
 std::string player_switch::to_rbg()const{
-    return "->" + to_player.to_string();
+    return "->" + to_player.to_string() + " ";
 }
 
 std::unique_ptr<game_move> player_switch::flatten(void){

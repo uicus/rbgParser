@@ -15,7 +15,7 @@
          [blackMan,blackMan,blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan]
          [blackMan,blackMan,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan,whiteMan]
          [        ,blackMan,empty   ,empty   ,whiteMan,whiteMan,whiteMan,whiteMan,        ]
-         [        ,        ,empty   ,whiteMan,whiteMan,whiteMan,whiteMan,        ,        ] 
+         [        ,        ,empty   ,whiteMan,whiteMan,whiteMan,whiteMan,        ,        ]
          [        ,        ,        ,whiteMan,whiteMan,whiteMan,        ,        ,        ]
          [        ,        ,        ,        ,whiteMan,        ,        ,        ,        ])
 

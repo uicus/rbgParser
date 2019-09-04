@@ -32,7 +32,7 @@ token identifier_leaf::get_identifier(void)const{
 
 std::vector<token> identifier_leaf::get_identifiers_sequence(void)const{
     std::vector<token> result{name};
-    return std::move(result);
+    return result;
 }
 
 std::unique_ptr<game_move> identifier_leaf::get_game_move(void)const{

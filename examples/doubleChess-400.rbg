@@ -137,7 +137,7 @@
         right pickUpPiece(color~Pawn) left
       + left pickUpPiece(color~Pawn) right
     ) forward [color~Pawn] [$ pawnDoubleMove=0]
-    
+
 #move(forward; backward; color; oppColor) = (
      (
           [$ pawnDoubleMove=0]

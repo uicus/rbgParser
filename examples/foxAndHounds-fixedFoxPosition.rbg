@@ -19,7 +19,7 @@
 
 #foxTurn(forward) = (
     ->foxPlayer anySquare {f} [e] (upRight + downLeft + upLeft + downRight) {e} [f]
-    ->> [$ foxPlayer = 100, houndPlayer = 0] 
+    ->> [$ foxPlayer = 100, houndPlayer = 0]
     (   {? forward~Left + forward~Right}
       + {! forward~Left + forward~Right} ->> {})
   )

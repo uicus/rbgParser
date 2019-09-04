@@ -28,7 +28,6 @@
       )
     )
 
-
 #markNeighborToCapture(oppStone; dir; oppDir) = (
       (
           dir {oppStone} blockHasNoLiberty(oppStone) [toCapture] oppDir
@@ -41,8 +40,8 @@
       markNeighborToCapture(oppStone; down; up)
       markNeighborToCapture(oppStone; left; right)
       markNeighborToCapture(oppStone; right; left)
-    )    
-      
+    )
+
 #floodfillCaptures(oppStone) = (
       (
         anySquare
@@ -63,10 +62,10 @@
       )*
       {! anySquare {toCapture} }
     )
-    
+
 #countPoints = (
       (
-        anySquare 
+        anySquare
         {empty}
         ->>
         (
@@ -112,6 +111,6 @@
     )
 
 #rules = (
-      turn(black; white) 
+      turn(black; white)
       turn(white; black)
     )*

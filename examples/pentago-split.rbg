@@ -11,7 +11,7 @@
          [e,e,e,e,e,e]
          [e,e,e,e,e,e]
          [e,e,e,e,e,e])
-         
+
 #anySquare = ((up* + down*)(left* + right*))
 
 #winAt(piece; shift1; shift2) = ((shift1 {piece})* (shift2 {piece})^4)
@@ -33,11 +33,11 @@
 
 #rotateClockwise = (
       up store right down putAndStore down left putAndStore left up putAndStore up right put
-      right store down down putAndStore left left putAndStore up up putAndStore right right put 
+      right store down down putAndStore left left putAndStore up up putAndStore right right put
     )
 #rotateCounterclockwise = (
       up store left down putAndStore down right putAndStore right up putAndStore up left put
-      left store down down putAndStore right right putAndStore up up putAndStore left left put 
+      left store down down putAndStore right right putAndStore up up putAndStore left left put
     )
 
 #turn(me; opp; piece) = (

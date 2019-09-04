@@ -121,4 +121,11 @@ std::unique_ptr<arithmetic_expression> arithmetic_operation::copy(void)const{
     return std::unique_ptr<arithmetic_expression>(new arithmetic_operation(std::move(result_content), kind_of_operation));
 }
 
+bool arithmetic_operation::has_piece_as_variable(const std::set<token>& pieces)const{
+    for(const auto& el: content)
+        if(el->has_piece_as_variable(pieces))
+            return true;
+    return false;
+}
+
 }

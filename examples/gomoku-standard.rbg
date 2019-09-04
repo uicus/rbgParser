@@ -20,7 +20,7 @@
          [e,e,e,e,e,e,e,e,e,e,e,e,e,e,e]
          [e,e,e,e,e,e,e,e,e,e,e,e,e,e,e]
          [e,e,e,e,e,e,e,e,e,e,e,e,e,e,e])
-         
+
 #anySquare = ((up* + down*)(left* + right*))
 
 #winAt(piece; shift1; shift2) = (

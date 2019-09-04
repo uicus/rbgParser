@@ -261,7 +261,7 @@ std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarat
     result.push_back(parse_rectangle2D);
     result.push_back(parse_cuboid3D);
     result.push_back(parse_unchecked_graph); // must be last
-    return std::move(result);
+    return result;
 }
 
 std::unique_ptr<graph_builder> game_items::parse_graph(declarations& decl, messages_container& msg)const{

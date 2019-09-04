@@ -23,7 +23,7 @@
   )
 
 #turn(me; opp; piece) = (
-    ->me (down* up^5 (left* + right*)) {e} ->> down* {e} {! down {e}} 
+    ->me (down* up^5 (left* + right*)) {e} ->> down* {e} {! down {e}}
     (
         {! winAt(piece)} [piece]
       + {? winAt(piece)} [$ me=100, opp=0] ->> {}
