@@ -1,4 +1,4 @@
-// TicTacToe
+// Tic-tac-toe
 
 #players = xplayer(100), oplayer(100)
 #pieces = e, x, o
