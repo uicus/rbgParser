@@ -16,10 +16,10 @@
 #board = rectangle(up,down,left,right,
          [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
          [blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn, blackPawn  , blackPawn  , blackPawn       ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
          [whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn, whitePawn  , whitePawn  , whitePawn       ]
          [whiteRookUnmoved, whiteKnight, whiteBishop, whiteQueen, whiteKing, whiteBishop, whiteKnight, whiteRookUnmoved])
 

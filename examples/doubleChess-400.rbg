@@ -15,16 +15,16 @@
 
 #board = rectangle(up,down,left,right,
          [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKingUnmoved, blackBishop, blackKnight, blackRookUnmoved, blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKingUnmoved, blackBishop, blackKnight, blackRookUnmoved]
-         [blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn, blackPawn  , blackPawn  , blackPawn       , blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn, blackPawn  , blackPawn  , blackPawn       ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ,empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ,empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ,empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ,empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ,empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ,empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ,empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ,empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn, whitePawn  , whitePawn  , whitePawn       , whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn, whitePawn  , whitePawn  , whitePawn       ]
+         [blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn       , blackPawn  , blackPawn  , blackPawn       , blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn       , blackPawn  , blackPawn  , blackPawn       ]
+         [empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           , empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           , empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           , empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           , empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           , empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           , empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           , empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           , empty           , empty      , empty      , empty     , empty           , empty      , empty      , empty           ]
+         [whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn       , whitePawn  , whitePawn  , whitePawn       , whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn       , whitePawn  , whitePawn  , whitePawn       ]
          [whiteRookUnmoved, whiteKnight, whiteBishop, whiteQueen, whiteKingUnmoved, whiteBishop, whiteKnight, whiteRookUnmoved, whiteRookUnmoved, whiteKnight, whiteBishop, whiteQueen, whiteKingUnmoved, whiteBishop, whiteKnight, whiteRookUnmoved])
 
 #anySquare = (left* + right*)(up* + down*)
