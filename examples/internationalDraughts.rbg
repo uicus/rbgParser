@@ -181,18 +181,21 @@
     [$ actuallyCapturedPieces = toBeRemoved]
     checkingMove(me; opp)
     {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
+    
+#canMove(me; opp; forward) = {? selectMove(me; opp; forward)}
 
-#turn(me; opp; forward) =
+#turn(me; opp; forward; backward) =
     ->me selectMove(me; opp; forward)
     {! canCaptureMore(me; opp)}
     ->> applyMove(me; forward)
     {$ toBeRemoved + manToBeRemoved + kingToBeRemoved + manToBePlaced + kingToBePlaced + manToBeMoved + kingToBeMoved == 0}
     ->>
-    [$ me=50] [$ opp=50]
-    ->>
-    [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
+    (
+        {$ stagnation < 20} [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
+      + {$ stagnation == 20} [$ me=50] [$ opp=50] ->> {! canMove(opp; me; backward)} [$ me=100] [$ opp=0]
+    )
 
 #rules = (
-      turn(white; black; up)
-      turn(black; white; down)
+      turn(white; black; up; down)
+      turn(black; white; down; up)
     )*
