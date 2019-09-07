@@ -10,7 +10,7 @@
 
 #players = white(100), black(100)
 #pieces = allPieces, empty
-#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), stagnation(49)
+#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), stagnation(50)
 
 #board = rectangle(up,down,left,right,
          [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
@@ -156,11 +156,11 @@
     ->color move(forward; backward; color; oppColor)
     ->>
     (
-        {$ stagnation < 49} ->> (
+        {$ stagnation < 50} ->> (
             {! checked(oppColor; color; backward; forward)} [$ color=50,oppColor=50] // Draw if stalemate (no further legal move)
           + {? checked(oppColor; color; backward; forward)} [$ color=100,oppColor=0] // Win if checkmate (no further legal move)
         )
-      + {$ stagnation == 49} [$ color=50,oppColor=50] ->> (
+      + {$ stagnation == 50} [$ color=50,oppColor=50] ->> (
             {! checked(oppColor; color; backward; forward)} ->> {} // Draw if not checked
           + {? checked(oppColor; color; backward; forward)}
             {! move(forward; backward; color; oppColor)}
