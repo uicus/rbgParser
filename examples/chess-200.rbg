@@ -42,7 +42,7 @@
       + (left^2 + right^2)(up + down)
     )
 
-#captureAnyBy(capturingPiece; oppColor) = {empty,singleColorPieces(color)} [capturingPiece]
+#captureAnyBy(capturingPiece; oppColor) = {empty,singleColorPieces(oppColor)} [capturingPiece]
 
 #pickUpPiece(piece) = {piece}[empty]
 
