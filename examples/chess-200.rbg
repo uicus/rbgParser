@@ -5,20 +5,18 @@
 #anyRook(color) = color~RookMoved, color~RookUnmoved
 #majorPieces(color) = color~RookMoved, color~Knight, color~Bishop, color~Queen
 #singleColorPieces(color) = color~Pawn, color~King, anyRook(color), color~Knight, color~Bishop, color~Queen
-#emptyOrColor(color) = singleColorPieces(color), empty
-#allPieces = singleColorPieces(white), singleColorPieces(black)
 
 #players = white(100), black(100)
-#pieces = allPieces, empty
+#pieces = singleColorPieces(white), singleColorPieces(black), empty
 #variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), turnCount(200)
 
 #board = rectangle(up,down,left,right,
          [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
          [blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn, blackPawn  , blackPawn  , blackPawn       ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
          [whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn, whitePawn  , whitePawn  , whitePawn       ]
          [whiteRookUnmoved, whiteKnight, whiteBishop, whiteQueen, whiteKing, whiteBishop, whiteKnight, whiteRookUnmoved])
 
@@ -44,7 +42,7 @@
       + (left^2 + right^2)(up + down)
     )
 
-#captureAnyBy(capturingPiece; oppColor) = {emptyOrColor(oppColor)} [capturingPiece]
+#captureAnyBy(capturingPiece; oppColor) = {empty,singleColorPieces(color)} [capturingPiece]
 
 #pickUpPiece(piece) = {piece}[empty]
 
@@ -91,7 +89,7 @@
         left^2
       + left {empty} {! isAttackedBy(oppColor; forward; backward)}
         left {empty} [color~King]
-        left {empty} // Rook CAN pass through an attacked square
+        left {empty} // Rook can pass through an attacked square
         left pickUpPiece(color~RookUnmoved)
         right^3
     )

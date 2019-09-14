@@ -5,20 +5,18 @@
 #anyRook(color) = color~RookMoved, color~RookUnmoved
 #majorPieces(color) = color~RookMoved, color~Knight, color~Bishop, color~Queen
 #singleColorPieces(color) = color~Pawn, color~King, anyRook(color), color~Knight, color~Bishop, color~Queen
-#emptyOrColor(color) = singleColorPieces(color), empty
-#allPieces = singleColorPieces(white), singleColorPieces(black)
 
 #players = white(100), black(100)
-#pieces = allPieces, empty
-#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), stagnation(49)
+#pieces = singleColorPieces(white), singleColorPieces(black), empty
+#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), stagnation(50)
 
 #board = rectangle(up,down,left,right,
          [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
          [blackPawn       , blackPawn  , blackPawn  , blackPawn , blackPawn, blackPawn  , blackPawn  , blackPawn       ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
-         [empty           , empty      , empty      , empty     , empty    , empty      ,empty       , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
+         [empty           , empty      , empty      , empty     , empty    , empty      , empty      , empty           ]
          [whitePawn       , whitePawn  , whitePawn  , whitePawn , whitePawn, whitePawn  , whitePawn  , whitePawn       ]
          [whiteRookUnmoved, whiteKnight, whiteBishop, whiteQueen, whiteKing, whiteBishop, whiteKnight, whiteRookUnmoved])
 
@@ -46,7 +44,7 @@
 
 #captureAnyBy(capturingPiece; oppColor) = (
       {empty}
-    + {oppColor~Pawn,oppColor~Knight,oppColor~Bishop,anyRook(oppColor),oppColor~Queen} [$ stagnation=0]
+    + {singleColorPieces(oppColor)} [$ stagnation=0]
   ) [capturingPiece]
 
 #pickUpPiece(piece) = {piece}[empty]
@@ -98,7 +96,7 @@
         left pickUpPiece(color~RookUnmoved)
         right^3
     )
-    [color~RookMoved] [$ stagnation=stagnation+1]
+    [color~RookMoved]
 
 #kingMove(forward; backward; color; oppColor) = (
       pickUpPiece(color~King)
@@ -130,7 +128,7 @@
 #enPassantPawnMove(forward; color) =
     {$ pawnDoubleMove==1}
     (
-        // We are sure that thd current square is occupied by oppColor~Pawn, because pawnDoubleMove==1, so do not check it
+        // We are sure that the current square is occupied by oppColor~Pawn, because pawnDoubleMove==1, so do not check it
         right pickUpPiece(color~Pawn) left
       + left pickUpPiece(color~Pawn) right
     )
@@ -156,11 +154,11 @@
     ->color move(forward; backward; color; oppColor)
     ->>
     (
-        {$ stagnation < 49} ->> (
+        {$ stagnation < 50} ->> (
             {! checked(oppColor; color; backward; forward)} [$ color=50,oppColor=50] // Draw if stalemate (no further legal move)
           + {? checked(oppColor; color; backward; forward)} [$ color=100,oppColor=0] // Win if checkmate (no further legal move)
         )
-      + {$ stagnation == 49} [$ color=50,oppColor=50] ->> (
+      + {$ stagnation == 50} [$ color=50,oppColor=50] ->> (
             {! checked(oppColor; color; backward; forward)} ->> {} // Draw if not checked
           + {? checked(oppColor; color; backward; forward)}
             {! move(forward; backward; color; oppColor)}

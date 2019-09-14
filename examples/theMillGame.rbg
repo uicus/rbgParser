@@ -1,5 +1,5 @@
-// The Mill Game
-// -- The play is limited to 18+32 turns.
+// The Mill Game (Nine men's morris)
+// -- The play is limited to 50 turns including the first phase.
 
 #pieces = empty, whitePiece, blackPiece
 #players = white(100), black(100)

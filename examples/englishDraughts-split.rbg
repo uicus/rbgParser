@@ -69,7 +69,17 @@
     {! potentialJumpAround(opp;)}
     [me~King]
 
-#turn(me; opp; forward) =
+#canMove(me; opp; forward) = (
+      anySquare
+      (
+          nonCapturingManMove(me; forward)
+        + nonCapturingKingMove(me)
+        + capturingManMove(me; opp; forward)
+        + capturingKingMove(me; opp)
+      )
+    )
+
+#turn(me; opp; forward; backward) =
     (
         {! canCapture(me; opp; forward)}
         ->me anySquare
@@ -84,11 +94,13 @@
           + capturingKingMove(me; opp)
         ) [$ stagnation = 0]
     )
-    [$ me=50] [$ opp=50]
     ->>
-    [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
+    (
+        {$ stagnation < 20} [$ stagnation = stagnation+1] [$ me=100] [$ opp=0]
+      + {$ stagnation == 20} [$ me=50] [$ opp=50] ->> {! canMove(opp; me; backward)} [$ me=100] [$ opp=0]
+    )
 
 #rules = (
-      turn(black; white; down)
-      turn(white; black; up)
+      turn(black; white; down; up)
+      turn(white; black; up; down)
     )*

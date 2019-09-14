@@ -1,7 +1,7 @@
 // Chess skirmish
 // -- The movement rules are as in chess, except that king is a regular piece.
-// -- The play ends when a player does not have a legal move or 100 turn passes.
-// -- The player with more pieces captured wins.
+// -- The play ends when a player does not have a legal move or 100 turn limit is reached.
+// -- The player with more pieces left wins.
 
 #anyRook(color) = color~RookMoved, color~RookUnmoved
 #majorPieces(color) = color~RookMoved, color~Knight, color~Bishop, color~Queen
@@ -11,7 +11,7 @@
 
 #players = white(100), black(100)
 #pieces = allPieces, empty
-#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), turnCount(100)
+#variables = pawnDoubleMove(1), whiteKingMoved(1), blackKingMoved(1), turnCount(99)
 
 #board = rectangle(up,down,left,right,
          [blackRookUnmoved, blackKnight, blackBishop, blackQueen, blackKing, blackBishop, blackKnight, blackRookUnmoved]
@@ -141,11 +141,8 @@
 
 #turn(forward; backward; color; oppColor) = (
     ->color move(forward; backward; color; oppColor)
-    ->>
-    (
-      [$ turnCount=turnCount+1]
-      setScores
-    )
+    ->> setScores
+    ->> [$ turnCount=turnCount+1]
   )
 
 #rules = (
