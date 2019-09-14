@@ -77,4 +77,8 @@ bool assignment::has_piece_as_variable(const std::set<token>& pieces)const{
     return right_side->has_piece_as_variable(pieces);
 }
 
+bool assignment::is_modifier(void)const{
+    return true;
+}
+
 }

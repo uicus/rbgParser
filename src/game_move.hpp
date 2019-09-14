@@ -20,6 +20,7 @@ class game_move{
         int index_in_expression(void)const{return index;};
         virtual int give_indices_in_expression(int next_free)=0;
         virtual bool modifies(void)const{return true;}
+        virtual bool is_modifier(void)const{return false;}
         virtual std::unique_ptr<game_move> flatten(void)=0;
         virtual std::unique_ptr<game_move> simplify(void)=0;
         virtual void accept(abstract_dispatcher& dispatcher)const=0;

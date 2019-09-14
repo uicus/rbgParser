@@ -36,6 +36,7 @@ class assignment : public game_move{
         bool is_lazy(void)const;
         std::unique_ptr<game_move> copy(void)const override;
         bool has_piece_as_variable(const std::set<token>& pieces)const override;
+        bool is_modifier(void)const override;
 };
 
 std::unique_ptr<game_move> make_assignments_concatenation(

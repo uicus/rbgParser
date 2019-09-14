@@ -39,6 +39,10 @@ std::unique_ptr<game_move> player_switch::copy(void)const{
     return std::unique_ptr<game_move>(new player_switch(to_player));
 }
 
+bool player_switch::is_modifier(void)const{
+    return true;
+}
+
 keeper_switch::keeper_switch(bool deterministic):
 deterministic(deterministic){
 }
@@ -74,6 +78,10 @@ bool keeper_switch::is_deterministic(void)const{
 
 std::unique_ptr<game_move> keeper_switch::copy(void)const{
     return std::unique_ptr<game_move>(new keeper_switch(deterministic));
+}
+
+bool keeper_switch::is_modifier(void)const{
+    return true;
 }
 
 }

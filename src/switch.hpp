@@ -29,6 +29,7 @@ class player_switch : public game_move{
         bool has_finisher(void)const override{return true;};
         const token& get_player(void)const;
         std::unique_ptr<game_move> copy(void)const override;
+        bool is_modifier(void)const override;
 };
 
 class keeper_switch : public game_move{
@@ -52,6 +53,7 @@ class keeper_switch : public game_move{
         bool has_finisher(void)const override{return true;};
         bool is_deterministic(void)const;
         std::unique_ptr<game_move> copy(void)const override;
+        bool is_modifier(void)const override;
 };
 
 }

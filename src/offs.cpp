@@ -58,4 +58,8 @@ std::unique_ptr<game_move> off::copy(void)const{
     return std::unique_ptr<game_move>(new off(token(off_piece)));
 }
 
+bool off::is_modifier(void)const{
+    return true;
+}
+
 }

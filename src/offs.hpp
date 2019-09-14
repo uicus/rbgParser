@@ -31,6 +31,7 @@ class off : public game_move{
         const token& get_piece(void)const;
         bool is_lazy(void)const;
         std::unique_ptr<game_move> copy(void)const override;
+        bool is_modifier(void)const override;
         friend std::unique_ptr<game_move> make_offs_sum(std::vector<token>&& legal_offs);
 };
 
