@@ -72,10 +72,8 @@
 #canMove(me; opp; forward) = (
       anySquare
       (
-          nonCapturingManMove(me; forward)
-        + nonCapturingKingMove(me)
-        + capturingManMove(me; opp; forward)
-        + capturingKingMove(me; opp)
+          {me~King} ((upRight + downLeft + upLeft + downRight) {empty} + potentialJumpAround(opp; ))
+        + {me~Man} ((forward~Left + forward~Right) {empty} + potentialJumpForward(opp; ; forward))
       )
     )
 
