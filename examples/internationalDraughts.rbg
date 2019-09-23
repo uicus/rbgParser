@@ -181,8 +181,27 @@
     [$ actuallyCapturedPieces = toBeRemoved]
     checkingMove(me; opp)
     {$ toBeRemovedDuringCheck > actuallyCapturedPieces}
-    
-#canMove(me; opp; forward) = {? selectMove(me; opp; forward)}
+
+#potentialJumpInGivenDirection(dir; opp) = dir {opp~Man,opp~King} dir {empty}
+#potentialFlyingJumpInGivenDirection(dir; opp) = dir ({empty} dir)* {opp~Man,opp~King} dir {empty}
+#canMove(me; opp; forward) = (
+      anySquare (
+          {me~King} (
+                (upRight + downLeft + upLeft + downRight) {empty}
+              + potentialFlyingJumpInGivenDirection(upRight; opp)
+              + potentialFlyingJumpInGivenDirection(upLeft; opp)
+              + potentialFlyingJumpInGivenDirection(downRight; opp)
+              + potentialFlyingJumpInGivenDirection(downLeft; opp)
+          )
+        + {me~Man} (
+                (forward~Left + forward~Right) {empty}
+              + potentialJumpInGivenDirection(upRight; opp)
+              + potentialJumpInGivenDirection(upLeft; opp)
+              + potentialJumpInGivenDirection(downRight; opp)
+              + potentialJumpInGivenDirection(downLeft; opp)
+            )
+      )
+    )
 
 #turn(me; opp; forward; backward) =
     ->me selectMove(me; opp; forward)
