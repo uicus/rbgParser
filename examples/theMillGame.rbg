@@ -1,9 +1,9 @@
 // The Mill Game (Nine men's morris)
-// -- The play is limited to 50 turns including the first phase.
+// -- The play ends with a draw after 50 moves without forming a mill.
 
 #pieces = empty, whitePiece, blackPiece
 #players = white(100), black(100)
-#variables = turn(31)
+#variables = stagnation(49)
 
 #circleSegment(
     v;id1;id2;id3;previousOnCircle;
@@ -52,10 +52,10 @@
 #pieceOutOfMill(color) = anySquare {color~Piece} {! isPartOfMill(color)}
 
 #findAndCaptureOpponentOutOfMill(color) =
-    anySquare {color~Piece} {! isPartOfMill(color)} ->> [empty]
+    anySquare {color~Piece} {! isPartOfMill(color)} ->> [empty] [$ stagnation = 0]
 
 #findAndCaptureOpponentAny(color) =
-    anySquare {color~Piece} ->> [empty]
+    anySquare {color~Piece} ->> [empty] [$ stagnation = 0]
 
 #captureOutOfMill(color;opponentColor) = (
         {! isPartOfMill(color)} ->>
@@ -69,7 +69,9 @@
 #putPiece(color) =
     ->color anySquare {empty} [color~Piece]
 
-#firstPhaseTurn(color;opponentColor) = (
+#firstPhaseTurn(color;opponentColor) =
+    [$ stagnation = stagnation + 1]
+    (
         {? pieceOutOfMill(opponentColor)}
         putPiece(color)
         captureOutOfMill(color;opponentColor)
@@ -88,16 +90,18 @@
     ) {empty} [color~Piece]
 
 #endTurn(color;opponentColor) =
+    (
+        {$ stagnation < 50}
+      + {$ stagnation == 50} [$ color=50, opponentColor=50] ->> {}
+    )
     [$ color=100, opponentColor=0]
     (
-        [$ turn = turn + 1]
-      + {$ turn == 31} (
-            {$ opponentColor~Piece >= 3} [$ color=50, opponentColor=50]
-          + {$ opponentColor~Piece < 3}
-        ) ->> {}
+        {$ opponentColor~Piece >= 3}
+      + {$ opponentColor~Piece < 3} ->> {}
     )
 
 #secondPhaseTurn(color;opponentColor) =
+    [$ stagnation = stagnation + 1] 
     (
         {? pieceOutOfMill(opponentColor)}
         movePiece(color)
