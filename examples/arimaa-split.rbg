@@ -21,13 +21,20 @@
 #anySquare = (left* + right*)(up* + down*)
 #anyNeighborSquare = (left + right + up + down)
 
-#setupPiece(color; piece; backward) = (->color anySquare {! backward^2} {empty} [color~piece])
-#setupPlayer(color; backward) = setupPiece(color; Elephant; backward)
-                                setupPiece(color; Camel; backward)
-                                setupPiece(color; Horse; backward)^2
-                                setupPiece(color; Dog; backward)^2
-                                setupPiece(color; Cat; backward)^2
-                                setupPiece(color; Rabbit; backward)^8
+#setupPiece(color; piece; backward) = (anySquare {! backward^2} {empty} ->> [color~piece])
+#setupPlayer(color; backward) = 
+    (
+        ({$ color~Elephant < 1} + {$ color~Camel < 1} + {$ color~Horse < 2} + {$ color~Dog < 2} + {$ color~Cat < 2} + {$ color~Rabbit < 8})
+        ->color (
+            {$ color~Elephant < 1} setupPiece(color; Elephant; backward)
+          + {$ color~Camel < 1} setupPiece(color; Camel; backward)
+          + {$ color~Horse < 2} setupPiece(color; Horse; backward)
+          + {$ color~Dog < 2} setupPiece(color; Dog; backward)
+          + {$ color~Cat < 2} setupPiece(color; Cat; backward)
+          + {$ color~Rabbit < 8} setupPiece(color; Rabbit; backward)
+        )
+    )*
+    {$ color~Elephant == 1} {$ color~Camel == 1} {$ color~Horse == 2} {$ color~Dog == 2} {$ color~Cat == 2} {$ color~Rabbit == 8}
 
 #fireTrap = (
       {colorPieces(gold)} ({? anyNeighborSquare {colorPieces(gold)}} + {! anyNeighborSquare {colorPieces(gold)}} [empty])
