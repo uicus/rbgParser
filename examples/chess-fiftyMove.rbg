@@ -151,6 +151,7 @@
   )
 
 #turn(forward; backward; color; oppColor) = (
+    [$ stagnation=stagnation+1]
     ->color move(forward; backward; color; oppColor)
     ->>
     (
@@ -165,7 +166,6 @@
             [$ color=100,oppColor=0] ->> {} // Win if checkmate
         )
     )
-    [$ stagnation=stagnation+1]
   )
 
 #rules = (
