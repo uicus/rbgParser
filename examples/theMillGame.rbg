@@ -3,7 +3,7 @@
 
 #pieces = empty, whitePiece, blackPiece
 #players = white(100), black(100)
-#variables = stagnation(49)
+#variables = stagnation(50)
 
 #circleSegment(
     v;id1;id2;id3;previousOnCircle;
