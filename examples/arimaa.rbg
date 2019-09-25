@@ -23,7 +23,7 @@
 #anyNeighborSquare = (left + right + up + down)
 
 #setupPiece(color; piece; backward) = (anySquare {! backward^2} {empty} ->> [color~piece])
-#setupPlayer(color; backward) = 
+#setupPlayer(color; backward) =
     (
         ({$ color~Elephant < 1} + {$ color~Camel < 1} + {$ color~Horse < 2} + {$ color~Dog < 2} + {$ color~Cat < 2} + {$ color~Rabbit < 8})
         ->color (
@@ -55,11 +55,11 @@
     {! anyNeighborSquare {colorPieces(color)}}
     {?
         {color~Camel} anyNeighborSquare {oppColor~Elephant}
-	    + {color~Horse} anyNeighborSquare {oppColor~Elephant,oppColor~Camel}
-	    + {color~Dog} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse}
-	    + {color~Cat} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog}
-	    + {color~Rabbit} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog,oppColor~Cat}
-	  }
+        + {color~Horse} anyNeighborSquare {oppColor~Elephant,oppColor~Camel}
+        + {color~Dog} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse}
+        + {color~Cat} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog}
+        + {color~Rabbit} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog,oppColor~Cat}
+    }
   )
 
 #basicMoveRabbit(color; oppColor; forward) = (

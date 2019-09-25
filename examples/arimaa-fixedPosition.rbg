@@ -41,11 +41,11 @@
     {! anyNeighborSquare {colorPieces(color)}}
     {?
         {color~Camel} anyNeighborSquare {oppColor~Elephant}
-	    + {color~Horse} anyNeighborSquare {oppColor~Elephant,oppColor~Camel}
-	    + {color~Dog} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse}
-	    + {color~Cat} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog}
-	    + {color~Rabbit} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog,oppColor~Cat}
-	  }
+        + {color~Horse} anyNeighborSquare {oppColor~Elephant,oppColor~Camel}
+        + {color~Dog} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse}
+        + {color~Cat} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog}
+        + {color~Rabbit} anyNeighborSquare {oppColor~Elephant,oppColor~Camel,oppColor~Horse,oppColor~Dog,oppColor~Cat}
+      }
   )
 
 #basicMoveRabbit(color; oppColor; forward) = (

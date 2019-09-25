@@ -101,7 +101,7 @@
     )
 
 #secondPhaseTurn(color;opponentColor) =
-    [$ stagnation = stagnation + 1] 
+    [$ stagnation = stagnation + 1]
     (
         {? pieceOutOfMill(opponentColor)}
         movePiece(color)
