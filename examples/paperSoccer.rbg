@@ -19,9 +19,11 @@
         leftMarkedTriplet(edgeColumns; nonGoalBetween),
         leftMarkedTriplet(nonGoalColumns; nonGoalBetween),
         leftMarkedTriplet(nonGoalColumns; nonGoalBetween),
+        leftMarkedTriplet(nonGoalColumns; nonGoalBetween),
         leftMarkedTriplet(goalEdgeColumns; goalBetween),
         goalColumn,
         rightMarkedTriplet(goalEdgeColumns; goalBetween),
+        rightMarkedTriplet(nonGoalColumns; nonGoalBetween),
         rightMarkedTriplet(nonGoalColumns; nonGoalBetween),
         rightMarkedTriplet(nonGoalColumns; nonGoalBetween),
         rightMarkedTriplet(edgeColumns; nonGoalBetween)
@@ -78,7 +80,7 @@
 #findBall = (up* + down*)(left* + right*){ball}[empty]
 
 #canMoveFurther =
-    (up + down + left + right + (up + down)(left + right)){visited}
+    {empty}(up + down + left + right + (up + down)(left + right)){visited}
 
 #changeNeighbor(from; to) =
     (
@@ -99,10 +101,9 @@
     direction{notVisited}[how]
 
 #jumpInGivenDirection(direction) =
-    {empty}
     visitAuxiliarySquare(direction; visited)
     visitAuxiliarySquare(direction; justArrived)
-    direction{empty, whiteGoal, blackGoal}
+    direction
 
 #singleJump =
     (
@@ -114,7 +115,7 @@
       + jumpInGivenDirection(up right)
       + jumpInGivenDirection(down left)
       + jumpInGivenDirection(down right)
-    )
+    ){empty, whiteGoal, blackGoal}
 
 #turn(me; opp) =
     ->me singleJump
