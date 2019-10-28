@@ -21,10 +21,11 @@
 #swap(square) = {square} [e] anyNeighbour {e} ->> [square]
 
 #swapNeighbour = (findEmpty anyNeighbour (
-    swap(A) + swap(B) + swap(C) + swap(D) + swap(E) +
-    swap(F) + swap(G) + swap(H) + swap(I) + swap(J) +
-    swap(K) + swap(L) + swap(M) + swap(N) + swap(O)
-))
+      swap(A) + swap(B) + swap(C) + swap(D) + swap(E) +
+      swap(F) + swap(G) + swap(H) + swap(I) + swap(J) +
+      swap(K) + swap(L) + swap(M) + swap(N) + swap(O)
+    )
+  )
 
 #isSorted = (anySquare {! right + down}
     {e} left  {O} left  {N} left  {M} up 
@@ -35,8 +36,8 @@
 
 #turn = (
     [$ counter = counter+1] (
-      {! isSorted} ->player swapNeighbour +
-      {? isSorted} [$ player = 100] ->> {}
+        {! isSorted} ->player swapNeighbour
+      + {? isSorted} [$ player = 100] ->> {}
     )
   )
 
