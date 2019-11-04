@@ -19,16 +19,16 @@
 #anySquare = ((upRight + downLeft + upLeft + downRight)*)
 
 #foxTurn(forward) = (
-    ->foxPlayer anySquare {f} [e] (upRight + downLeft + upLeft + downRight) {e}
-    ->> [f] [$ foxPlayer = 100, houndPlayer = 0]
+    ->foxPlayer anySquare {f} [e] (upRight + downLeft + upLeft + downRight) {e} [f]
+    ->> [$ foxPlayer = 100, houndPlayer = 0]
     (   {? forward~Left + forward~Right}
       + {! forward~Left + forward~Right} ->> {})
   )
 
 #houndTurn(forward) = (
-    ->houndPlayer anySquare {h} [e] (forward~Left + forward~Right) {e}
-    ->> [h] [$ foxPlayer = 0, houndPlayer = 100]
+    ->houndPlayer anySquare {h} [e] (forward~Left + forward~Right) {e} [h]
+    ->> [$ foxPlayer = 0, houndPlayer = 100]
   )
 
-#rules = ->foxPlayer anySquare {! upLeft + upRight} ->> [f]
+#rules = ->foxPlayer anySquare {! upLeft + upRight} [f]
     (foxTurn(down) houndTurn(up))*
