@@ -41,8 +41,8 @@
     )
 
 #turn(me; opp; piece) = (
-      ->me anySquare {e} [piece]
-      ->> winCheck(me; opp; piece)
+      ->me anySquare {e}
+      ->> [piece] winCheck(me; opp; piece)
       ->me anySquare {? onAMiddleSquare}
       (->> rotateClockwise + ->> rotateCounterclockwise)
       winCheck(me; opp; piece)
