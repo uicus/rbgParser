@@ -32,8 +32,7 @@
 #turn(piece; me; opp) = (
     ->me anySquare {piece} [e]
     queenShift [piece]
-    queenShift
-    ->> [x] [$ me=100, opp=0]
+    queenShift ->> [x] [$ me=100, opp=0]
   )
 
 #rules = (turn(w; white; black) turn(b; black; white))*
