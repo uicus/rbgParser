@@ -175,10 +175,12 @@
 #copyConfiguration = (
     (anySquare {! forEachPiece(backLayer {;})} ->> forEachPiece(backLayer [;]) frontLayer)*
     isConfigurationSame
+    anySquare {! up + left}
   )
 
 #turn(color; oppColor; forward; backward) = (
-    [$ steps = 4] copyConfiguration
+    copyConfiguration
+    [$ steps = 4]
     ->color
     (
       singleMove(color; oppColor; forward; backward)

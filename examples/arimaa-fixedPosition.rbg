@@ -147,6 +147,7 @@
 #copyConfiguration = (
     (anySquare isDifferentPieceInConfigurations ->> forEachPiece(backLayer [;]) frontLayer)*
     isConfigurationSame
+    anySquare {! up + left}
   )
 
 #checkWin = (
@@ -157,8 +158,8 @@
 
 #turn(color; oppColor; forward; backward) = (
     copyConfiguration
-    ->color
     [$ steps = 4] [$ changed = 0]
+    ->color
     (
       {$ steps > 0} anySquare {colorPieces(color)} {! isFrozen(color; oppColor)} (
           [$ steps = steps-1] basicMove(color; oppColor; forward)
