@@ -16,7 +16,7 @@ make rbgParser
 To compile static library, use:
 
 ```
-make rbgParser.a
+make librbgParser.a
 ```
 
 Note that using:
