@@ -96,7 +96,7 @@
     ->>
     (
         {$ stagnation < 20}  [$ me=100] [$ opp=0]
-      + {$ stagnation == 20} [$ me=50] [$ opp=50] ->> {! canMove(opp; me; backward)} [$ me=100] [$ opp=0]
+      + {$ stagnation == 20} [$ me=50] [$ opp=50] ->> {! canMove(opp; me; backward)} [$ me=100] [$ opp=0] ->> {}
     )
 
 #rules = (

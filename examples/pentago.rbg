@@ -22,7 +22,7 @@
     )
 #winCheck(me; opp; piece) = (
         {! winAt(piece)}
-      + {? winAt(piece)} [$ me=100] [$ opp=0] ->> {}
+      + {? winAt(piece)} ->> [$ me=100] [$ opp=0] ->> {}
     )
 #onAMiddleSquare = (left up {! left} {! up} + right up {! right} {! up} + right down {! right} {! down} + left down {! left} {! down})
 
