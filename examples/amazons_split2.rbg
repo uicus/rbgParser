@@ -1,5 +1,5 @@
-// Amazons split
-// -- Each original amazons move is split into two moves.
+// Amazons split2
+// -- Each orthodox amazons move is split into two moves.
 
 #players = white(100), black(100)
 #pieces = e, w, b, x

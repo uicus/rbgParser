@@ -1,5 +1,5 @@
-// Amazons split5
-// -- Each orthodox amazons move is split into five moves.
+// Amazons split5plus
+// -- Each orthodox amazons move is split into five or more moves.
 
 #players = white(100), black(100)
 #pieces = e, w, b, x
@@ -19,7 +19,7 @@
 #anySquare = ((up* + down*)(left* + right*))
 #anyNeighbor = (up + down + left + right)
 
-#directedSplitShift(dir;me) = (dir {e} ->me (dir {e})*)
+#directedSplitShift(dir;me) = (dir {e} ->me (dir {e} ->me)*)
 #queenSplitShift(player) = (
     directedSplitShift(up left;player) +
     directedSplitShift(up;player) +

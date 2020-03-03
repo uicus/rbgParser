@@ -1,5 +1,5 @@
-// Amazons split5
-// -- Each orthodox amazons move is split into five moves.
+// Amazons split2a
+// -- Each orthodox amazons move is split into two moves (alternative way).
 
 #players = white(100), black(100)
 #pieces = e, w, b, x
@@ -17,7 +17,18 @@
          [e, e, e, w, e, e, w, e, e, e])
 
 #anySquare = ((up* + down*)(left* + right*))
-#anyNeighbor = (up + down + left + right)
+
+#directedShift(dir) = (dir {e} (dir {e})*)
+#queenShift = (
+    directedShift(up left) +
+    directedShift(up) +
+    directedShift(up right) +
+    directedShift(left) +
+    directedShift(right) +
+    directedShift(down left) +
+    directedShift(down) +
+    directedShift(down right)
+  )
 
 #directedSplitShift(dir;me) = (dir {e} ->me (dir {e})*)
 #queenSplitShift(player) = (
@@ -32,9 +43,9 @@
   )
 
 #turn(piece; me; opp) = (
-    ->me anySquare {piece} {? anyNeighbor {e}} ->> [e]
-    ->me queenSplitShift(me) ->> [piece]
-    ->me queenSplitShift(me) ->> [x] [$ me=100, opp=0]
+    ->me anySquare {piece} [e]
+    queenSplitShift(me) [piece]
+    queenShift ->> [x] [$ me=100, opp=0]
   )
 
 #rules = (turn(w; white; black) turn(b; black; white))*
