@@ -1,0 +1,45 @@
+// Yavalath
+
+#players = white(100), black(100)
+#pieces = e, w, b
+#variables =
+#board = hexagon(NW, NE, E, SE, SW, W,
+              [ e , e , e , e , e ]
+            [ e , e , e , e , e , e ]
+          [ e , e , e , e , e , e , e ]
+        [ e , e , e , e , e , e , e , e ]
+      [ e , e , e , e , e , e , e , e , e ]
+        [ e , e , e , e , e , e , e , e ]
+          [ e , e , e , e , e , e , e ]
+            [ e , e , e , e , e , e ]
+              [ e , e , e , e , e ])
+
+#anyNeighbor = (NW + NE + E + SE + SW + W)
+#anySquare = anyNeighbor*
+
+#winAt(piece; shift1; shift2; count) = (
+    (shift1 {piece})*
+    (shift2 {piece})^count
+  )
+#winAt(piece; count) = (
+      winAt(piece; NE; SW; count)
+    + winAt(piece; NW; SE; count)
+    + winAt(piece; W; E; count)
+  )
+
+#turn(me; opp; piece) = (
+    ->me anySquare {e} ->> [piece]
+    (
+        {! winAt(piece; 2)}
+      + {? winAt(piece; 2)}
+        (
+            {? winAt(piece; 3)} [$ me=100, opp=0]
+          + {! winAt(piece; 3)} [$ me=0, opp=100]
+        ) ->> {}
+    )
+  )
+
+#rules = [$ white=50, black=50] (
+    turn(white; black; w)
+    turn(black; white; b)
+  )*
