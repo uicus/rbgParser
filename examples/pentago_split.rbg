@@ -1,7 +1,7 @@
 // Pentago
 // -- Each original move is split into two moves: placement and rotation.
 
-#players = white(100), black(100)
+#players = white(999), black(100)
 #pieces = e, w, b
 #variables = tmp(2)
 #board = rectangle(up,down,left,right,
@@ -18,13 +18,32 @@
 #winAt(piece) = (
         winAt(piece; up left; down right)
       + winAt(piece; up; down)
-      + winAt(piece; up right; up left)
+      + winAt(piece; up right; down left)
       + winAt(piece; left; right)
     )
-#winCheck(me; opp; piece) = (
+#winCheckAt(me; opp; piece) = (
         {! winAt(piece)}
       + {? winAt(piece)} [$ me=100] [$ opp=0] ->> {}
     )
+
+#winAtSingle(piece; shift2) = ((shift2 {piece})^4)
+#winGlobal(piece) = (anySquare {piece} (
+        winAtSingle(piece; down right)
+      + winAtSingle(piece; down)
+      + winAtSingle(piece; down left)
+      + winAtSingle(piece; right)
+    ))
+#winCheckGlobal = (
+       {! winGlobal(w)} (
+           {! winGlobal(b)}
+         + {? winGlobal(b)} [$ white=0] [$ black=100] ->> {}
+       )
+     + {? winGlobal(w)} (
+           {! winGlobal(b)} [$ white=100] [$ black=0] ->> {}
+         + {? winGlobal(b)} [$ white=50] [$ black=50] ->> {}
+       )
+    )
+
 #onAMiddleSquare = (left up {! left} {! up} + right up {! right} {! up} + right down {! right} {! down} + left down {! left} {! down})
 
 #store = ({e} [$ tmp = 0] + {w} [$ tmp = 1] + {b} [$ tmp = 2])
@@ -42,10 +61,10 @@
 
 #turn(me; opp; piece) = (
       ->me anySquare {e}
-      ->> [piece] winCheck(me; opp; piece)
+      ->> [piece] winCheckAt(me; opp; piece)
       ->me anySquare {? onAMiddleSquare}
       (->> rotateClockwise + ->> rotateCounterclockwise)
-      winCheck(me; opp; piece)
+      winCheckGlobal
     )
 
 #rules = [$ white=50] [$ black=50] (
