@@ -17,24 +17,24 @@
 #anyNeighbor = (NW + NE + E + SE + SW + W)
 #anySquare = anyNeighbor*
 
-#winAt(piece; shift1; shift2; count) = (
+#lineAt(piece; shift1; shift2; count) = (
     (shift1 {piece})*
     (shift2 {piece})^count
   )
-#winAt(piece; count) = (
-      winAt(piece; NE; SW; count)
-    + winAt(piece; NW; SE; count)
-    + winAt(piece; W; E; count)
+#lineAt(piece; count) = (
+      lineAt(piece; NE; SW; count)
+    + lineAt(piece; NW; SE; count)
+    + lineAt(piece; W; E; count)
   )
 
 #turn(me; opp; piece) = (
     ->me anySquare {e} ->> [piece]
     (
-        {! winAt(piece; 2)}
-      + {? winAt(piece; 2)}
+        {! lineAt(piece; 2)}
+      + {? lineAt(piece; 2)}
         (
-            {? winAt(piece; 3)} [$ me=100, opp=0]
-          + {! winAt(piece; 3)} [$ me=0, opp=100]
+            {? lineAt(piece; 3)} [$ me=100, opp=0]
+          + {! lineAt(piece; 3)} [$ me=0, opp=100]
         ) ->> {}
     )
   )

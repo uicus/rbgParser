@@ -1,4 +1,4 @@
-// Arimaa-split
+// Arimaa split
 // -- The same rules as in arimaa, with the change that each step in a turn is performed as a separate move.
 // -- The game ends in a draw after 200 full turns excluding initial setup.
 

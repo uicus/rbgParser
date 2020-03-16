@@ -1,7 +1,7 @@
 // Pentago
-// -- Each original move is split into two moves: placement and rotation.
+// -- Each orthodox move is split into two moves: placement and rotation.
 
-#players = white(999), black(100)
+#players = white(100), black(100)
 #pieces = e, w, b
 #variables = tmp(2)
 #board = rectangle(up,down,left,right,
