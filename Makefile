@@ -47,15 +47,6 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
-verify: $(EXAMPLES)
-	@$(foreach game,$(EXAMPLES),                     \
-		echo 'Verifying idempotence on $(game)...';  \
-		$(BIN_DIR)/$(TARGET) -o test1.rbg $(game);   \
-		$(BIN_DIR)/$(TARGET) -o test2.rbg test1.rbg; \
-		diff test1.rbg test2.rbg;                    \
-		rm test*.rbg;                                \
-		echo "";)
-
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(DEP_DIR)
