@@ -5,6 +5,8 @@
 #include<vector>
 #include<set>
 
+#include"types.hpp"
+
 namespace rbg_parser{
 
 class abstract_dispatcher;
