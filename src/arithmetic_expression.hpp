@@ -4,6 +4,7 @@
 #include<memory>
 #include<vector>
 #include<set>
+#include<string>
 
 #include"types.hpp"
 
