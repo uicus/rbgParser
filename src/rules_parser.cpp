@@ -6,6 +6,7 @@
 #include"identifier_leaf.hpp"
 #include"arrow_leaf.hpp"
 #include"typing_machine.hpp"
+#include"period_leaf.hpp"
 
 namespace rbg_parser{
 
@@ -36,6 +37,7 @@ std::unique_ptr<expression> parse_rules(slice_iterator& it, const typing_machine
     p.add_leaf_parser(parse_integer_leaf);
     p.add_leaf_parser(parse_identifier_leaf);
     p.add_leaf_parser(parse_arrow_leaf);
+    p.add_leaf_parser(parse_period_leaf);
 
     p.add_operator(plus, operator_info{add, 51, false});
     p.add_operator(minus, operator_info{subtract, 52, false});

@@ -8,6 +8,7 @@ class prioritized_sum;
 class concatenation;
 class star_move;
 class shift;
+class noop;
 class ons;
 class off;
 class assignment;
@@ -26,6 +27,7 @@ class abstract_dispatcher{
         virtual void dispatch(const concatenation&)=0;
         virtual void dispatch(const star_move&)=0;
         virtual void dispatch(const shift&)=0;
+        virtual void dispatch(const noop&)=0;
         virtual void dispatch(const ons&)=0;
         virtual void dispatch(const off&)=0;
         virtual void dispatch(const assignment&)=0;
