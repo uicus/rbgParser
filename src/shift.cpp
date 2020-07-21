@@ -15,15 +15,15 @@ void shift::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string shift::to_rbg(uint)const{
-    return to_rbg();
+std::string shift::to_rbg(const options& opt, uint)const{
+    return to_rbg(opt);
 }
 
 std::unique_ptr<game_move> shift::flatten(void){
     return std::unique_ptr<game_move>(new shift(std::move(*this)));
 }
 
-std::string shift::to_rbg()const{
+std::string shift::to_rbg(const options&)const{
     std::string result = "";
     result += edge_name.to_string();
     result += " ";

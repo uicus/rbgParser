@@ -12,11 +12,11 @@ void noop::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string noop::to_rbg(uint)const{
-    return to_rbg();
+std::string noop::to_rbg(const options& opt, uint)const{
+    return to_rbg(opt);
 }
 
-std::string noop::to_rbg()const{
+std::string noop::to_rbg(const options&)const{
     return ".";
 }
 

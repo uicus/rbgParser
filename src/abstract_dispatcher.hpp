@@ -4,7 +4,6 @@
 namespace rbg_parser{
 
 class sum;
-class prioritized_sum;
 class concatenation;
 class star_move;
 class shift;
@@ -23,7 +22,6 @@ class arithmetic_operation;
 class abstract_dispatcher{
     public:
         virtual void dispatch(const sum&)=0;
-        virtual void dispatch(const prioritized_sum&)=0;
         virtual void dispatch(const concatenation&)=0;
         virtual void dispatch(const star_move&)=0;
         virtual void dispatch(const shift&)=0;

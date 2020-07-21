@@ -15,11 +15,11 @@ void player_switch::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string player_switch::to_rbg(uint)const{
-    return to_rbg();
+std::string player_switch::to_rbg(const options& opt, uint)const{
+    return to_rbg(opt);
 }
 
-std::string player_switch::to_rbg()const{
+std::string player_switch::to_rbg(const options&)const{
     return "->" + to_player.to_string() + " ";
 }
 
@@ -56,11 +56,11 @@ void keeper_switch::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string keeper_switch::to_rbg(uint)const{
-    return to_rbg();
+std::string keeper_switch::to_rbg(const options& opt, uint)const{
+    return to_rbg(opt);
 }
 
-std::string keeper_switch::to_rbg()const{
+std::string keeper_switch::to_rbg(const options&)const{
     return is_deterministic() ? "->>" : "->*";
 }
 

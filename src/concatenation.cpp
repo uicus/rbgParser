@@ -34,22 +34,22 @@ void concatenation::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string concatenation::to_rbg(uint indent)const{
+std::string concatenation::to_rbg(const options& opt, uint indent)const{
     std::string result = "";
     for(uint i=0;i<content.size();++i){
-        result += open_bracket_if_necessary(priority(),content[i]->priority());
-        result += content[i]->to_rbg(indent);
-        result += close_bracket_if_necessary(priority(),content[i]->priority());
+        result += open_bracket_if_necessary(priority(opt),content[i]->priority(opt));
+        result += content[i]->to_rbg(opt, indent);
+        result += close_bracket_if_necessary(priority(opt),content[i]->priority(opt));
     }
     return result;
 }
 
-std::string concatenation::to_rbg()const{
+std::string concatenation::to_rbg(const options& opt)const{
     std::string result = "";
     for(uint i=0;i<content.size();++i){
-        result += open_bracket_if_necessary(priority(),content[i]->priority());
-        result += content[i]->to_rbg();
-        result += close_bracket_if_necessary(priority(),content[i]->priority());
+        result += open_bracket_if_necessary(priority(opt),content[i]->priority(opt));
+        result += content[i]->to_rbg(opt);
+        result += close_bracket_if_necessary(priority(opt),content[i]->priority(opt));
     }
     return result;
 }

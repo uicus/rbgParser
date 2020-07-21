@@ -20,9 +20,9 @@ class noop : public game_move{
         int give_indices_in_expression(int next_free)override;
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new noop);};
         void accept(abstract_dispatcher& dispatcher)const override;
-        uint priority(void)const override{return 4;};
-        std::string to_rbg(uint)const override;
-        std::string to_rbg()const override;
+        uint priority(const options&)const override{return 4;};
+        std::string to_rbg(const options& opt, uint)const override;
+        std::string to_rbg(const options&)const override;
         std::unique_ptr<game_move> flatten(void)override;
         std::unique_ptr<game_move> copy(void)const override;
 };

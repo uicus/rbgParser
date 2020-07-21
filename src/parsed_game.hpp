@@ -25,7 +25,7 @@ class parsed_game{
         const game_move* get_moves(void)const;
         const std::string& get_name(void)const;
         int get_straightness(void)const;
-        std::string to_rbg(bool pretty=false)const;
+        std::string to_rbg(const options& opt, bool pretty=false)const;
 };
 
 }

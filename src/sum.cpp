@@ -34,26 +34,38 @@ void sum::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string sum::to_rbg(uint indent)const{
+std::string sum::to_rbg(const options& opt, uint indent)const{
     std::string result = "";
+    if(opt.enabled_noop_before_alternative())
+        result += ".(";
     for(uint i=0;i<content.size();++i){
         result += (i==0 ? "\n":"\n+ ");
-        result += open_bracket_if_necessary(priority(),content[i]->priority());
-        result += content[i]->to_rbg(indent+1);
-        result += close_bracket_if_necessary(priority(),content[i]->priority());
+        if(opt.enabled_noop_after_alternative())
+            result += ".";
+        result += open_bracket_if_necessary(priority(opt)+(opt.enabled_noop_after_alternative() ? 1 : 0),content[i]->priority(opt));
+        result += content[i]->to_rbg(opt, indent+1);
+        result += close_bracket_if_necessary(priority(opt)+(opt.enabled_noop_after_alternative() ? 1 : 0),content[i]->priority(opt));
     }
     result += "\n";//+print_tabs(indent);
+    if(opt.enabled_noop_before_alternative())
+        result += ")";
     return result;
 }
 
-std::string sum::to_rbg()const{
+std::string sum::to_rbg(const options& opt)const{
     std::string result = "";
+    if(opt.enabled_noop_before_alternative())
+        result += ".(";
     for(uint i=0;i<content.size();++i){
         result += (i==0 ? "" : " + ");
-        result += open_bracket_if_necessary(priority(),content[i]->priority());
-        result += content[i]->to_rbg();
-        result += close_bracket_if_necessary(priority(),content[i]->priority());
+        if(opt.enabled_noop_after_alternative())
+            result += ".";
+        result += open_bracket_if_necessary(priority(opt)+(opt.enabled_noop_after_alternative() ? 1 : 0),content[i]->priority(opt));
+        result += content[i]->to_rbg(opt);
+        result += close_bracket_if_necessary(priority(opt)+(opt.enabled_noop_after_alternative() ? 1 : 0),content[i]->priority(opt));
     }
+    if(opt.enabled_noop_before_alternative())
+        result += ")";
     return result;
 }
 

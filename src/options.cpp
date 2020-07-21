@@ -24,12 +24,18 @@ const char* wrong_argument_error::what(void)const noexcept{
 options::options(void):
 show_warnings(true),
 warnings_as_errors(false),
+noop_before_alternative(false),
+noop_after_alternative(false),
+noop_after_modifier(false),
 output_name("a.rbg"){
 }
 
 options::options(uint number_of_args, const char** args):
 show_warnings(true),
 warnings_as_errors(false),
+noop_before_alternative(false),
+noop_after_alternative(false),
+noop_after_modifier(false),
 output_name("a.rbg"){
     for(uint i=0;i<number_of_args;++i){
         if(args[i][0] != '-')
@@ -46,6 +52,12 @@ output_name("a.rbg"){
                 show_warnings = false;
             else if(!std::strcmp(args[i], "-Werror"))
                 warnings_as_errors = true;
+            else if(!std::strcmp(args[i], "-fnoop-before-alternative"))
+                noop_before_alternative = true;
+            else if(!std::strcmp(args[i], "-fnoop-after-alternative"))
+                noop_after_alternative = true;
+            else if(!std::strcmp(args[i], "-fnoop-after-modifier"))
+                noop_after_modifier = true;
             else
                 throw wrong_argument_error("Unrecognized flag");
         }
@@ -59,8 +71,28 @@ bool options::escalating_warnings(void)const{
     return warnings_as_errors;
 }
 
+bool options::enabled_noop_before_alternative(void)const{
+    return noop_before_alternative;
+}
+
+bool options::enabled_noop_after_alternative(void)const{
+    return noop_after_alternative;
+}
+
+bool options::enabled_noop_after_modifier(void)const{
+    return noop_after_modifier;
+}
+
 const std::string& options::output_file(void)const{
     return output_name;
+}
+
+options options::create_inside_pattern_copy(void)const{
+    options result = *this;
+    result.noop_before_alternative = false;
+    result.noop_after_alternative = false;
+    result.noop_after_modifier = false;
+    return result;
 }
 
 }

@@ -43,7 +43,6 @@ std::unique_ptr<expression> parse_rules(slice_iterator& it, const typing_machine
     p.add_operator(minus, operator_info{subtract, 52, false});
     p.add_operator(star, operator_info{multiply, 53, false});
     p.add_operator(slash, operator_info{divide, 54, false});
-    p.add_operator(priority_plus, operator_info{priority_add, 55, false});
 
     p.add_operator(comma, operator_info{separate, 30, false});
     p.add_operator(equal, operator_info{assign, 40, false});

@@ -30,20 +30,20 @@ void star_move::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string star_move::to_rbg(uint indent)const{
+std::string star_move::to_rbg(const options& opt, uint indent)const{
     std::string result = "";
-    result += open_bracket_if_necessary(priority(),contained_move->priority());
-    result += contained_move->to_rbg(indent);
-    result += close_bracket_if_necessary(priority(),contained_move->priority());
+    result += open_bracket_if_necessary(priority(opt),contained_move->priority(opt));
+    result += contained_move->to_rbg(opt, indent);
+    result += close_bracket_if_necessary(priority(opt),contained_move->priority(opt));
     result += "*";
     return result;
 }
 
-std::string star_move::to_rbg()const{
+std::string star_move::to_rbg(const options& opt)const{
     std::string result = "";
-    result += open_bracket_if_necessary(priority(),contained_move->priority());
-    result += contained_move->to_rbg();
-    result += close_bracket_if_necessary(priority(),contained_move->priority());
+    result += open_bracket_if_necessary(priority(opt),contained_move->priority(opt));
+    result += contained_move->to_rbg(opt);
+    result += close_bracket_if_necessary(priority(opt),contained_move->priority(opt));
     result += "*";
     return result;
 }

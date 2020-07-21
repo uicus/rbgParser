@@ -1,4 +1,5 @@
 #include"move_check.hpp"
+#include"options.hpp"
 
 namespace rbg_parser{
 
@@ -34,18 +35,18 @@ straightness_result move_check::compute_k_straightness(void)const{
     return result;
 }
 
-std::string move_check::to_rbg(uint indent)const{
+std::string move_check::to_rbg(const options& opt, uint indent)const{
     std::string result = "";
     result += negated ? "{!" : "{?";
-    result += content->to_rbg(indent);
+    result += content->to_rbg(opt.create_inside_pattern_copy(), indent);
     result += "}";
     return result;
 }
 
-std::string move_check::to_rbg()const{
+std::string move_check::to_rbg(const options& opt)const{
     std::string result = "";
     result += negated ? "{!" : "{?";
-    result += content->to_rbg();
+    result += content->to_rbg(opt.create_inside_pattern_copy());
     result += "}";
     return result;
 }

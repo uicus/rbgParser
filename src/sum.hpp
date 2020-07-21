@@ -6,6 +6,7 @@
 
 #include"game_move.hpp"
 #include"abstract_dispatcher.hpp"
+#include"options.hpp"
 
 namespace rbg_parser{
 
@@ -23,9 +24,9 @@ class sum : public game_move{
         bool modifies(void)const override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
-        uint priority(void)const override{return 1;};
-        std::string to_rbg(uint indent)const override;
-        std::string to_rbg()const override;
+        uint priority(const options& opt)const override{return opt.enabled_noop_before_alternative() ? 2 : 1;};
+        std::string to_rbg(const options& opts, uint indent)const override;
+        std::string to_rbg(const options& opts)const override;
         std::unique_ptr<game_move> flatten(void)override;
         void gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements)override;
         straightness_result compute_k_straightness(void)const override;

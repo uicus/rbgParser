@@ -28,10 +28,10 @@ int parsed_game::get_straightness(void)const{
     return straightness;
 }
 
-std::string parsed_game::to_rbg(bool pretty)const{
+std::string parsed_game::to_rbg(const options& opt, bool pretty)const{
     return "#board ="+g.to_rbg(pretty)
           +decl.to_rbg()
-          +"#rules = "+(pretty ? "\n"+moves->to_rbg(1) : moves->to_rbg())+"\n";
+          +"#rules = "+(pretty ? "\n"+moves->to_rbg(opt, 1) : moves->to_rbg(opt))+"\n";
 }
 
 }

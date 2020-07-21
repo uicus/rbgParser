@@ -18,17 +18,19 @@ void assignment::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string assignment::to_rbg(uint)const{
-    return to_rbg();
+std::string assignment::to_rbg(const options& opt, uint)const{
+    return to_rbg(opt);
 }
 
-std::string assignment::to_rbg()const{
+std::string assignment::to_rbg(const options& opt)const{
     std::string result = "";
     result += "[$ ";
     result += print_variable(left_side);
     result += "=";
     result += right_side->to_rbg();
     result += "]";
+    if(opt.enabled_noop_after_modifier())
+        result += ".";
     return result;
 }
 

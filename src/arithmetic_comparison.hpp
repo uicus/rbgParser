@@ -39,9 +39,9 @@ class arithmetic_comparison : public game_move{
         kind get_kind_of_comparison(void)const;
         const arithmetic_expression* get_right_side(void)const;
         std::unique_ptr<game_move> simplify(void)override;
-        uint priority(void)const override{return 3;};
-        std::string to_rbg(uint)const override;
-        std::string to_rbg()const override;
+        uint priority(const options&)const override{return 3;};
+        std::string to_rbg(const options& opt, uint)const override;
+        std::string to_rbg(const options&)const override;
         std::unique_ptr<game_move> flatten(void)override;
         std::unique_ptr<game_move> copy(void)const override;
         bool has_piece_as_variable(const std::set<token>& pieces)const override;

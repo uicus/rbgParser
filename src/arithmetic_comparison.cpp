@@ -21,11 +21,11 @@ void arithmetic_comparison::accept(abstract_dispatcher& dispatcher)const{
     dispatcher.dispatch(*this);
 }
 
-std::string arithmetic_comparison::to_rbg(uint)const{
-    return to_rbg();
+std::string arithmetic_comparison::to_rbg(const options& opt, uint)const{
+    return to_rbg(opt);
 }
 
-std::string arithmetic_comparison::to_rbg()const{
+std::string arithmetic_comparison::to_rbg(const options&)const{
     std::string result = "{$ ";
     result += left_side->to_rbg();
     switch(kind_of_comparison){

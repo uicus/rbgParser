@@ -7,6 +7,7 @@
 #include"token.hpp"
 #include"abstract_dispatcher.hpp"
 #include"arithmetic_expression.hpp"
+#include"options.hpp"
 #include<memory>
 
 namespace rbg_parser{
@@ -25,9 +26,9 @@ class assignment : public game_move{
         int give_indices_in_expression(int next_free)override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
-        uint priority(void)const override{return 4;};
-        std::string to_rbg(uint)const override;
-        std::string to_rbg()const override;
+        uint priority(const options& opt)const override{return opt.enabled_noop_after_modifier() ? 2 : 4;};
+        std::string to_rbg(const options& opt, uint)const override;
+        std::string to_rbg(const options&)const override;
         std::unique_ptr<game_move> flatten(void)override;
         straightness_result compute_k_straightness(void)const override;
         bool check_if_redundant(std::set<token>& assignments_so_far, bool&)const override;

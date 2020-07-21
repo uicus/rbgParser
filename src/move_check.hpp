@@ -24,10 +24,10 @@ class move_check : public game_move{
         const game_move* get_content(void)const;
         bool is_negated(void)const;
         std::unique_ptr<game_move> simplify(void)override;
-        uint priority(void)const override{return 4;};
+        uint priority(const options&)const override{return 4;};
         straightness_result compute_k_straightness(void)const override;
-        std::string to_rbg(uint indent)const override;
-        std::string to_rbg()const override;
+        std::string to_rbg(const options& opt, uint indent)const override;
+        std::string to_rbg(const options&)const override;
         std::unique_ptr<game_move> flatten(void)override;
         std::unique_ptr<game_move> copy(void)const override;
         bool has_piece_as_variable(const std::set<token>& pieces)const override;

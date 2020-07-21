@@ -8,7 +8,6 @@ OBJ_DIR := obj
 BIN_DIR := bin
 DEP_DIR := dep
 MAIN_FILE := $(SRC_DIR)/main.cpp
-EXAMPLES_DIR := examples
 
 C := g++
 AR = gcc-ar
@@ -18,7 +17,6 @@ CFLAGS := -Wall -Wextra -Wpedantic -O3 -flto -std=c++11 -s $(INCLUDE)
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
 OBJECTS_FOR_LIB := $(filter-out $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(MAIN_FILE)), $(OBJECTS))
 DEPFILES := $(patsubst $(SRC_DIR)/%.cpp, $(DEP_DIR)/%.d, $(wildcard $(SRC_DIR)/*.cpp))
-EXAMPLES := $(wildcard $(EXAMPLES_DIR)/*.rbg)
 
 all: $(TARGET) lib$(TARGET).a
 

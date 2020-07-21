@@ -20,15 +20,17 @@ const token& off::get_piece(void)const{
     return off_piece;
 }
 
-std::string off::to_rbg(uint)const{
-    return to_rbg();
+std::string off::to_rbg(const options& opt, uint)const{
+    return to_rbg(opt);
 }
 
-std::string off::to_rbg()const{
+std::string off::to_rbg(const options& opt)const{
     std::string result = "";
     result += "[";
     result += off_piece.to_string();
     result += "]";
+    if(opt.enabled_noop_after_modifier())
+        result += ".";
     return result;
 }
 
