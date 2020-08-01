@@ -1,6 +1,7 @@
 #ifndef GRAPH
 #define GRAPH
 
+#include<tuple>
 #include<vector>
 #include<map>
 #include<string>
