@@ -26,7 +26,7 @@ class assignment : public game_move{
         int give_indices_in_expression(int next_free)override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
-        uint priority(const options& opt)const override{return opt.enabled_noop_after_modifier() ? 2 : 4;};
+        uint priority(const options& opt)const override{return (opt.enabled_noop_after_modifier() or opt.enabled_noop_before_modifier()) ? 2 : 4;};
         std::string to_rbg(const options& opt, uint)const override;
         std::string to_rbg(const options&)const override;
         std::unique_ptr<game_move> flatten(void)override;

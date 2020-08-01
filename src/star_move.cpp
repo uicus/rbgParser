@@ -32,18 +32,30 @@ void star_move::accept(abstract_dispatcher& dispatcher)const{
 
 std::string star_move::to_rbg(const options& opt, uint indent)const{
     std::string result = "";
-    result += open_bracket_if_necessary(priority(opt),contained_move->priority(opt));
+    if(opt.enabled_noop_before_star())
+        result += ".";
+    if(opt.enabled_noop_after_star())
+        result += "(.";
+    result += open_bracket_if_necessary(opt.enabled_noop_after_star() ? 2 : 3,contained_move->priority(opt));
     result += contained_move->to_rbg(opt, indent);
-    result += close_bracket_if_necessary(priority(opt),contained_move->priority(opt));
+    result += close_bracket_if_necessary(opt.enabled_noop_after_star() ? 2 : 3,contained_move->priority(opt));
+    if(opt.enabled_noop_after_star())
+        result += ")";
     result += "*";
     return result;
 }
 
 std::string star_move::to_rbg(const options& opt)const{
     std::string result = "";
-    result += open_bracket_if_necessary(priority(opt),contained_move->priority(opt));
+    if(opt.enabled_noop_before_star())
+        result += ".";
+    if(opt.enabled_noop_after_star())
+        result += "(.";
+    result += open_bracket_if_necessary(opt.enabled_noop_after_star() ? 2 : 3,contained_move->priority(opt));
     result += contained_move->to_rbg(opt);
-    result += close_bracket_if_necessary(priority(opt),contained_move->priority(opt));
+    result += close_bracket_if_necessary(opt.enabled_noop_after_star() ? 2 : 3,contained_move->priority(opt));
+    if(opt.enabled_noop_after_star())
+        result += ")";
     result += "*";
     return result;
 }

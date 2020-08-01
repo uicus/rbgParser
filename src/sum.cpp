@@ -42,9 +42,9 @@ std::string sum::to_rbg(const options& opt, uint indent)const{
         result += (i==0 ? "\n":"\n+ ");
         if(opt.enabled_noop_after_alternative())
             result += ".";
-        result += open_bracket_if_necessary(priority(opt)+(opt.enabled_noop_after_alternative() ? 1 : 0),content[i]->priority(opt));
+        result += open_bracket_if_necessary(opt.enabled_noop_after_alternative() ? 2 : 1,content[i]->priority(opt));
         result += content[i]->to_rbg(opt, indent+1);
-        result += close_bracket_if_necessary(priority(opt)+(opt.enabled_noop_after_alternative() ? 1 : 0),content[i]->priority(opt));
+        result += close_bracket_if_necessary(opt.enabled_noop_after_alternative() ? 2 : 1,content[i]->priority(opt));
     }
     result += "\n";//+print_tabs(indent);
     if(opt.enabled_noop_before_alternative())
@@ -60,9 +60,9 @@ std::string sum::to_rbg(const options& opt)const{
         result += (i==0 ? "" : " + ");
         if(opt.enabled_noop_after_alternative())
             result += ".";
-        result += open_bracket_if_necessary(priority(opt)+(opt.enabled_noop_after_alternative() ? 1 : 0),content[i]->priority(opt));
+        result += open_bracket_if_necessary(opt.enabled_noop_after_alternative() ? 2 : 1,content[i]->priority(opt));
         result += content[i]->to_rbg(opt);
-        result += close_bracket_if_necessary(priority(opt)+(opt.enabled_noop_after_alternative() ? 1 : 0),content[i]->priority(opt));
+        result += close_bracket_if_necessary(opt.enabled_noop_after_alternative() ? 2 : 1,content[i]->priority(opt));
     }
     if(opt.enabled_noop_before_alternative())
         result += ")";

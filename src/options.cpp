@@ -26,7 +26,10 @@ show_warnings(true),
 warnings_as_errors(false),
 noop_before_alternative(false),
 noop_after_alternative(false),
+noop_before_modifier(false),
 noop_after_modifier(false),
+noop_before_star(false),
+noop_after_star(false),
 output_name("a.rbg"){
 }
 
@@ -35,7 +38,10 @@ show_warnings(true),
 warnings_as_errors(false),
 noop_before_alternative(false),
 noop_after_alternative(false),
+noop_before_modifier(false),
 noop_after_modifier(false),
+noop_before_star(false),
+noop_after_star(false),
 output_name("a.rbg"){
     for(uint i=0;i<number_of_args;++i){
         if(args[i][0] != '-')
@@ -56,8 +62,14 @@ output_name("a.rbg"){
                 noop_before_alternative = true;
             else if(!std::strcmp(args[i], "-fnoop-after-alternative"))
                 noop_after_alternative = true;
+            else if(!std::strcmp(args[i], "-fnoop-before-modifier"))
+                noop_before_modifier = true;
             else if(!std::strcmp(args[i], "-fnoop-after-modifier"))
                 noop_after_modifier = true;
+            else if(!std::strcmp(args[i], "-fnoop-before-star"))
+                noop_before_star = true;
+            else if(!std::strcmp(args[i], "-fnoop-after-star"))
+                noop_after_star = true;
             else
                 throw wrong_argument_error("Unrecognized flag");
         }
@@ -83,6 +95,18 @@ bool options::enabled_noop_after_modifier(void)const{
     return noop_after_modifier;
 }
 
+bool options::enabled_noop_before_modifier(void)const{
+    return noop_before_modifier;
+}
+
+bool options::enabled_noop_after_star(void)const{
+    return noop_after_star;
+}
+
+bool options::enabled_noop_before_star(void)const{
+    return noop_before_star;
+}
+
 const std::string& options::output_file(void)const{
     return output_name;
 }
@@ -91,6 +115,7 @@ options options::create_inside_pattern_copy(void)const{
     options result = *this;
     result.noop_before_alternative = false;
     result.noop_after_alternative = false;
+    result.noop_before_modifier = false;
     result.noop_after_modifier = false;
     return result;
 }

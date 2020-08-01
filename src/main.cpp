@@ -18,9 +18,12 @@ int main(int argc, const char** argv){
         std::cerr<<"\"-o output_file\" - write output to file with given name; defaults to \"a.rbg\""<<std::endl;
         std::cerr<<"\"-Whide\" - do not show warnings"<<std::endl;
         std::cerr<<"\"-Werror\" - treat warnings as errors"<<std::endl;
-        std::cerr<<"\"-fnoop-before-alternative\" - put dots before alternative expressions in output mode (e.g. turn 'a (b + c)' into 'a . (b + c)')"<<std::endl;
-        std::cerr<<"\"-fnoop-after-alternative\" - put dots inside alternative expressions in output mode (e.g. turn 'a (b + c)' into 'a (. b + . c)')"<<std::endl;
+        std::cerr<<"\"-fnoop-before-alternative\" - put dots before alternative expressions in output mode (e.g. turn '(a + b)' into '. (a + b)')"<<std::endl;
+        std::cerr<<"\"-fnoop-after-alternative\" - put dots inside alternative expressions in output mode (e.g. turn '(a + b)' into '(. a + . b)')"<<std::endl;
+        std::cerr<<"\"-fnoop-before-modifier\" - put dots before modifiers in output mode (e.g. turn '[a]' into '. [a]')"<<std::endl;
         std::cerr<<"\"-fnoop-after-modifier\" - put dots after modifiers in output mode (e.g. turn '[a]' into '[a] .')"<<std::endl;
+        std::cerr<<"\"-fnoop-before-star\" - put dots before stars expressions in output mode (e.g. turn 'a*' into '. a*')"<<std::endl;
+        std::cerr<<"\"-fnoop-after-star\" - put dots inside stars expressions in output mode (e.g. turn 'a*' into '(. a)*')"<<std::endl;
     }
     else{
         rbg_parser::messages_container msg;

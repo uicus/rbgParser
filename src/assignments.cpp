@@ -24,6 +24,8 @@ std::string assignment::to_rbg(const options& opt, uint)const{
 
 std::string assignment::to_rbg(const options& opt)const{
     std::string result = "";
+    if(opt.enabled_noop_before_modifier())
+        result += ".";
     result += "[$ ";
     result += print_variable(left_side);
     result += "=";

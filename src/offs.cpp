@@ -26,6 +26,8 @@ std::string off::to_rbg(const options& opt, uint)const{
 
 std::string off::to_rbg(const options& opt)const{
     std::string result = "";
+    if(opt.enabled_noop_before_modifier())
+        result += ".";
     result += "[";
     result += off_piece.to_string();
     result += "]";

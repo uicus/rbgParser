@@ -5,6 +5,7 @@
 
 #include"game_move.hpp"
 #include"abstract_dispatcher.hpp"
+#include"options.hpp"
 
 namespace rbg_parser{
 
@@ -22,7 +23,7 @@ class star_move : public game_move{
         bool modifies(void)const override;
         std::unique_ptr<game_move> simplify(void)override;
         void accept(abstract_dispatcher& dispatcher)const override;
-        uint priority(const options&)const override{return 3;};
+        uint priority(const options& opt)const override{return opt.enabled_noop_before_star() ? 2 : 3;};
         std::string to_rbg(const options& opt, uint indent)const override;
         std::string to_rbg(const options& opt)const override;
         std::unique_ptr<game_move> flatten(void)override;
