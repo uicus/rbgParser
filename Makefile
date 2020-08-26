@@ -12,7 +12,7 @@ MAIN_FILE := $(SRC_DIR)/main.cpp
 C := g++
 AR = gcc-ar
 INCLUDE := -I$(INC_DIR)
-CFLAGS := -Wall -Wextra -Wpedantic -O3 -flto -std=c++11 -s $(INCLUDE)
+CFLAGS := -Wall -Wextra -Wpedantic -O3 -flto -std=c++17 -s $(INCLUDE)
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(wildcard $(SRC_DIR)/*.cpp))
 OBJECTS_FOR_LIB := $(filter-out $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(MAIN_FILE)), $(OBJECTS))

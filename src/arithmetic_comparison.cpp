@@ -45,7 +45,7 @@ std::string arithmetic_comparison::to_rbg(const options&)const{
             result += ">";
             break;
         case geq:
-            result += "<=";
+            result += ">=";
             break;
         default:
             break;

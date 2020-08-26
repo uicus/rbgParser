@@ -117,6 +117,8 @@ options options::create_inside_pattern_copy(void)const{
     result.noop_after_alternative = false;
     result.noop_before_modifier = false;
     result.noop_after_modifier = false;
+    result.noop_before_star = false;
+    result.noop_after_star = false;
     return result;
 }
 
