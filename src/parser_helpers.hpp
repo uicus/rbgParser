@@ -60,6 +60,11 @@ parser_result<std::map<token, uint>> parse_bounded_sequence(
     const std::string& purpose_name,
     messages_container& msg);
 
+parser_result<std::vector<std::pair<token, uint>>> parse_ordered_bounded_sequence(
+    slice_iterator& it,
+    const std::string& purpose_name,
+    messages_container& msg);
+
 class declarations;
 
 token parse_edge_name(declarations& decl, slice_iterator& it, messages_container& msg);

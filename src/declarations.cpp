@@ -4,13 +4,16 @@
 namespace rbg_parser{
 
 declarations::declarations(
-    std::map<token, uint>&& players_names,
+    std::vector<std::pair<token, uint>>&& players_names_,
     std::set<token>&& pieces_names,
     std::map<token, uint>&& variables_names):
-players_names(std::move(players_names)),
+players_names(),
+ordered_player_names(std::move(players_names_)),
 pieces_names(std::move(pieces_names)),
 variables_names(std::move(variables_names)),
 edges_names(){
+    for(const auto& el: ordered_player_names)
+        players_names.insert(el);
 }
 
 const std::set<token>& declarations::get_legal_pieces(void)const{
@@ -42,7 +45,7 @@ void declarations::add_edge_label(const token& name){
 }
 
 std::string declarations::to_rbg(void)const{
-    return "#players = "+rbg_parser::to_rbg(players_names)+"\n"
+    return "#players = "+rbg_parser::to_rbg(ordered_player_names)+"\n"
           +"#pieces = "+rbg_parser::to_rbg(pieces_names)+"\n"
           +"#variables = "+rbg_parser::to_rbg(variables_names)+"\n";
 }

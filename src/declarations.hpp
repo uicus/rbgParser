@@ -4,6 +4,7 @@
 #include<set>
 #include<map>
 #include<string>
+#include<vector>
 
 #include"token.hpp"
 
@@ -11,12 +12,13 @@ namespace rbg_parser{
 
 class declarations{
         std::map<token, uint> players_names;
+        std::vector<std::pair<token, uint>> ordered_player_names;
         std::set<token> pieces_names;
         std::map<token, uint> variables_names;
         std::set<token> edges_names;
     public:
         declarations(
-            std::map<token, uint>&& players_names,
+            std::vector<std::pair<token, uint>>&& players_names_,
             std::set<token>&& pieces_names,
             std::map<token, uint>&& variables_names);
         const std::set<token>& get_legal_pieces(void)const;

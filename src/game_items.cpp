@@ -233,9 +233,25 @@ std::map<token, uint> game_items::parse_bounded_declaration_set(
     return result;
 }
 
+std::vector<std::pair<token, uint>> game_items::parse_bounded_declaration_list(
+    slice* game_items::*segment_position,
+    const std::string& name,
+    messages_container& msg)const{
+    slice_iterator it(*(this->*segment_position),&macros);
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing \'"+name+"\' segment");
+    it.next(msg);
+    auto parsing_result = parse_ordered_bounded_sequence(it,name+" list",msg);
+    if(not parsing_result.is_success())
+        throw msg.build_message("Expected comma-separated list of identifiers in \'"+name+"\' segment");
+    auto result = parsing_result.move_value();
+    if(it.has_value())
+        msg.add_message(it.create_call_stack("Unexpected tokens at the end of \'"+name+"\' segment"));
+    return result;
+}
+
 declarations game_items::parse_declarations(messages_container& msg)const{
     declarations result(
-        parse_bounded_declaration_set(&game_items::players_segment,"players",msg),
+        parse_bounded_declaration_list(&game_items::players_segment,"players",msg),
         parse_declaration_set(&game_items::pieces_segment,"pieces",msg),
         parse_bounded_declaration_set(&game_items::variables_segment,"variables",msg)
     );

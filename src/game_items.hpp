@@ -53,6 +53,10 @@ class game_items{
             slice* game_items::*segment_position,
             const std::string& name,
             messages_container& msg)const;
+        std::vector<std::pair<token, uint>> parse_bounded_declaration_list(
+            slice* game_items::*segment_position,
+            const std::string& name,
+            messages_container& msg)const;
         declarations parse_declarations(messages_container& msg)const;
         std::vector<std::function<parser_result<std::unique_ptr<graph_builder>>(declarations&, slice_iterator&, messages_container&)>>
             prepare_graph_builders(void)const;

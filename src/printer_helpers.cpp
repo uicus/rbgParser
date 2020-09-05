@@ -11,6 +11,15 @@ std::string to_rbg(const std::vector<token>& v){
     return result;
 }
 
+std::string to_rbg(const std::vector<std::pair<token, uint>>& v){
+    std::string result = "";
+    for(const auto& el: v)
+        result+=el.first.to_string()+"("+std::to_string(el.second)+"),";
+    if(not result.empty())
+        result.pop_back();
+    return result;
+}
+
 std::string to_rbg(const std::set<token>& s){
     std::string result = "";
     for(const auto& el: s)

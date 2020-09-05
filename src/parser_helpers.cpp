@@ -90,6 +90,41 @@ parser_result<std::map<token, uint>> parse_bounded_sequence(
     return success(std::move(result));
 }
 
+parser_result<std::vector<std::pair<token, uint>>> parse_ordered_bounded_sequence(
+    slice_iterator& it,
+    const std::string& purpose_name,
+    messages_container& msg){
+    parsing_context_string_guard g(&it, "Unexpected end of input while parsing "+purpose_name);
+    std::vector<std::pair<token, uint>> result;
+    if(!it.has_value())
+        return success(std::move(result));
+    bool should_meet_comma = false;
+    while(it.has_value() && (it.current(msg).get_type() == comma || it.current(msg).get_type() == identifier)){
+        if(it.current(msg).get_type() == comma)
+            should_meet_comma = false;
+        else if(it.current(msg).get_type() == identifier){
+            if(should_meet_comma)
+                throw msg.build_message(it.create_call_stack("Two identifiers should be separated by at least one comma"));
+            auto name = it.current(msg);
+            it.next(msg);
+            if(it.current(msg).get_type() != left_round_bracket)
+                throw msg.build_message(it.create_call_stack("Expected \'(\', encountered \'"+it.current(msg).to_string()+"\'"));
+            it.next(msg);
+            if(it.current(msg).get_type() != number || it.current(msg).get_value() <= 0)
+                throw msg.build_message(it.create_call_stack("Expected positive integer, encountered \'"+it.current(msg).to_string()+"\'"));
+            uint variable_bound = it.current(msg).get_value();
+            it.next(msg);
+            if(it.current(msg).get_type() != right_round_bracket)
+                throw msg.build_message(it.create_call_stack("Expected \')\', encountered \'"+it.current(msg).to_string()+"\'"));
+            should_meet_comma = true;
+            result.emplace_back(std::move(name), variable_bound);
+        }
+        it.next(msg);
+    }
+    return success(std::move(result));
+
+}
+
 token parse_edge_name(declarations& decl, slice_iterator& it, messages_container& msg){
     if(it.current(msg).get_type() != identifier)
         throw msg.build_message(it.create_call_stack("Expected edge label, encountered \'"+it.current(msg).to_string()+"\'"));

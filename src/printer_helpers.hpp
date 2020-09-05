@@ -12,6 +12,7 @@
 namespace rbg_parser{
 
 std::string to_rbg(const std::vector<token>&);
+std::string to_rbg(const std::vector<std::pair<token, uint>>&);
 std::string to_rbg(const std::set<token>&);
 std::string to_rbg(const std::map<token, uint>&);
 std::string print_tabs(uint indent);
