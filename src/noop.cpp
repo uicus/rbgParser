@@ -5,7 +5,7 @@ namespace rbg_parser{
 
 int noop::give_indices_in_expression(int next_free){
     index = next_free;
-    return next_free+1;
+    return next_free;
 }
 
 void noop::accept(abstract_dispatcher& dispatcher)const{

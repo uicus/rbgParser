@@ -60,10 +60,10 @@ enum token_type{
 };
 
 class token{
-        uint position_in_file;
+        uint position_in_file = 0;
         token_type type;
         std::shared_ptr<std::string> contained_string;
-        uint number_value;
+        uint number_value = 0;
         token(uint position, token_type type)noexcept;
     public:
         token(void)noexcept;
