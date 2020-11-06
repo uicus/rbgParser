@@ -8,7 +8,7 @@ edge_name(edge_name){
 
 int shift::give_indices_in_expression(int next_free){
     index = next_free;
-    return next_free+1;
+    return next_free;
 }
 
 void shift::accept(abstract_dispatcher& dispatcher)const{

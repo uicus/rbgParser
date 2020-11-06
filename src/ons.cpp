@@ -9,7 +9,7 @@ legal_ons(legal_ons.begin(),legal_ons.end()){
 
 int ons::give_indices_in_expression(int next_free){
     index = next_free;
-    return next_free+1;
+    return next_free;
 }
 
 void ons::accept(abstract_dispatcher& dispatcher)const{

@@ -10,7 +10,7 @@ negated(negated){
 
 int move_check::give_indices_in_expression(int next_free){
     index = next_free;
-    return next_free+1;
+    return next_free;
 }
 
 void move_check::accept(abstract_dispatcher& dispatcher)const{
