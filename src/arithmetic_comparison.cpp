@@ -14,7 +14,7 @@ right_side(std::move(right_side)){
 
 int arithmetic_comparison::give_indices_in_expression(int next_free){
     index = next_free;
-    return next_free+1;
+    return next_free;
 }
 
 void arithmetic_comparison::accept(abstract_dispatcher& dispatcher)const{
