@@ -27,8 +27,8 @@ std::unique_ptr<game_move> player_switch::flatten(void){
     return std::unique_ptr<game_move>(new player_switch(std::move(*this)));
 }
 
-straightness_result player_switch::compute_k_straightness(void)const{
-    return standard_switch();
+straightness_result player_switch::compute_k_straightness([[maybe_unused]] StraightnessType st)const{
+    return standard_switch_beginning();
 }
 
 const token& player_switch::get_player(void)const{
@@ -68,8 +68,14 @@ std::unique_ptr<game_move> keeper_switch::flatten(void){
     return std::unique_ptr<game_move>(new keeper_switch(std::move(*this)));
 }
 
-straightness_result keeper_switch::compute_k_straightness(void)const{
-    return standard_switch();
+straightness_result keeper_switch::compute_k_straightness(StraightnessType st)const{
+    switch (st) {
+    case StraightnessType::APP_STRAIGHTNESS:
+    case StraightnessType::MAIN_STRAIGHTNESS:
+        return standard_switch_beginning();
+    default:
+        return standard_switch_nonbeginning();
+    }
 }
 
 bool keeper_switch::is_deterministic(void)const{

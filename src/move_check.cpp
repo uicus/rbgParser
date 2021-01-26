@@ -29,8 +29,9 @@ std::unique_ptr<game_move> move_check::simplify(void){
     return std::unique_ptr<game_move>(new move_check(content->simplify(), negated));
 }
 
-straightness_result move_check::compute_k_straightness(void)const{
-    auto result = content->compute_k_straightness();
+straightness_result move_check::compute_k_straightness(StraightnessType st)const{
+    if (st != StraightnessType::APP_STRAIGHTNESS) return standard_non_switch();
+    auto result = content->compute_k_straightness(st);
     result.wrap_in_check();
     return result;
 }

@@ -7,10 +7,7 @@ graph&& g,
 std::unique_ptr<game_move> moves):
 decl(std::move(decl)),
 g(std::move(g)),
-moves(std::move(moves)),
-straightness(){
-    straightness = this->moves->compute_k_straightness().final_result();
-}
+moves(std::move(moves)) {}
 
 const declarations& parsed_game::get_declarations(void)const{
     return decl;
@@ -24,8 +21,8 @@ const game_move* parsed_game::get_moves(void)const{
     return moves.get();
 }
 
-int parsed_game::get_straightness(void)const{
-    return straightness;
+int parsed_game::get_straightness(StraightnessType st)const{
+    return this->moves->compute_k_straightness(st).final_result(st);
 }
 
 std::string parsed_game::to_rbg(const options& opt, bool pretty)const{

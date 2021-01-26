@@ -14,7 +14,7 @@ class parsed_game{
         declarations decl;
         graph g;
         std::unique_ptr<game_move> moves;
-        int straightness;
+        //int straightness;
     public:
         parsed_game(
             declarations&& decl,
@@ -24,7 +24,7 @@ class parsed_game{
         const graph& get_board(void)const;
         const game_move* get_moves(void)const;
         const std::string& get_name(void)const;
-        int get_straightness(void)const;
+        int get_straightness(StraightnessType st)const;
         std::string to_rbg(const options& opt, bool pretty=false)const;
 };
 

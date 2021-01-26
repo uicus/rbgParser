@@ -112,8 +112,14 @@ void straightness_result::wrap_in_check(void){
     only_coming_through_moves = 0;
 }
 
-int straightness_result::final_result(void)const{
-    return count_max_of_straightness(count_max_of_straightness(self_contained_moves,beginning_moves),count_max_of_straightness(ending_moves,only_coming_through_moves));
+int straightness_result::final_result(StraightnessType st)const{
+    switch (st) {
+    case APP_STRAIGHTNESS:
+    case MAIN_STRAIGHTNESS:
+        return count_max_of_straightness(count_max_of_straightness(self_contained_moves,beginning_moves),count_max_of_straightness(ending_moves,only_coming_through_moves));
+    default:
+        return self_contained_moves;
+    }
 }
 
 straightness_result standard_non_switch(void){
@@ -124,8 +130,12 @@ straightness_result modifier_non_switch(void){
     return straightness_result(-1,-1,-1,1);
 }
 
-straightness_result standard_switch(void){
+straightness_result standard_switch_beginning(void){
     return straightness_result(-1,0,0,-1);
+}
+
+straightness_result standard_switch_nonbeginning(void){
+    return straightness_result(-1,-1,0,-1);
 }
 
 straightness_result empty_move(void){

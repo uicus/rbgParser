@@ -3,6 +3,13 @@
 
 namespace rbg_parser{
 
+enum StraightnessType {
+    APP_STRAIGHTNESS,
+    MAIN_STRAIGHTNESS,
+    MOVE_STRAIGHTNESS,
+    SEMIMOVE_STRAIGHTNESS
+};
+
 // maximum of modifiers in move
 // -1 = couldn't construct any move given type
 // -2 = infinity
@@ -18,16 +25,18 @@ class straightness_result{
         void max_of_results(const straightness_result& rhs);
         void concatenate_result(const straightness_result& rhs);
         void wrap_in_check(void);
-        int final_result(void)const;
+        int final_result(StraightnessType st)const;
         friend straightness_result standard_non_switch(void);
         friend straightness_result modifier_non_switch(void);
-        friend straightness_result standard_switch(void);
+        friend straightness_result standard_switch_beginning(void);
+        friend straightness_result standard_switch_nonbeginning(void);
         friend straightness_result empty_move(void);
 };
 
 straightness_result standard_non_switch(void);
 straightness_result modifier_non_switch(void);
-straightness_result standard_switch(void);
+straightness_result standard_switch_beginning(void);
+straightness_result standard_switch_nonbeginning(void);
 straightness_result empty_move(void);
 
 }

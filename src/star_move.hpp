@@ -27,7 +27,7 @@ class star_move : public game_move{
         std::string to_rbg(const options& opt, uint indent)const override;
         std::string to_rbg(const options& opt)const override;
         std::unique_ptr<game_move> flatten(void)override;
-        straightness_result compute_k_straightness(void)const override;
+        straightness_result compute_k_straightness(StraightnessType st)const override;
         const game_move* get_content(void)const;
         std::unique_ptr<game_move> copy(void)const override;
         bool has_piece_as_variable(const std::set<token>& pieces)const override;

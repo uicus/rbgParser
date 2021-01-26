@@ -81,10 +81,10 @@ void sum::gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements)
         el->gather_sum_elements(elements);
 }
 
-straightness_result sum::compute_k_straightness(void)const{
+straightness_result sum::compute_k_straightness(StraightnessType st)const{
     auto current_max = empty_move();
     for(const auto& el: content)
-        current_max.max_of_results(el->compute_k_straightness());
+        current_max.max_of_results(el->compute_k_straightness(st));
     return current_max;
 }
 

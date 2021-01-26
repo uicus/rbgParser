@@ -64,8 +64,8 @@ std::unique_ptr<game_move> star_move::flatten(void){
     return std::unique_ptr<game_move>(new star_move(contained_move->flatten()));
 }
 
-straightness_result star_move::compute_k_straightness(void)const{
-    auto content_result = contained_move->compute_k_straightness();
+straightness_result star_move::compute_k_straightness(StraightnessType st)const{
+    auto content_result = contained_move->compute_k_straightness(st);
     content_result.repeat_result();
     return content_result;
 }

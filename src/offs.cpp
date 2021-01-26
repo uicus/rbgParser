@@ -40,7 +40,7 @@ std::unique_ptr<game_move> off::flatten(void){
     return std::unique_ptr<game_move>(new off(std::move(*this)));
 }
 
-straightness_result off::compute_k_straightness(void)const{
+straightness_result off::compute_k_straightness([[maybe_unused]] StraightnessType st)const{
     return modifier_non_switch();
 }
 

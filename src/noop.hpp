@@ -21,6 +21,7 @@ class noop : public game_move{
         std::unique_ptr<game_move> simplify(void)override{return std::unique_ptr<game_move>(new noop);};
         void accept(abstract_dispatcher& dispatcher)const override;
         uint priority(const options&)const override{return 4;};
+        straightness_result compute_k_straightness(StraightnessType st)const override;
         std::string to_rbg(const options& opt, uint)const override;
         std::string to_rbg(const options&)const override;
         std::unique_ptr<game_move> flatten(void)override;

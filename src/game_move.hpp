@@ -30,7 +30,7 @@ class game_move{
         virtual std::string to_rbg(const options&)const=0;
         virtual void gather_concatenation_elements(std::vector<std::unique_ptr<game_move>>& elements){elements.push_back(flatten());}
         virtual void gather_sum_elements(std::vector<std::unique_ptr<game_move>>& elements){elements.push_back(flatten());};
-        virtual straightness_result compute_k_straightness(void)const{return standard_non_switch();};
+        virtual straightness_result compute_k_straightness([[maybe_unused]] StraightnessType st)const{return standard_non_switch();};
         virtual bool check_if_redundant(std::set<token>&, bool&)const{return false;};
         virtual bool has_finisher(void)const{return false;};
         virtual bool has_piece_as_variable(const std::set<token>&)const{return false;};

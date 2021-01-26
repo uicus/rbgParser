@@ -27,7 +27,7 @@ class off : public game_move{
         std::string to_rbg(const options& opt, uint)const override;
         std::string to_rbg(const options&)const override;
         std::unique_ptr<game_move> flatten(void)override;
-        straightness_result compute_k_straightness(void)const override;
+        straightness_result compute_k_straightness(StraightnessType st)const override;
         bool check_if_redundant(std::set<token>&, bool& already_met_off)const override;
         const token& get_piece(void)const;
         bool is_lazy(void)const;

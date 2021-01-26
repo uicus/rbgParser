@@ -46,7 +46,7 @@ std::unique_ptr<game_move> assignment::flatten(void){
     return std::unique_ptr<game_move>(new assignment(std::move(left_side), std::move(new_right_side)));
 }
 
-straightness_result assignment::compute_k_straightness(void)const{
+straightness_result assignment::compute_k_straightness([[maybe_unused]] StraightnessType st)const{
     return modifier_non_switch();
 }
 

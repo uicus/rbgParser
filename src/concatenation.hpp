@@ -29,7 +29,7 @@ class concatenation : public game_move{
         std::string to_rbg(const options& opt)const override;
         std::unique_ptr<game_move> flatten(void)override;
         void gather_concatenation_elements(std::vector<std::unique_ptr<game_move>>& elements)override;
-        straightness_result compute_k_straightness(void)const override;
+        straightness_result compute_k_straightness(StraightnessType st)const override;
         const std::vector<std::unique_ptr<game_move>>& get_content(void)const;
         void add_move(std::unique_ptr<game_move> m);
         std::unique_ptr<game_move> copy(void)const override;

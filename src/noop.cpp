@@ -20,6 +20,11 @@ std::string noop::to_rbg(const options&)const{
     return ".";
 }
 
+straightness_result noop::compute_k_straightness(StraightnessType st)const{
+    if (st == StraightnessType::SEMIMOVE_STRAIGHTNESS) return standard_switch_beginning();
+    return standard_non_switch();
+}
+
 std::unique_ptr<game_move> noop::flatten(void){
     return std::unique_ptr<game_move>(new noop);
 }

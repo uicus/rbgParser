@@ -66,10 +66,10 @@ void concatenation::gather_concatenation_elements(std::vector<std::unique_ptr<ga
         el->gather_concatenation_elements(elements);
 }
 
-straightness_result concatenation::compute_k_straightness(void)const{
+straightness_result concatenation::compute_k_straightness(StraightnessType st)const{
     auto current_max = standard_non_switch();
     for(const auto& el: content)
-        current_max.concatenate_result(el->compute_k_straightness());
+        current_max.concatenate_result(el->compute_k_straightness(st));
     return current_max;
 }
 

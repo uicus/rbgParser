@@ -44,7 +44,10 @@ int main(int argc, const char** argv){
                     std::cout<<"Verification successful"<<std::endl;
                 else
                     msg.write_as_warnings(std::cout);
-                std::cout<<"Strong straightness: "<<pg.get_moves()->compute_k_straightness().final_result()<<std::endl;
+                std::cout<<"Applicational strong straightness: "<<pg.get_moves()->compute_k_straightness(rbg_parser::StraightnessType::APP_STRAIGHTNESS).final_result(rbg_parser::StraightnessType::APP_STRAIGHTNESS)<<std::endl;
+                std::cout<<"Main straightness: "<<pg.get_moves()->compute_k_straightness(rbg_parser::StraightnessType::MAIN_STRAIGHTNESS).final_result(rbg_parser::StraightnessType::MAIN_STRAIGHTNESS)<<std::endl;
+                std::cout<<"Move straightness: "<<pg.get_moves()->compute_k_straightness(rbg_parser::StraightnessType::MOVE_STRAIGHTNESS).final_result(rbg_parser::StraightnessType::MOVE_STRAIGHTNESS)<<std::endl;
+                std::cout<<"Semimove straightness: "<<pg.get_moves()->compute_k_straightness(rbg_parser::StraightnessType::SEMIMOVE_STRAIGHTNESS).final_result(rbg_parser::StraightnessType::SEMIMOVE_STRAIGHTNESS)<<std::endl;
                 out<<pg.to_rbg(o, true);
             }
             else
