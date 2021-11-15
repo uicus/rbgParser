@@ -23,6 +23,7 @@ class declarations{
             std::map<token, uint>&& variables_names);
         const std::set<token>& get_legal_pieces(void)const;
         const std::map<token, uint>& get_legal_players(void)const;
+        const std::vector<std::pair<token, uint>>& get_legal_players_ordered(void)const;
         const std::map<token, uint>& get_legal_variables(void)const;
         const std::set<token>& get_legal_edges(void)const;
         uint get_player_bound(const token& player_name)const;

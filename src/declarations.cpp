@@ -24,6 +24,10 @@ const std::map<token, uint>& declarations::get_legal_players(void)const{
     return players_names;
 }
 
+const std::vector<std::pair<token, uint>>& declarations::get_legal_players_ordered(void)const{
+    return ordered_player_names;
+}
+
 const std::map<token, uint>& declarations::get_legal_variables(void)const{
     return variables_names;
 }
